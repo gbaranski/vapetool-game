@@ -4,6 +4,7 @@ const app = new PIXI.Application({
     backgroundColor: 0x1099bb,
     resolution: window.devicePixelRatio || 1,
 });
+
 class Bunny {
     constructor() {
         this.texture = PIXI.Texture.from('src/assets/bunny.png');
@@ -14,34 +15,36 @@ class Bunny {
         this.bunny.x = app.renderer.view.width / 2;
         this.bunny.y = app.renderer.view.height - this.bunny.height;
         container.addChild(this.bunny);
-
-
     }
     move(dx) {
-        this.bunny.x = this.bunny.x + dx / 2;
+        this.bunny.x += dx / 2;
     }
     jump(y) {
-        const jumpInterval = setInterval(() => {
-            this.bunny.y = this.bunny.y - 1;
-            if (this.bunny.y == y) {
-                clearInterval(jumpInterval);
-                const rotateInterval = setInterval(() => {
-                    this.bunny.angle += 10;
-                    if (this.bunny.angle > 360) {
-                        clearInterval(rotateInterval);
-                        this.bunny.angle = 0;
-                        const fallInterval = setInterval(() => {
-                            this.bunny.y = this.bunny.y + 1;
-                            if (this.bunny.y == app.renderer.view.height - this.bunny.height) {
-                                clearInterval(fallInterval);
-                            }
-                        }, 1);
-                    }
-                }, 10);
-            }
-        }, 10);
+        if (this.bunny.y == app.renderer.view.height - this.bunny.height) {
+            const jumpInterval = setInterval(() => {
+                this.bunny.y = this.bunny.y - 1;
+                if (this.bunny.y == y) {
+                    clearInterval(jumpInterval);
+                    const rotateInterval = setInterval(() => {
+                        this.bunny.angle += 5;
+                        if (this.bunny.angle > 360) {
+                            clearInterval(rotateInterval);
+                            this.bunny.angle = 0;
+                            const fallInterval = setInterval(() => {
+                                this.bunny.y = this.bunny.y + 1;
+                                if (this.bunny.y == app.renderer.view.height - this.bunny.height) {
+                                    clearInterval(fallInterval);
+                                }
+                            }, 1);
+                        }
+                    }, 1);
+                }
+            }, 1);
+        } else {
+            console.log("Bunny already in air");
+        }
     }
-}
+};
 
 document.body.appendChild(app.view);
 const container = new PIXI.Container();
@@ -56,6 +59,7 @@ document.onkeydown = function (key) {
     key = key || window.event;
     switch (key.keyCode) {
         case 38: // up 
+
             bunny.jump(bunny.bunny.y - 50);
             break;
         case 40: // down

@@ -1,0 +1,19 @@
+{
+  "name": "vapetool-game-pixijs",
+  "version": "1.0.0",
+  "description": "game in pixijs",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbaranski/vapetool-game.git"
+  },
+  "author": "gbaranski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gbaranski/vapetool-game/issues"
+  },
+  "homepage": "https://github.com/gbaranski/vapetool-game#readme"
+}
