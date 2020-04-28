@@ -42,7 +42,34 @@ class FallingObject {
     }
 
 }
-
+class DisplayText {
+    constructor() {
+        this.message;
+        this.score = 0;
+        this.style = new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 36,
+            fill: "white",
+            stroke: '#ff3300',
+            strokeThickness: 4,
+            dropShadow: true,
+            dropShadowColor: "#000000",
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+        });
+    }
+    updateText() {
+        container.removeChild(this.message);
+        this.message = new PIXI.Text(`Score: ${this.score}ml`, this.style);
+        this.message.position.set(0, 0);
+        container.addChild(this.message);
+    }
+    addScore(amount) {
+        this.score += amount;
+        this.updateText();
+    }
+}
 
 class GameState {
     constructor() {
@@ -65,6 +92,7 @@ class GameState {
             }
             if (hitTestRectangle(bunny.bunny, element)) {
                 console.log("hit")
+                displayText.addScore(10);
                 container.removeChild(element);
                 fallingObject.fallingObjects = fallingObject.fallingObjects.filter(function (e) {
                     return e !== element;
@@ -200,7 +228,7 @@ function hitTestRectangle(r1, r2) {
 gameState = new GameState();
 bunny = new Bunny();
 fallingObject = new FallingObject();
-
+displayText = new DisplayText();
 document.body.appendChild(app.view);
 const container = new PIXI.Container();
 
@@ -211,5 +239,5 @@ bunny.texture.baseTexture.on('loaded', function () {
 });
 fallingObject.texture.baseTexture.on('loaded', function () {
     fallingObject.create();
-
+    displayText.updateText();
 })
