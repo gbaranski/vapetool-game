@@ -1,14 +1,16 @@
 const app = new PIXI.Application({
-    width: 800,
-    height: 600,
+    width: $(window).width(),
+    height: $(window).height(),
     backgroundColor: 0x1099bb,
     resolution: window.devicePixelRatio || 1,
+
 });
 class Bunny {
     constructor() {
         this.texture = PIXI.Texture.from('src/assets/bunny.png');
         this.bunny = new PIXI.Sprite(this.texture);
         this.jumping = false;
+        this.flipping = false;
     }
     create() {
         console.log(this.bunny);
@@ -21,6 +23,9 @@ class Bunny {
     }
     jump() {
         this.bunny.vy = -10;
+    }
+    flip() {
+        this.flipping = true;
     }
 };
 class FallingObject {
@@ -74,6 +79,7 @@ class DisplayText {
 class GameState {
     constructor() {
         this.gravity = 0.5;
+        this.flipVelocity = 0;
     }
     gameLoop() {
         this.handleKeyboardPress();
@@ -99,6 +105,19 @@ class GameState {
                 });
             }
         });
+        if (bunny.bunny.vx > 0 && bunny.flipping == false) {
+            this.flipVelocity = 10;
+        } else if (bunny.flipping == false) {
+            this.flipVelocity = -10
+        }
+        if (bunny.flipping) {
+            console.log(bunny.bunny.vx)
+            bunny.bunny.angle += this.flipVelocity
+            if (Math.abs(bunny.bunny.angle) > 360) {
+                bunny.flipping = false;
+                bunny.bunny.angle = 0;
+            }
+        }
 
     }
     handleKeyboardPress() {
@@ -121,10 +140,11 @@ class GameState {
 
         let keyW = this.keyboard("w");
         keyW.press = () => {
-            if (!bunny.jumping) {
-                bunny.jump();
-            }
-
+            bunny.jump();
+        }
+        let keySpace = this.keyboard(" ");
+        keySpace.press = () => {
+            bunny.flip();
         }
     }
     keyboard(value) {
