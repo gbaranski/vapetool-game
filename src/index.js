@@ -11,6 +11,7 @@ class Bunny {
         this.bunny = new PIXI.Sprite(this.texture);
         this.jumping = false;
         this.flipping = false;
+        this.flipVelocity = 0;
     }
     create() {
         console.log(this.bunny);
@@ -24,8 +25,19 @@ class Bunny {
     jump() {
         this.bunny.vy = -10;
     }
-    flip() {
-        this.flipping = true;
+    handleFlips() {
+        if (this.bunny.vx > 0 && this.flipping == false) {
+            this.flipVelocity = 10;
+        } else if (bunny.flipping == false) {
+            this.flipVelocity = -10
+        }
+        if (this.flipping) {
+            this.bunny.angle += this.flipVelocity
+            if (Math.abs(this.bunny.angle) > 360) {
+                this.flipping = false;
+                this.bunny.angle = 0;
+            }
+        }
     }
 };
 class FallingObject {
@@ -49,7 +61,7 @@ class FallingObject {
 }
 class DisplayText {
     constructor() {
-        this.message;
+        this.scoreText;
         this.score = 0;
         this.style = new PIXI.TextStyle({
             fontFamily: "Arial",
@@ -64,25 +76,36 @@ class DisplayText {
             dropShadowDistance: 6,
         });
     }
-    updateText() {
-        container.removeChild(this.message);
-        this.message = new PIXI.Text(`Score: ${this.score}ml`, this.style);
-        this.message.position.set(0, 0);
-        container.addChild(this.message);
+    updateScoreText() {
+        container.removeChild(this.scoreText);
+        this.scoreText = new PIXI.Text(`Score: ${this.score}ml`, this.style);
+        this.scoreText.position.set(0, 0);
+        container.addChild(this.scoreText);
     }
     addScore(amount) {
         this.score += amount;
-        this.updateText();
+        this.updateScoreText();
+
+    }
+    addCenterText(text) {
+        this.scoreText = new PIXI.Text(text, this.style);
+        this.scoreText.position.set(app.renderer.view.width/2, app.renderer.height/2);
+        container.addChild(this.scoreText);
+    
     }
 }
 
 class GameState {
     constructor() {
         this.gravity = 0.5;
-        this.flipVelocity = 0;
     }
     gameLoop() {
         this.handleKeyboardPress();
+        this.handleBunnyPhysics();
+        this.handleFallingObjectsPhysics();
+        bunny.handleFlips();
+    }
+    handleBunnyPhysics() {
         bunny.bunny.x += bunny.bunny.vx;
         bunny.bunny.y += bunny.bunny.vy;
         if (bunny.bunny.y <= app.renderer.view.height - bunny.bunny.height) {
@@ -90,11 +113,11 @@ class GameState {
         } else {
             bunny.bunny.vy = 0;
         }
+    }
+    handleFallingObjectsPhysics() {
         fallingObject.fallingObjects.forEach(element => {
             if (element.y <= app.renderer.view.height - element.height) {
                 element.y += element.vy;
-            } else {
-                element.vy = 0;
             }
             if (hitTestRectangle(bunny.bunny, element)) {
                 console.log("hit")
@@ -105,21 +128,8 @@ class GameState {
                 });
             }
         });
-        if (bunny.bunny.vx > 0 && bunny.flipping == false) {
-            this.flipVelocity = 10;
-        } else if (bunny.flipping == false) {
-            this.flipVelocity = -10
-        }
-        if (bunny.flipping) {
-            console.log(bunny.bunny.vx)
-            bunny.bunny.angle += this.flipVelocity
-            if (Math.abs(bunny.bunny.angle) > 360) {
-                bunny.flipping = false;
-                bunny.bunny.angle = 0;
-            }
-        }
-
     }
+
     handleKeyboardPress() {
         let keyA = this.keyboard("a");
         keyA.press = () => {
@@ -144,7 +154,7 @@ class GameState {
         }
         let keySpace = this.keyboard(" ");
         keySpace.press = () => {
-            bunny.flip();
+            bunny.flipping = true;
         }
     }
     keyboard(value) {
@@ -259,5 +269,5 @@ bunny.texture.baseTexture.on('loaded', function () {
 });
 fallingObject.texture.baseTexture.on('loaded', function () {
     fallingObject.create();
-    displayText.updateText();
+    displayText.updateScoreText();
 })
