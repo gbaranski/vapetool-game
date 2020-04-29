@@ -228,12 +228,11 @@ $(document).ready(function() {
     displayText = new DisplayText();
     document.body.appendChild(app.view);
     app.stage.addChild(container);
-
     bunny.texture.baseTexture.on('loaded', function () {
-        bunny.create();
+        fallingObject.texture.baseTexture.on('loaded', function () {
+            bunny.create();
+            fallingObject.create();
+            displayText.updateScoreText();
+        })
     });
-    fallingObject.texture.baseTexture.on('loaded', function () {
-        fallingObject.create();
-        displayText.updateScoreText();
-    })
 });
