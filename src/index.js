@@ -121,9 +121,7 @@ class GameState {
             if (hitTestRectangle(bunny.bunny, element)) {
                 displayText.addScore(10);
                 container.removeChild(element);
-                fallingObject.fallingObjects = fallingObject.fallingObjects.filter(function (e) {
-                    return e !== element;
-                });
+                fallingObject.fallingObjects = fallingObject.fallingObjects.filter(e =>  e !== element);
             }
         });
     }
