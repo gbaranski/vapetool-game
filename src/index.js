@@ -7,8 +7,8 @@ class Bunny {
     this.flipping = false;
     this.flipVelocity = 0;
     this.friction = 0.5;
-    this.frictionAir = 0.1;
     this.ax = 0;
+    this.axErrorMargin = 0.1;
   }
   create() {
     this.sprite.x = app.renderer.view.width / 2;
@@ -33,7 +33,7 @@ class Bunny {
     if(this.checkIfOnGround()) {
         this.friction = 0.5;
     } else {
-        this.friction = 0.4;
+        this.friction = 0.1;
     }
     if (this.canMoveRight()) {
       this.sprite.vx += this.ax - this.friction;
@@ -41,15 +41,19 @@ class Bunny {
     if (this.canMoveLeft()) {
       this.sprite.vx += this.ax + this.friction;
     }
-    this.ax = Math.floor(this.ax);
     if (this.ax === 0) {
       if (this.sprite.vx > 0) {
         this.sprite.vx -= this.friction;
+        if(this.sprite.vx < this.axErrorMargin) {
+          this.sprite.vx = 0;
+        }
       } else if (this.sprite.vx < 0) {
         this.sprite.vx += this.friction;
+        if(this.sprite.vx > this.axErrorMargin) {
+          this.sprite.vx = 0;
+        }
       }
     }
-
     this.sprite.x += this.sprite.vx;
     this.sprite.y += this.sprite.vy;
     this.sprite.y = Math.min(
@@ -61,6 +65,7 @@ class Bunny {
     } else {
       this.sprite.vy = 0;
     }
+    this.ax = Math.floor(this.ax);
   }
   handleFlips() {
     if (this.sprite.vx > 0 && this.flipping == false) {
@@ -159,6 +164,7 @@ class GameState {
     this.handleKeyboardPress();
   }
   gameLoop() {
+    console.log(this.bunny.sprite.vx);
     this.bunny.handlePhysics(this.gravity);
     this.bunny.handleFlips();
     this.fallingObject.handleFallingObjectsPhysics(this.bunny.sprite, this.displayText);
@@ -257,7 +263,7 @@ const app = new PIXI.Application({
   width: $(window).width(),
   height: $(window).height(),
   backgroundColor: 0x1099bb,
-  resolution: window.devicePixelRatio || 1,
+  resolution: 1,
 });
 
 const container = new PIXI.Container();
