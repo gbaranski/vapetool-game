@@ -32,7 +32,6 @@ function keyboard(value) {
   return key;
 }
 
-
 function hitTestRectangle(r1, r2) {
   let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
   hit = false;
@@ -60,7 +59,6 @@ function hitTestRectangle(r1, r2) {
   return hit;
 }
 
-
 class GameState {
   constructor(player, fallingObject, displayText) {
     this.player = player;
@@ -70,10 +68,12 @@ class GameState {
     this.handleKeyboardPress();
   }
   gameLoop() {
-    console.log(this.player.sprite.vx);
     this.player.handlePhysics(this.gravity);
     this.player.handleFlips();
-    this.fallingObject.handleFallingObjectsPhysics(this.player.sprite, this.displayText);
+    this.fallingObject.handleFallingObjectsPhysics(
+      this.player.sprite,
+      this.displayText
+    );
   }
 
   handleKeyboardPress() {
@@ -104,7 +104,6 @@ class GameState {
   }
 }
 
-
 const app = new PIXI.Application({
   width: $(window).width(),
   height: $(window).height(),
@@ -116,18 +115,21 @@ const container = new PIXI.Container();
 
 $(document).ready(function () {
   const loader = PIXI.Loader.shared;
-  loader.add('player', 'src/assets/bunny.png');
-  loader.add('fallingObject', 'src/assets/eliquid.png');
+  loader.add("player", "src/assets/bunny.png");
+  loader.add("fallingObject", "src/assets/eliquid.png");
+  loader.add("enemy", "src/assets/police.png");
   const player = new Player(loader);
+  const enemy = new Enemy(loader);
   const fallingObject = new FallingObject(loader);
   const displayText = new DisplayText();
   const gameState = new GameState(player, fallingObject, displayText);
   document.body.appendChild(app.view);
   app.stage.addChild(container);
-      loader.onComplete.add(() => {
-        fallingObject.create();
-        player.create();
-        displayText.updateScoreText();
-        app.ticker.add((delta) => gameState.gameLoop(delta));
-    });
+  loader.onComplete.add(() => {
+    fallingObject.create();
+    player.create();
+    enemy.create();
+    displayText.updateScoreText();
+    app.ticker.add((delta) => gameState.gameLoop(delta));
+  });
 });
