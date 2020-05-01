@@ -94,6 +94,20 @@ class FallingObject {
       container.addChild(this.fallingObjects[i]);
     }
   }
+  handleFallingObjectsPhysics(sprite, displayText) {
+    this.fallingObjects.forEach((element) => {
+      if (element.y <= app.renderer.view.height - element.height) {
+        element.y += element.vy;
+      }
+      if (hitTestRectangle(sprite, element)) {
+        displayText.addScore(10);
+        container.removeChild(element);
+        this.fallingObjects = this.fallingObjects.filter(
+          (e) => e !== element
+        );
+      }
+    });
+  }
 }
 
 class DisplayText {
@@ -143,24 +157,10 @@ class GameState {
   }
   gameLoop() {
     this.bunny.handlePhysics(this.gravity);
-    this.handleFallingObjectsPhysics();
     this.bunny.handleFlips();
+    this.fallingObject.handleFallingObjectsPhysics(this.bunny.sprite, this.displayText);
   }
-  // move faliingOPbjects
-  handleFallingObjectsPhysics() {
-    this.fallingObject.fallingObjects.forEach((element) => {
-      if (element.y <= app.renderer.view.height - element.height) {
-        element.y += element.vy;
-      }
-      if (hitTestRectangle(this.bunny.sprite, element)) {
-        this.displayText.addScore(10);
-        container.removeChild(element);
-        this.fallingObject.fallingObjects = this.fallingObject.fallingObjects.filter(
-          (e) => e !== element
-        );
-      }
-    });
-  }
+
 
   handleKeyboardPress() {
     let keyA = this.keyboard("a");
