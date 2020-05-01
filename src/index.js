@@ -1,7 +1,8 @@
 class Bunny {
-  constructor() {
-    this.texture = PIXI.Texture.from("src/assets/bunny.png");
-    this.sprite = new PIXI.Sprite(this.texture);
+  constructor(loader) {
+    loader.load((loader, resources) => {
+      this.sprite = new PIXI.Sprite(resources.bunny.texture)
+    });
     this.jumping = false;
     this.flipping = false;
     this.flipVelocity = 0;
@@ -78,8 +79,10 @@ class Bunny {
 }
 
 class FallingObject {
-  constructor() {
-    this.texture = PIXI.Texture.from("src/assets/eliquid.png");
+  constructor(loader) {
+    loader.load((loader, resources) => {
+      this.texture = new PIXI.Texture(resources.fallingObject.texture);
+    });
     this.fallingObjects = [];
     this.objectGravity = 3;
   }
@@ -260,19 +263,19 @@ const app = new PIXI.Application({
 const container = new PIXI.Container();
 
 $(document).ready(function () {
-  const bunny = new Bunny();
-  const fallingObject = new FallingObject();
+  const loader = PIXI.Loader.shared;
+  loader.add('bunny', 'src/assets/bunny.png');
+  loader.add('fallingObject', 'src/assets/eliquid.png');
+  const bunny = new Bunny(loader);
+  const fallingObject = new FallingObject(loader);
   const displayText = new DisplayText();
   const gameState = new GameState(bunny, fallingObject, displayText);
-
   document.body.appendChild(app.view);
   app.stage.addChild(container);
-  bunny.texture.baseTexture.on("loaded", function () {
-    fallingObject.texture.baseTexture.on("loaded", function () {
-      fallingObject.create();
-      bunny.create();
-      displayText.updateScoreText();
-      app.ticker.add((delta) => gameState.gameLoop(delta));
+      loader.onComplete.add(() => {
+        fallingObject.create();
+        bunny.create();
+        displayText.updateScoreText();
+        app.ticker.add((delta) => gameState.gameLoop(delta));
     });
-  });
 });
