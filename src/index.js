@@ -106,6 +106,7 @@ class GameState {
       this.enemy.enemies.forEach((enemy) => {
         if (hitTestRectangle(cloudSprite, enemy)) {
           console.log("Hitted");
+          enemy.hp -= 1;
         }
       });
     });
@@ -122,6 +123,7 @@ class GameState {
     this.player.handleFlips();
     this.player.updateCloudFrame();
     this.bullet.handleBulletPhysics();
+    this.enemy.printHpText();
     this.handleCloudCollision();
     this.handleFallingObjectCollision();
     this.handleBulletCollision();

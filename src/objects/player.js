@@ -114,7 +114,7 @@ class Player {
     cloudSprite.scale.y = timeDifference / 1000;
     cloudSprite.x = this.sprite.x + 20;
     cloudSprite.y = this.sprite.y + 20;
-    cloudSprite.anchor.set(0.5);
+    cloudSprite.anchor.set(0.5, 0.5);
     if (this.checkIfBunnyGoRight()) {
       cloudSprite.vx = 1;
     } else {
