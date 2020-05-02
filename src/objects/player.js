@@ -96,4 +96,13 @@ class Player {
       }
     }
   }
+  loadCloud() {
+    this.startLoadDate = new Date().getTime();
+    console.log(this.startLoadDate);
+  }
+  attackCloud() {
+    console.log("attacking cloud");
+    const timeDifference = new Date().getTime() - this.startLoadDate;
+    console.log(timeDifference);
+  }
 }

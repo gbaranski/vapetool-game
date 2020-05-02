@@ -77,7 +77,7 @@ class GameState {
           this.player.sprite.y
         );
       });
-    }, 1000);
+    }, 2000);
   }
   handleFallingObjectCollision() {
     this.fallingObject.fallingObjects.forEach((element) => {
@@ -144,6 +144,14 @@ class GameState {
     keySpace.press = () => {
       this.player.flipping = true;
     };
+
+    let keyE = keyboard("e");
+    keyE.press = () => {
+      this.player.loadCloud();
+    };
+    keyE.release = () => {
+      this.player.attackCloud();
+    };
   }
 }
 
@@ -181,6 +189,7 @@ $(document).ready(function () {
     player.create();
     enemy.create();
     enemy.create();
+    enemy;
     displayText.updateScoreText();
     displayText.setHp(player.hp);
     displayText.updateHpText();
