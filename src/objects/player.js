@@ -9,13 +9,14 @@ class Player {
     this.friction = 0.5;
     this.ax = 0;
     this.axErrorMargin = 0.1;
-    this.hp = 10;
+    this.hp = 100;
   }
   create() {
     this.sprite.x = app.renderer.view.width / 2;
     this.sprite.y = app.renderer.view.height - this.sprite.height;
     this.sprite.vx = 0;
     this.sprite.vy = 0;
+    // this.sprite.anchor.set(0.5);
     container.addChild(this.sprite);
   }
   jump() {

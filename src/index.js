@@ -82,7 +82,7 @@ class GameState {
       if (hitTestRectangle(this.player.sprite, element)) {
         this.displayText.addScore(10);
         container.removeChild(element);
-        this.displayText.setHp(player.hp);
+        this.displayText.setHp(this.player.hp);
         this.fallingObject.fallingObjects = this.fallingObject.fallingObjects.filter(
           (e) => e !== element
         );
@@ -103,7 +103,7 @@ class GameState {
   handlePlayerDie() {
     if (this.player.hp <= 0) {
       console.log("Player is dead");
-      this.displayText.addCenterText("Dead");
+      this.displayText.showDeathScreen();
       app.ticker.stop();
     }
   }

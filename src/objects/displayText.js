@@ -15,7 +15,7 @@ class DisplayText {
       dropShadowAngle: Math.PI / 6,
       dropShadowDistance: 6,
     });
-    this.centerTextStyle = new PIXI.TextStyle({
+    this.deathTextStyle = new PIXI.TextStyle({
       fontFamily: "Montserrat",
       fontSize: 100,
       fill: "white",
@@ -51,12 +51,13 @@ class DisplayText {
     this.hpText.position.set(0, 40);
     container.addChild(this.hpText);
   }
-  addCenterText(text) {
-    this.centerText = new PIXI.Text(text, this.centerTextStyle);
-    this.centerText.position.set(
-      app.renderer.view.width / 2,
-      app.renderer.height / 2
+  showDeathScreen() {
+    const deathText = new PIXI.Text(
+      `You're dead\n Score: ${this.score}`,
+      this.deathTextStyle
     );
-    container.addChild(this.centerText);
+    deathText.anchor.set(0.5);
+    deathText.position.set(app.renderer.width / 2, app.renderer.height / 2);
+    container.addChild(deathText);
   }
 }

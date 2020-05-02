@@ -11,6 +11,7 @@ class Bullet {
     let bullet = new PIXI.Sprite(this.texture);
     bullet.x = startX;
     bullet.y = startY;
+    bullet.anchor.set(0.5);
     bullet.scale.x = -0.1;
     bullet.scale.y = -0.1;
     bullet.rotation = rotateToPoint(startX, startY, targetX, targetY);
