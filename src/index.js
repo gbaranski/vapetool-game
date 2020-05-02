@@ -68,16 +68,16 @@ class GameState {
     this.displayText = displayText;
     this.gravity = 0.5;
     this.handleKeyboardPress();
-    // this.shootInterval = setInterval(() => {
-    //   this.enemy.enemies.forEach((enemy) => {
-    //     this.bullet.shoot(
-    //       enemy.x + enemy.width / 2,
-    //       enemy.y + enemy.height / 2,
-    //       this.player.sprite.x,
-    //       this.player.sprite.y
-    //     );
-    //   });
-    // }, 2000);
+    this.shootInterval = setInterval(() => {
+      this.enemy.enemies.forEach((enemy) => {
+        this.bullet.shoot(
+          enemy.x + enemy.width / 2,
+          enemy.y + enemy.height / 2,
+          this.player.sprite.x,
+          this.player.sprite.y
+        );
+      });
+    }, 2000);
   }
   handleFallingObjectCollision() {
     this.fallingObject.fallingObjects.forEach((element) => {
