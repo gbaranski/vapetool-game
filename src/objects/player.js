@@ -9,6 +9,7 @@ class Player {
     this.friction = 0.5;
     this.ax = 0;
     this.axErrorMargin = 0.1;
+    this.hp = 10;
   }
   create() {
     this.sprite.x = app.renderer.view.width / 2;

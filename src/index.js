@@ -82,6 +82,7 @@ class GameState {
       if (hitTestRectangle(this.player.sprite, element)) {
         this.displayText.addScore(10);
         container.removeChild(element);
+        this.displayText.setHp(player.hp);
         this.fallingObject.fallingObjects = this.fallingObject.fallingObjects.filter(
           (e) => e !== element
         );
@@ -91,11 +92,20 @@ class GameState {
   handleBulletCollision() {
     this.bullet.bullets.forEach((bullet) => {
       if (hitTestRectangle(this.player.sprite, bullet)) {
+        this.player.hp = this.player.hp - 10;
+        this.displayText.setHp(this.player.hp);
         container.removeChild(bullet);
         this.bullet.bullets = this.bullet.bullets.filter((e) => e !== bullet);
         console.log("Get hit by bullet");
       }
     });
+  }
+  handlePlayerDie() {
+    if (this.player.hp <= 0) {
+      console.log("Player is dead");
+      this.displayText.addCenterText("Dead");
+      app.ticker.stop();
+    }
   }
   gameLoop() {
     this.player.handlePhysics(this.gravity);
@@ -103,6 +113,7 @@ class GameState {
     this.bullet.handleBulletPhysics();
     this.handleFallingObjectCollision();
     this.handleBulletCollision();
+    this.handlePlayerDie();
     this.fallingObject.handlePhysics(this.player.sprite, this.displayText);
   }
 
@@ -168,6 +179,8 @@ $(document).ready(function () {
     player.create();
     enemy.create();
     displayText.updateScoreText();
+    displayText.setHp(player.hp);
+    displayText.updateHpText();
     app.ticker.add((delta) => gameState.gameLoop(delta));
   });
 });
