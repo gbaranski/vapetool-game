@@ -17,15 +17,10 @@ class FallingObject {
       container.addChild(this.fallingObjects[i]);
     }
   }
-  handleFallingObjectsPhysics(sprite, displayText) {
+  handlePhysics(sprite, displayText) {
     this.fallingObjects.forEach((element) => {
       if (element.y <= app.renderer.view.height - element.height) {
         element.y += element.vy;
-      }
-      if (hitTestRectangle(sprite, element)) {
-        displayText.addScore(10);
-        container.removeChild(element);
-        this.fallingObjects = this.fallingObjects.filter((e) => e !== element);
       }
     });
   }

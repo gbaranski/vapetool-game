@@ -60,20 +60,50 @@ function hitTestRectangle(r1, r2) {
 }
 
 class GameState {
-  constructor(player, fallingObject, displayText) {
+  constructor(player, enemy, bullet, fallingObject, displayText) {
     this.player = player;
+    this.enemy = enemy;
+    this.bullet = bullet;
     this.fallingObject = fallingObject;
     this.displayText = displayText;
     this.gravity = 0.5;
     this.handleKeyboardPress();
+    this.shootInterval = setInterval(() => {
+      this.bullet.shoot(
+        this.enemy.sprite.x + this.enemy.sprite.width / 2,
+        this.enemy.sprite.y + this.enemy.sprite.height / 2,
+        this.player.sprite.x,
+        this.player.sprite.y
+      );
+    }, 1000);
+  }
+  handleFallingObjectCollision() {
+    this.fallingObject.fallingObjects.forEach((element) => {
+      if (hitTestRectangle(this.player.sprite, element)) {
+        this.displayText.addScore(10);
+        container.removeChild(element);
+        this.fallingObject.fallingObjects = this.fallingObject.fallingObjects.filter(
+          (e) => e !== element
+        );
+      }
+    });
+  }
+  handleBulletCollision() {
+    this.bullet.bullets.forEach((bullet) => {
+      if (hitTestRectangle(this.player.sprite, bullet)) {
+        container.removeChild(bullet);
+        this.bullet.bullets = this.bullet.bullets.filter((e) => e !== bullet);
+        console.log("Get hit by bullet");
+      }
+    });
   }
   gameLoop() {
     this.player.handlePhysics(this.gravity);
     this.player.handleFlips();
-    this.fallingObject.handleFallingObjectsPhysics(
-      this.player.sprite,
-      this.displayText
-    );
+    this.bullet.handleBulletPhysics();
+    this.handleFallingObjectCollision();
+    this.handleBulletCollision();
+    this.fallingObject.handlePhysics(this.player.sprite, this.displayText);
   }
 
   handleKeyboardPress() {
@@ -118,11 +148,19 @@ $(document).ready(function () {
   loader.add("player", "src/assets/bunny.png");
   loader.add("fallingObject", "src/assets/eliquid.png");
   loader.add("enemy", "src/assets/police.png");
+  loader.add("bullet", "src/assets/bullet.png");
   const player = new Player(loader);
   const enemy = new Enemy(loader);
+  const bullet = new Bullet(loader);
   const fallingObject = new FallingObject(loader);
   const displayText = new DisplayText();
-  const gameState = new GameState(player, fallingObject, displayText);
+  const gameState = new GameState(
+    player,
+    enemy,
+    bullet,
+    fallingObject,
+    displayText
+  );
   document.body.appendChild(app.view);
   app.stage.addChild(container);
   loader.onComplete.add(() => {
