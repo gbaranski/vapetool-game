@@ -72,7 +72,7 @@ class GameState {
       this.enemy.enemies.forEach((enemy) => {
         this.bullet.shoot(
           enemy.x + enemy.width / 2,
-          enemy.y + enemy.height / 2,
+          enemy.y,
           this.player.sprite.x,
           this.player.sprite.y
         );
