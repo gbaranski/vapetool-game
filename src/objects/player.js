@@ -2,7 +2,9 @@ class Player {
   constructor(loader) {
     loader.load((loader, resources) => {
       this.sprite = new PIXI.Sprite(resources.player.texture);
+      this.cloudTexture = new PIXI.Texture(resources.cloud.texture);
     });
+    this.cloudSprites = [];
     this.jumping = false;
     this.flipping = false;
     this.flipVelocity = 0;
@@ -73,8 +75,11 @@ class Player {
       app.renderer.view.height - this.sprite.height / 2
     );
   }
+  checkIfBunnyGoRight() {
+    return this.sprite.vx > 0;
+  }
   handleFlips() {
-    if (this.sprite.vx > 0 && !this.flipping) {
+    if (this.checkIfBunnyGoRight() && !this.flipping) {
       this.flipVelocity = 10;
     } else if (!this.flipping) {
       this.flipVelocity = -10;
@@ -98,11 +103,55 @@ class Player {
   }
   loadCloud() {
     this.startLoadDate = new Date().getTime();
-    console.log(this.startLoadDate);
   }
   attackCloud() {
-    console.log("attacking cloud");
     const timeDifference = new Date().getTime() - this.startLoadDate;
-    console.log(timeDifference);
+    const cloudSprite = new PIXI.Sprite(this.cloudTexture);
+    cloudSprite.shouldRemove = false;
+    cloudSprite.scaleMultiplier = 1.05;
+    cloudSprite.anchor.set(0.5);
+    cloudSprite.scale.x = timeDifference / 1000;
+    cloudSprite.scale.y = timeDifference / 1000;
+    cloudSprite.x = this.sprite.x + 20;
+    cloudSprite.y = this.sprite.y + 20;
+    cloudSprite.anchor.set(0.5);
+    if (this.checkIfBunnyGoRight()) {
+      cloudSprite.vx = 1;
+    } else {
+      cloudSprite.vx = -1;
+    }
+    container.addChild(cloudSprite);
+    this.cloudSprites.push(cloudSprite);
+    setTimeout(() => {
+      cloudSprite.shouldRemove = true;
+      cloudSprite.scale.x;
+    }, timeDifference);
+  }
+  updateCloudFrame() {
+    this.cloudSprites.forEach((cloudSprite) => {
+      if (cloudSprite != undefined) {
+        // check if there is any cloudsprite created
+        if (!cloudSprite.shouldRemove) {
+          cloudSprite.scaleMultiplier = 1.05;
+        } else {
+          cloudSprite.scaleMultiplier = 0.95;
+        }
+        if (cloudSprite.scale.x < 0.01 && cloudSprite.scale.y <= 0.01) {
+          this.cloudSprites = this.cloudSprites.filter(
+            (e) => e !== cloudSprite
+          );
+          container.removeChild(cloudSprite);
+        }
+        cloudSprite.scale.x = Math.min(
+          cloudSprite.scale.x * cloudSprite.scaleMultiplier,
+          4
+        );
+        cloudSprite.scale.y = Math.min(
+          cloudSprite.scale.y * cloudSprite.scaleMultiplier,
+          4
+        );
+        cloudSprite.x += cloudSprite.vx;
+      }
+    });
   }
 }

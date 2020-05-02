@@ -68,16 +68,16 @@ class GameState {
     this.displayText = displayText;
     this.gravity = 0.5;
     this.handleKeyboardPress();
-    this.shootInterval = setInterval(() => {
-      this.enemy.enemies.forEach((enemy) => {
-        this.bullet.shoot(
-          enemy.x + enemy.width / 2,
-          enemy.y + enemy.height / 2,
-          this.player.sprite.x,
-          this.player.sprite.y
-        );
-      });
-    }, 2000);
+    // this.shootInterval = setInterval(() => {
+    //   this.enemy.enemies.forEach((enemy) => {
+    //     this.bullet.shoot(
+    //       enemy.x + enemy.width / 2,
+    //       enemy.y + enemy.height / 2,
+    //       this.player.sprite.x,
+    //       this.player.sprite.y
+    //     );
+    //   });
+    // }, 2000);
   }
   handleFallingObjectCollision() {
     this.fallingObject.fallingObjects.forEach((element) => {
@@ -98,8 +98,16 @@ class GameState {
         this.displayText.setHp(this.player.hp);
         container.removeChild(bullet);
         this.bullet.bullets = this.bullet.bullets.filter((e) => e !== bullet);
-        console.log("Get hit by bullet");
       }
+    });
+  }
+  handleCloudCollision() {
+    this.player.cloudSprites.forEach((cloudSprite) => {
+      this.enemy.enemies.forEach((enemy) => {
+        if (hitTestRectangle(cloudSprite, enemy)) {
+          console.log("Hitted");
+        }
+      });
     });
   }
   handlePlayerDie() {
@@ -112,7 +120,9 @@ class GameState {
   gameLoop() {
     this.player.handlePhysics(this.gravity);
     this.player.handleFlips();
+    this.player.updateCloudFrame();
     this.bullet.handleBulletPhysics();
+    this.handleCloudCollision();
     this.handleFallingObjectCollision();
     this.handleBulletCollision();
     this.handlePlayerDie();
@@ -170,6 +180,7 @@ $(document).ready(function () {
   loader.add("fallingObject", "src/assets/eliquid.png");
   loader.add("enemy", "src/assets/police.png");
   loader.add("bullet", "src/assets/bullet.png");
+  loader.add("cloud", "src/assets/cloud.png");
   const player = new Player(loader);
   const enemy = new Enemy(loader);
   const bullet = new Bullet(loader);
