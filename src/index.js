@@ -69,12 +69,14 @@ class GameState {
     this.gravity = 0.5;
     this.handleKeyboardPress();
     this.shootInterval = setInterval(() => {
-      this.bullet.shoot(
-        this.enemy.sprite.x + this.enemy.sprite.width / 2,
-        this.enemy.sprite.y + this.enemy.sprite.height / 2,
-        this.player.sprite.x,
-        this.player.sprite.y
-      );
+      this.enemy.enemies.forEach((enemy) => {
+        this.bullet.shoot(
+          enemy.x + enemy.width / 2,
+          enemy.y + enemy.height / 2,
+          this.player.sprite.x,
+          this.player.sprite.y
+        );
+      });
     }, 1000);
   }
   handleFallingObjectCollision() {
@@ -177,6 +179,7 @@ $(document).ready(function () {
   loader.onComplete.add(() => {
     fallingObject.create();
     player.create();
+    enemy.create();
     enemy.create();
     displayText.updateScoreText();
     displayText.setHp(player.hp);
