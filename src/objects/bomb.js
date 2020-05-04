@@ -27,8 +27,8 @@ class Bomb {
     }
     bomb.vy = -Math.abs(timeDifference / 20);
     bomb.gravity = 2;
-    bomb.scale.x = 0.5;
-    bomb.scale.y = 0.5;
+    bomb.scale.x = 0.2;
+    bomb.scale.y = 0.2;
     bomb.anchor.set(0.5, 0.5);
     this.bombs.push(bomb);
     container.addChild(bomb);
