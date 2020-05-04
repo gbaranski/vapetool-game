@@ -122,6 +122,8 @@ class GameState {
       this.enemy.enemies.forEach((enemy) => {
         if(boxesIntersect(bomb, enemy)) {
           this.bomb.explode(bomb.x, bomb.y);
+          enemy.hp -= 10;
+          this.bomb.remove(bomb);
         }
       })
     });
