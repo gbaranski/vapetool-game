@@ -11,13 +11,15 @@ class Player {
     this.friction = 0.5;
     this.ax = 0;
     this.axErrorMargin = 0.1;
-    this.hp = 100;
+    this.hp = 10000;
   }
   create() {
     this.sprite.x = app.renderer.view.width / 2;
     this.sprite.y = app.renderer.view.height - this.sprite.height;
     this.sprite.vx = 0;
     this.sprite.vy = 0;
+    this.sprite.scale.x = 2;
+    this.sprite.scale.y = 3;
     this.sprite.anchor.set(0.5, 0.5);
     container.addChild(this.sprite);
   }
@@ -109,16 +111,17 @@ class Player {
     const cloudSprite = new PIXI.Sprite(this.cloudTexture);
     cloudSprite.shouldRemove = false;
     cloudSprite.scaleMultiplier = 1.05;
-    cloudSprite.anchor.set(0.5);
+    cloudSprite.anchor.set(0.5, 1);
     cloudSprite.scale.x = timeDifference / 1000;
     cloudSprite.scale.y = timeDifference / 1000;
     cloudSprite.x = this.sprite.x + 20;
     cloudSprite.y = this.sprite.y + 20;
-    cloudSprite.anchor.set(0.5, 0.5);
     if (this.checkIfBunnyGoRight()) {
-      cloudSprite.vx = 1;
+      // cloudSprite.vx = 1;
+      cloudSprite.vx = 0;
     } else {
-      cloudSprite.vx = -1;
+      cloudSprite.vx = 0;
+      // cloudSprite.vx = -1;
     }
     container.addChild(cloudSprite);
     this.cloudSprites.push(cloudSprite);

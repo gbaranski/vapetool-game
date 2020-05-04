@@ -31,7 +31,12 @@ function keyboard(value) {
   };
   return key;
 }
-
+function boxesIntersect(a, b)
+{
+  const ab = a.getBounds();
+  const bb = b.getBounds();
+  return ab.x + ab.width > bb.x && ab.x < bb.x + bb.width && ab.y + ab.height > bb.y && ab.y < bb.y + bb.height;
+}
 function hitTestRectangle(r1, r2) {
   let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
   hit = false;
@@ -104,7 +109,7 @@ class GameState {
   handleCloudCollision() {
     this.player.cloudSprites.forEach((cloudSprite) => {
       this.enemy.enemies.forEach((enemy) => {
-        if (hitTestRectangle(cloudSprite, enemy)) {
+        if (boxesIntersect(cloudSprite, enemy)) {
           console.log("Hitted");
           enemy.hp -= 1;
         }
@@ -124,6 +129,7 @@ class GameState {
     this.player.updateCloudFrame();
     this.bullet.handleBulletPhysics();
     this.enemy.printHpText();
+    this.enemy.checkIfDead();
     this.handleCloudCollision();
     this.handleFallingObjectCollision();
     this.handleBulletCollision();
@@ -183,6 +189,7 @@ $(document).ready(function () {
   loader.add("enemy", "src/assets/police.png");
   loader.add("bullet", "src/assets/bullet.png");
   loader.add("cloud", "src/assets/cloud.png");
+  loader.add("bomb", "src/assets/efest.png");
   const player = new Player(loader);
   const enemy = new Enemy(loader);
   const bullet = new Bullet(loader);

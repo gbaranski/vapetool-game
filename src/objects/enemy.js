@@ -39,4 +39,13 @@ class Enemy {
       container.addChild(hpText);
     });
   }
+  checkIfDead() {
+    this.enemies.forEach((enemy) => {
+      if(enemy.hp <= 0) {
+        container.removeChild(enemy);
+        this.enemies = this.enemies.filter(
+          (e) => e !== enemy);
+      }
+    });
+  }
 }
