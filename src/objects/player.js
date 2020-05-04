@@ -25,7 +25,7 @@ class Player {
   }
   jump() {
     if (this.checkIfOnGround()) {
-      this.sprite.vy = -10;
+      this.sprite.vy = -18;
     }
   }
   checkIfOnGround() {
@@ -91,9 +91,9 @@ class Player {
       this.sprite.vy = Math.max(
         Math.min(
           this.sprite.vy < 0 ? this.sprite.vy * 1.05 : this.sprite.vy,
-          10
+          30
         ),
-        -10
+        -30
       );
       this.sprite.vx = Math.max(Math.min(this.sprite.vx * 1.3, 10), -10);
       this.sprite.angle += this.flipVelocity;

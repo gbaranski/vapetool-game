@@ -65,13 +65,14 @@ function hitTestRectangle(r1, r2) {
 }
 
 class GameState {
-  constructor(player, enemy, bullet, fallingObject, displayText) {
+  constructor(player, enemy, bullet, bomb, fallingObject, displayText) {
     this.player = player;
     this.enemy = enemy;
     this.bullet = bullet;
+    this.bomb = bomb;
     this.fallingObject = fallingObject;
     this.displayText = displayText;
-    this.gravity = 0.5;
+    this.gravity = 1;
     this.handleKeyboardPress();
     this.shootInterval = setInterval(() => {
       this.enemy.enemies.forEach((enemy) => {
@@ -116,6 +117,15 @@ class GameState {
       });
     });
   }
+  handleBombCollision() {
+    this.bomb.bombs.forEach((bomb) => {
+      this.enemy.enemies.forEach((enemy) => {
+        if(boxesIntersect(bomb, enemy)) {
+          this.bomb.explode(bomb.x, bomb.y);
+        }
+      })
+    });
+  }
   handlePlayerDie() {
     if (this.player.hp <= 0) {
       console.log("Player is dead");
@@ -128,9 +138,11 @@ class GameState {
     this.player.handleFlips();
     this.player.updateCloudFrame();
     this.bullet.handleBulletPhysics();
+    this.bomb.renderBombFrame();
     this.enemy.printHpText();
     this.enemy.checkIfDead();
     this.handleCloudCollision();
+    this.handleBombCollision();
     this.handleFallingObjectCollision();
     this.handleBulletCollision();
     this.handlePlayerDie();
@@ -170,6 +182,14 @@ class GameState {
     keyE.release = () => {
       this.player.attackCloud();
     };
+
+    let keyQ = keyboard("q");
+    keyQ.press = () => {
+      this.bomb.loadBomb();
+    }
+    keyQ.release = () => {
+      this.bomb.create(this.player.sprite.x, this.player.sprite.y, this.player.checkIfBunnyGoRight());
+    }
   }
 }
 
@@ -190,29 +210,37 @@ $(document).ready(function () {
   loader.add("bullet", "src/assets/bullet.png");
   loader.add("cloud", "src/assets/cloud.png");
   loader.add("bomb", "src/assets/efest.png");
+  loader.add("explosive", "src/assets/explosive.json");
   const player = new Player(loader);
   const enemy = new Enemy(loader);
   const bullet = new Bullet(loader);
+  const bomb = new Bomb(loader);
   const fallingObject = new FallingObject(loader);
   const displayText = new DisplayText();
   const gameState = new GameState(
     player,
     enemy,
     bullet,
+    bomb,
     fallingObject,
     displayText
   );
   document.body.appendChild(app.view);
   app.stage.addChild(container);
+  function scheduleEnemyCreation() {
+    setTimeout(() => { enemy.create(); scheduleEnemyCreation() }, 3000)
+  }
+
+
   loader.onComplete.add(() => {
     fallingObject.create();
     player.create();
     enemy.create();
     enemy.create();
-    enemy;
     displayText.updateScoreText();
     displayText.setHp(player.hp);
     displayText.updateHpText();
+    //scheduleEnemyCreation()
     app.ticker.add((delta) => gameState.gameLoop(delta));
   });
 });
