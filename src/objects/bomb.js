@@ -9,6 +9,7 @@ class Bomb {
       }
     });
     this.bombs = [];
+    // this.explosions = [];
     this.loadTime;
   }
   loadBomb() {
@@ -55,6 +56,7 @@ class Bomb {
     explosion.rotation = Math.random() * Math.PI;
     explosion.scale.set(0.75 + Math.random() * 0.5);
     explosion.gotoAndPlay(Math.random() * 27);
+    // this.explosions.push(explosion);
     container.removeChild(explosion);
     container.addChild(explosion);
     setTimeout(() => {

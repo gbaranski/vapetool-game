@@ -124,7 +124,15 @@ class GameState {
           this.bomb.explode(bomb.x, bomb.y);
           enemy.hp -= 10;
           this.bomb.remove(bomb);
+        } else if(bomb.y >= app.renderer.view.height) {
+          this.bomb.explode(bomb.x, bomb.y)
+          this.bomb.remove(bomb);
         }
+        // this.bomb.explosions.forEach((explosion) => {
+        //   if(boxesIntersect(explosion, enemy)) {
+        //     enemy.hp -= 1;
+        //   }
+        // });
       })
     });
   }
