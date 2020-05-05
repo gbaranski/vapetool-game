@@ -148,7 +148,7 @@ class GameState {
     this.bomb.explosions.forEach((explosion) => {
       this.enemy.enemies.forEach((enemy) => {
         if(boxesIntersect(explosion, enemy)) {
-          enemy.hp -= 0.05;
+          enemy.hp -= 1;
         }
       })
     });
