@@ -1,4 +1,5 @@
-{"frames": {
+import explosiveImg from './explosive.png'
+export const explosiveJson = {"frames": {
 
     "Explosion_Sequence_A 1.png":
     {
@@ -219,10 +220,12 @@
     "meta": {
         "app": "http://www.texturepacker.com",
         "version": "1.0",
-        "image": "explosive.png",
+        "image": explosiveImg,
         "format": "RGBA8888",
         "size": {"w":1024,"h":2048},
         "scale": "1",
         "smartupdate": "$TexturePacker:SmartUpdate:17e4a2d92ff3e27832c3f4938cec7c85$"
     }
     }
+
+    export default explosiveJson

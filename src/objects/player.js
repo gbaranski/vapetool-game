@@ -1,9 +1,15 @@
-class Player {
-  constructor(loader) {
+import * as PIXI from 'pixi.js'
+
+export default class Player {
+  constructor(loader, rendererWidth, rendererHeight, container) {
     loader.load((loader, resources) => {
       this.sprite = new PIXI.Sprite(resources.player.texture);
       this.cloudTexture = new PIXI.Texture(resources.cloud.texture);
     });
+    this.container = container;
+    this.rendererWidth = rendererWidth;
+    this.rendererHeight = rendererHeight;
+
     this.cloudSprites = [];
     this.jumping = false;
     this.flipping = false;
@@ -14,15 +20,17 @@ class Player {
     this.hp = 10000;
     this.isLastMoveRight;
   }
+
   create() {
-    this.sprite.x = app.renderer.view.width / 2;
-    this.sprite.y = app.renderer.view.height - this.sprite.height;
     this.sprite.vx = 0;
     this.sprite.vy = 0;
     this.sprite.scale.x = 2;
     this.sprite.scale.y = 3;
     this.sprite.anchor.set(0.5, 0.5);
-    container.addChild(this.sprite);
+    this.sprite.x = this.rendererWidth / 2;
+    console.log(this.rendererHeight);
+    this.sprite.y = this.rendererHeight - this.sprite.height / 2;
+    this.container.addChild(this.sprite);
   }
   jump() {
     if (this.checkIfOnGround()) {
@@ -30,7 +38,7 @@ class Player {
     }
   }
   checkIfOnGround() {
-    return this.sprite.y === app.renderer.view.height - this.sprite.height / 2;
+    return this.sprite.y === this.rendererHeight - this.sprite.height / 2;
   }
   canMoveRight() {
     return this.sprite.vx < 10 && this.ax > 0;
@@ -67,7 +75,7 @@ class Player {
     this.sprite.x += this.sprite.vx;
     this.sprite.y += this.sprite.vy;
 
-    if (this.sprite.y <= app.renderer.view.height - this.sprite.height / 2) {
+    if (this.sprite.y <= this.rendererHeight - this.sprite.height / 2) {
       this.sprite.vy += gravity;
     } else {
       this.sprite.vy = 0;
@@ -75,7 +83,7 @@ class Player {
     this.ax = Math.floor(this.ax);
     this.sprite.y = Math.min(
       this.sprite.y,
-      app.renderer.view.height - this.sprite.height / 2
+      this.rendererHeight - this.sprite.height / 2
     );
   }
   checkIfBunnyGoRight() {
@@ -124,7 +132,7 @@ class Player {
       cloudSprite.vx = 0;
       // cloudSprite.vx = -1;
     }
-    container.addChild(cloudSprite);
+    this.container.addChild(cloudSprite);
     this.cloudSprites.push(cloudSprite);
     setTimeout(() => {
       cloudSprite.shouldRemove = true;
@@ -144,7 +152,7 @@ class Player {
           this.cloudSprites = this.cloudSprites.filter(
             (e) => e !== cloudSprite
           );
-          container.removeChild(cloudSprite);
+          this.container.removeChild(cloudSprite);
         }
         cloudSprite.scale.x = Math.min(
           cloudSprite.scale.x * cloudSprite.scaleMultiplier,

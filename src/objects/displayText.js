@@ -1,5 +1,7 @@
-class DisplayText {
-  constructor() {
+import * as PIXI from 'pixi.js'
+export default class DisplayText {
+  constructor(container) {
+    this.container = container;
     this.scoreText;
     this.hpText;
     this.score = 0;
@@ -29,13 +31,13 @@ class DisplayText {
     });
   }
   updateScoreText() {
-    container.removeChild(this.scoreText);
+    this.container.removeChild(this.scoreText);
     this.scoreText = new PIXI.Text(
       `Score: ${this.score}ml`,
       this.scoreTextStyle
     );
     this.scoreText.position.set(0, 0);
-    container.addChild(this.scoreText);
+    this.container.addChild(this.scoreText);
   }
   addScore(amount) {
     this.score += amount;
@@ -46,10 +48,10 @@ class DisplayText {
     this.updateHpText();
   }
   updateHpText() {
-    container.removeChild(this.hpText);
+    this.container.removeChild(this.hpText);
     this.hpText = new PIXI.Text(`HP: ${this.hp}`, this.scoreTextStyle);
     this.hpText.position.set(0, 40);
-    container.addChild(this.hpText);
+    this.container.addChild(this.hpText);
   }
   showDeathScreen() {
     const deathText = new PIXI.Text(
@@ -58,6 +60,6 @@ class DisplayText {
     );
     deathText.anchor.set(0.5);
     deathText.position.set(app.renderer.width / 2, app.renderer.height / 2);
-    container.addChild(deathText);
+    this.container.addChild(deathText);
   }
 }

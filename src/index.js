@@ -1,3 +1,12 @@
+import * as PIXI from 'pixi.js'
+import $ from "jquery";
+import Player from "./objects/player";
+import Enemy from "./objects/enemy";
+import Bullet from "./objects/bullet";
+import Bomb from "./objects/bomb";
+import FallingObject from "./objects/fallingObject";
+import DisplayText from "./objects/displayText";
+
 function keyboard(value) {
   let key = {};
   key.value = value;
@@ -65,13 +74,14 @@ function hitTestRectangle(r1, r2) {
 }
 
 class GameState {
-  constructor(player, enemy, bullet, bomb, fallingObject, displayText) {
+  constructor(player, enemy, bullet, bomb, fallingObject, displayText, container) {
     this.player = player;
     this.enemy = enemy;
     this.bullet = bullet;
     this.bomb = bomb;
     this.fallingObject = fallingObject;
     this.displayText = displayText;
+    this.container = container;
     this.gravity = 1;
     this.handleKeyboardPress();
     this.shootInterval = setInterval(() => {
@@ -89,7 +99,7 @@ class GameState {
     this.fallingObject.fallingObjects.forEach((element) => {
       if (hitTestRectangle(this.player.sprite, element)) {
         this.displayText.addScore(10);
-        container.removeChild(element);
+        this.container.removeChild(element);
         this.displayText.setHp(this.player.hp);
         this.fallingObject.fallingObjects = this.fallingObject.fallingObjects.filter(
           (e) => e !== element
@@ -102,7 +112,7 @@ class GameState {
       if (hitTestRectangle(this.player.sprite, bullet)) {
         this.player.hp = this.player.hp - 10;
         this.displayText.setHp(this.player.hp);
-        container.removeChild(bullet);
+        this.container.removeChild(bullet);
         this.bullet.bullets = this.bullet.bullets.filter((e) => e !== bullet);
       }
     });
@@ -214,31 +224,42 @@ const app = new PIXI.Application({
   backgroundColor: 0x1099bb,
   resolution: 1,
 });
-
+window.app = app;
 const container = new PIXI.Container();
+
+import playerImg from './assets/bunny.png'
+import enemyImg from './assets/police.png'
+import fallingObjectImg from './assets/eliquid.png'
+import bulletImg from './assets/bullet.png'
+import cloudImg from './assets/cloud.png'
+import bombImg from './assets/efest.png'
+import explosiveJson from './assets/explosive.js'
+import explosions from './assets/explosion/*.png'
+export const explosionFrames = Object.values(explosions);
 
 $(document).ready(function () {
   const loader = PIXI.Loader.shared;
-  loader.add("player", "src/assets/bunny.png");
-  loader.add("fallingObject", "src/assets/eliquid.png");
-  loader.add("enemy", "src/assets/police.png");
-  loader.add("bullet", "src/assets/bullet.png");
-  loader.add("cloud", "src/assets/cloud.png");
-  loader.add("bomb", "src/assets/efest.png");
-  loader.add("explosive", "src/assets/explosive.json");
-  const player = new Player(loader);
-  const enemy = new Enemy(loader);
-  const bullet = new Bullet(loader);
-  const bomb = new Bomb(loader);
-  const fallingObject = new FallingObject(loader);
-  const displayText = new DisplayText();
+  
+  loader.add("player", playerImg);
+  loader.add("enemy", enemyImg);
+  loader.add("fallingObject", fallingObjectImg);
+  loader.add("bullet", bulletImg);
+  loader.add("cloud", cloudImg);
+  loader.add("bomb", bombImg);
+  const player = new Player(loader, app.renderer.view.width, app.renderer.view.height,container);
+  const enemy = new Enemy(loader, app.renderer.view.width, app.renderer.view.height, container);
+  const bullet = new Bullet(loader, app.renderer.view.width, app.renderer.view.height, container);
+  const bomb = new Bomb(loader, explosionFrames, container);
+  const fallingObject = new FallingObject(loader, app.renderer.view.width, app.renderer.view.height, container);
+  const displayText = new DisplayText(container);
   const gameState = new GameState(
     player,
     enemy,
     bullet,
     bomb,
     fallingObject,
-    displayText
+    displayText, 
+    container
   );
   document.body.appendChild(app.view);
   app.stage.addChild(container);
@@ -249,7 +270,7 @@ $(document).ready(function () {
 
   loader.onComplete.add(() => {
     fallingObject.create();
-    player.create();
+    player.create(app.renderer.view.width, app.renderer.view.height);
     enemy.create();
     enemy.create();
     displayText.updateScoreText();

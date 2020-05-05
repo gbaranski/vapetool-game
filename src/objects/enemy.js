@@ -1,8 +1,14 @@
-class Enemy {
-  constructor(loader) {
+import * as PIXI from 'pixi.js'
+export default class Enemy {
+  constructor(loader, rendererWidth, rendererHeight, container) {
     loader.load((loader, resources) => {
       this.texture = new PIXI.Texture(resources.enemy.texture);
     });
+    this.rendererWidth = rendererWidth;
+    this.rendererHeight = rendererHeight;
+
+    this.container = container;
+  
     this.enemies = [];
     this.hpTexts = [];
     this.hpTextStyle = new PIXI.TextStyle({
@@ -23,26 +29,25 @@ class Enemy {
     enemy.scale.y = 0.1;
     enemy.hp = 100;
     enemy.melee = Math.round(Math.random());
-    enemy.x = Math.floor(Math.random() * Math.floor(app.renderer.view.width));
-    enemy.y = app.renderer.view.height - enemy.height / 2;
+    enemy.x = Math.floor(Math.random() * Math.floor(this.rendererWidth));
+    enemy.y = this.rendererHeight - enemy.height / 2;
     enemy.anchor.set(0.5);
     this.enemies.push(enemy);
-    container.addChild(enemy);
+    this.container.addChild(enemy);
   }
   printHpText() {
     this.hpTexts.forEach((hpText) => {
-      container.removeChild(hpText);
+      this.container.removeChild(hpText);
     });
     this.enemies.forEach((enemy) => {
       const hpText = new PIXI.Text(enemy.hp, this.hpTextStyle);
       hpText.position.set(enemy.x, enemy.y - enemy.height);
       this.hpTexts.push(hpText);
-      container.addChild(hpText);
+      this.container.addChild(hpText);
     });
   }
   render(spriteX) {
     this.enemies.forEach(enemy => {
-      console.log(enemy.melee);
       const distanceFromPlayer = enemy.melee ? 0 : 200;
       enemy.vx = 0;
       if(enemy.x > spriteX && enemy.x - spriteX > distanceFromPlayer) {
@@ -57,7 +62,7 @@ class Enemy {
   checkIfDead() {
     this.enemies.forEach((enemy) => {
       if(enemy.hp <= 0) {
-        container.removeChild(enemy);
+        this.container.removeChild(enemy);
         this.enemies = this.enemies.filter(
           (e) => e !== enemy);
       }

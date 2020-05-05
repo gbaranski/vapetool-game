@@ -4,7 +4,8 @@
   "description": "game in pixijs",
   "main": "index.html",
   "scripts": {
-    "start": "http-server -c 1"
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html --out-dir docs"
   },
   "repository": {
     "type": "git",
@@ -16,8 +17,13 @@
     "url": "https://github.com/gbaranski/vapetool-game/issues"
   },
   "homepage": "https://github.com/gbaranski/vapetool-game#readme",
-
   "devDependencies": {
-    "http-server": "^0.12.3"
+    "http-server": "^0.12.3",
+    "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "@types/jquery": "^3.3.38",
+    "jquery": "^3.5.1",
+    "pixi.js": "^5.2.4"
   }
 }

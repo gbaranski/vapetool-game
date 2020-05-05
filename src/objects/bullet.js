@@ -1,8 +1,14 @@
-class Bullet {
-  constructor(loader) {
+import * as PIXI from 'pixi.js'
+
+export default class Bullet {
+  constructor(loader,rendererWidth, rendererHeight, container) {
     loader.load((loader, resources) => {
       this.texture = new PIXI.Texture(resources.bullet.texture);
     });
+    this.container = container;
+    this.rendererWidth = rendererWidth;
+    this.rendererHeight = rendererHeight;
+    
     this.bullets = [];
 
     this.bulletSpeed = -50;
@@ -16,16 +22,17 @@ class Bullet {
     bullet.scale.y = -0.1;
     bullet.rotation = rotateToPoint(startX, startY, targetX, targetY);
     this.bullets.push(bullet);
-    container.addChild(bullet);
+    this.container.addChild(bullet);
   }
   handleOutOfBounds(sprite) {
+    console.log(this.rendererWidth)
     if (
       sprite.x < 0 ||
       sprite.y < 0 ||
-      sprite.x > app.renderer.width ||
-      sprite.y > app.renderer.height
+      sprite.x > this.rendererWidth ||
+      sprite.y > this.rendererHeight
     ) {
-      container.removeChild(sprite);
+      this.container.removeChild(sprite);
       return false;
     }
     return true;
@@ -35,7 +42,7 @@ class Bullet {
       bullet.x += Math.cos(bullet.rotation) * this.bulletSpeed;
       bullet.y += Math.sin(bullet.rotation) * this.bulletSpeed;
     });
-    this.bullets = this.bullets.filter(this.handleOutOfBounds);
+    // this.bullets = this.bullets.filter(this.handleOutOfBounds);
   }
 }
 

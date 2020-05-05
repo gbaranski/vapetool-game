@@ -1,8 +1,13 @@
-class FallingObject {
-  constructor(loader) {
+import * as PIXI from 'pixi.js'
+
+export default class FallingObject {
+  constructor(loader, rendererWidth, rendererHeight, container) {
     loader.load((loader, resources) => {
       this.texture = new PIXI.Texture(resources.fallingObject.texture);
     });
+    this.rendererWidth = rendererWidth;
+    this.rendererHeight = rendererHeight;
+    this.container = container;
     this.fallingObjects = [];
     this.objectGravity = 3;
   }
@@ -11,15 +16,15 @@ class FallingObject {
       this.fallingObjects[i] = new PIXI.Sprite(this.texture);
       this.fallingObjects[i].scale.x = 0.1;
       this.fallingObjects[i].scale.y = 0.1;
-      this.fallingObjects[i].x = Math.floor(Math.random() * app.renderer.width);
+      this.fallingObjects[i].x = Math.floor(Math.random() * this.rendererWidth);
       this.fallingObjects[i].y = 0;
       this.fallingObjects[i].vy = this.objectGravity;
-      container.addChild(this.fallingObjects[i]);
+      this.container.addChild(this.fallingObjects[i]);
     }
   }
   handlePhysics(sprite, displayText) {
     this.fallingObjects.forEach((element) => {
-      if (element.y <= app.renderer.view.height - element.height) {
+      if (element.y <= this.rendererHeight - element.height) {
         element.y += element.vy;
       }
     });

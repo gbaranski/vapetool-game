@@ -1,12 +1,13 @@
-class Bomb {
-  constructor(loader) {
+import * as PIXI from 'pixi.js'
+
+export default class Bomb {
+  constructor(loader, explosionFrames, container) {
     this.explosionTextures = [];
+    this.container = container;
     loader.load((loader, resources) => {
       this.bombTexture = new PIXI.Texture(resources.bomb.texture);
-      for (let i = 0; i < 26; i++) {
-        const texture = PIXI.Texture.from(`Explosion_Sequence_A ${i + 1}.png`);
-        this.explosionTextures.push(texture);
-      }
+      const texture = new PIXI.AnimatedSprite(explosionFrames.map(path => PIXI.Texture.from(path)));
+      this.explosionTextures.push(texture);
     });
     this.bombs = [];
     // this.explosions = [];
@@ -32,7 +33,7 @@ class Bomb {
     bomb.scale.y = 0.2;
     bomb.anchor.set(0.5, 0.5);
     this.bombs.push(bomb);
-    container.addChild(bomb);
+    this.container.addChild(bomb);
   }
   renderBombFrame() {
     this.bombs.forEach((bomb) => {
@@ -57,10 +58,10 @@ class Bomb {
     explosion.scale.set(0.75 + Math.random() * 0.5);
     explosion.gotoAndPlay(Math.random() * 27);
     // this.explosions.push(explosion);
-    container.removeChild(explosion);
-    container.addChild(explosion);
+    this.container.removeChild(explosion);
+    this.container.addChild(explosion);
     setTimeout(() => {
-        container.removeChild(explosion);   
+        this.container.removeChild(explosion);   
     }, 1000);
   }
 }
