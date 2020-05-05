@@ -209,6 +209,8 @@ class GameState {
 const app = new PIXI.Application({
   width: $(window).width(),
   height: $(window).height(),
+  antialiasing: true,
+  transparent: false,
   backgroundColor: 0x1099bb,
   resolution: 1,
 });
