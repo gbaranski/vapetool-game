@@ -143,6 +143,7 @@ class GameState {
     this.bomb.renderBombFrame();
     this.enemy.printHpText();
     this.enemy.checkIfDead();
+    this.enemy.render(this.player.sprite.x)
     this.handleCloudCollision();
     this.handleBombCollision();
     this.handleFallingObjectCollision();

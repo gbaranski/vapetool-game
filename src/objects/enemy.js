@@ -22,6 +22,7 @@ class Enemy {
     enemy.scale.x = 0.1;
     enemy.scale.y = 0.1;
     enemy.hp = 100;
+    enemy.melee = Math.round(Math.random());
     enemy.x = Math.floor(Math.random() * Math.floor(app.renderer.view.width));
     enemy.y = app.renderer.view.height - enemy.height / 2;
     enemy.anchor.set(0.5);
@@ -37,6 +38,20 @@ class Enemy {
       hpText.position.set(enemy.x, enemy.y - enemy.height);
       this.hpTexts.push(hpText);
       container.addChild(hpText);
+    });
+  }
+  render(spriteX) {
+    this.enemies.forEach(enemy => {
+      console.log(enemy.melee);
+      const distanceFromPlayer = enemy.melee ? 0 : 200;
+      enemy.vx = 0;
+      if(enemy.x > spriteX && enemy.x - spriteX > distanceFromPlayer) {
+        enemy.vx = -2;
+      }
+      if(enemy.x < spriteX && spriteX - enemy.x > distanceFromPlayer) {
+        enemy.vx = 2;
+      }
+      enemy.x += enemy.vx;
     });
   }
   checkIfDead() {
