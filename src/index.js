@@ -155,6 +155,7 @@ class GameState {
     let keyA = keyboard("a");
     keyA.press = () => {
       this.player.ax = -1;
+      this.player.isLastMoveRight = false;
     };
     keyA.release = () => {
       this.player.ax = 0;
@@ -163,6 +164,7 @@ class GameState {
     let keyD = keyboard("d");
     keyD.press = () => {
       this.player.ax = 1;
+      this.player.isLastMoveRight = true;;
     };
     keyD.release = () => {
       this.player.ax = 0;

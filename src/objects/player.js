@@ -12,6 +12,7 @@ class Player {
     this.ax = 0;
     this.axErrorMargin = 0.1;
     this.hp = 10000;
+    this.isLastMoveRight;
   }
   create() {
     this.sprite.x = app.renderer.view.width / 2;
@@ -39,7 +40,7 @@ class Player {
   }
   handlePhysics(gravity) {
     if (this.checkIfOnGround()) {
-      this.friction = 0.5; // friction on ground
+      this.friction = 0.7; // friction on ground
     } else {
       this.friction = 0.1; // friction in air
     }
@@ -78,7 +79,7 @@ class Player {
     );
   }
   checkIfBunnyGoRight() {
-    return this.sprite.vx > 0;
+    return this.isLastMoveRight;
   }
   handleFlips() {
     if (this.checkIfBunnyGoRight() && !this.flipping) {
