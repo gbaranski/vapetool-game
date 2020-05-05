@@ -24,6 +24,8 @@
   "dependencies": {
     "@types/jquery": "^3.3.38",
     "jquery": "^3.5.1",
-    "pixi.js": "^5.2.4"
+    "pixi.js": "^5.2.4",
+    "pixi.js-keyboard": "^1.0.9",
+    "pixi.js-mouse": "^1.0.4"
   }
 }

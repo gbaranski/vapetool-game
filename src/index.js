@@ -6,6 +6,7 @@ import Bullet from "./objects/bullet";
 import Bomb from "./objects/bomb";
 import FallingObject from "./objects/fallingObject";
 import DisplayText from "./objects/displayText";
+import Keyboard from 'pixi.js-keyboard';
 
 function keyboard(value) {
   let key = {};
@@ -161,6 +162,8 @@ class GameState {
     }
   }
   gameLoop() {
+    this.handleKeyboardPress()
+    Keyboard.update();
     this.player.handlePhysics(this.gravity);
     this.player.handleFlips();
     this.player.updateCloudFrame();
@@ -169,6 +172,7 @@ class GameState {
     this.enemy.printHpText();
     this.enemy.checkIfDead();
     this.enemy.render(this.player.sprite.x)
+    
     this.handleCloudCollision();
     this.handleBombCollision();
     this.handleFallingObjectCollision();
@@ -178,46 +182,37 @@ class GameState {
   }
 
   handleKeyboardPress() {
-    let keyA = keyboard("a");
-    keyA.press = () => {
+
+    if(Keyboard.isKeyDown('ArrowLeft', 'KeyA')) {
       this.player.ax = -1;
       this.player.isLastMoveRight = false;
-    };
-    keyA.release = () => {
+    }
+    if (Keyboard.isKeyReleased('ArrowLeft', 'KeyA')) {
       this.player.ax = 0;
-    };
-
-    let keyD = keyboard("d");
-    keyD.press = () => {
+    }
+    if (Keyboard.isKeyDown('ArrowRight', 'KeyD')) {
       this.player.ax = 1;
       this.player.isLastMoveRight = true;;
-    };
-    keyD.release = () => {
+    }
+    if (Keyboard.isKeyReleased('ArrowRight', 'KeyD')) {
       this.player.ax = 0;
-    };
-
-    let keyW = keyboard("w");
-    keyW.press = () => {
+    }
+    if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
       this.player.jump();
-    };
-    let keySpace = keyboard(" ");
-    keySpace.press = () => {
+    }
+    if (Keyboard.isKeyDown('Space')) {
       this.player.flipping = true;
-    };
-
-    let keyE = keyboard("e");
-    keyE.press = () => {
+    }
+    if (Keyboard.isKeyPressed('KeyE')) {
       this.player.loadCloud();
-    };
-    keyE.release = () => {
+    }
+    if (Keyboard.isKeyReleased('KeyE')) {
       this.player.attackCloud();
-    };
-
-    let keyQ = keyboard("q");
-    keyQ.press = () => {
+    }
+    if(Keyboard.isKeyDown('KeyQ')) {
       this.bomb.loadBomb();
     }
-    keyQ.release = () => {
+    if(Keyboard.isKeyReleased('KeyQ')) {
       this.bomb.create(this.player.sprite.x, this.player.sprite.y, this.player.checkIfBunnyGoRight());
     }
   }
@@ -246,7 +241,6 @@ export const explosionFrames = Object.values(explosions);
 
 $(document).ready(function () {
   const loader = PIXI.Loader.shared;
-  
   loader.add("player", playerImg);
   loader.add("enemy", enemyImg);
   loader.add("fallingObject", fallingObjectImg);
@@ -270,11 +264,9 @@ $(document).ready(function () {
   );
   document.body.appendChild(app.view);
   app.stage.addChild(container);
-  function scheduleEnemyCreation() {
-    setTimeout(() => { enemy.create(); scheduleEnemyCreation() }, 3000)
-  }
-
-
+  // function scheduleEnemyCreation() {
+  //   setTimeout(() => { enemy.create(); scheduleEnemyCreation() }, 3000)
+  // }
   loader.onComplete.add(() => {
     fallingObject.create();
     player.create(app.renderer.view.width, app.renderer.view.height);
