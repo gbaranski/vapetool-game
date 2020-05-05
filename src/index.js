@@ -8,39 +8,6 @@ import FallingObject from "./objects/fallingObject";
 import DisplayText from "./objects/displayText";
 import Keyboard from 'pixi.js-keyboard';
 
-function keyboard(value) {
-  let key = {};
-  key.value = value;
-  key.isDown = false;
-  key.isUp = true;
-  key.press = undefined;
-  key.release = undefined;
-  key.downHandler = (event) => {
-    if (event.key === key.value) {
-      if (key.isUp && key.press) key.press();
-      key.isDown = true;
-      key.isUp = false;
-      event.preventDefault();
-    }
-  };
-  key.upHandler = (event) => {
-    if (event.key === key.value) {
-      if (key.isDown && key.release) key.release();
-      key.isDown = false;
-      key.isUp = true;
-      event.preventDefault();
-    }
-  };
-  const downListener = key.downHandler.bind(key);
-  const upListener = key.upHandler.bind(key);
-  window.addEventListener("keydown", downListener, false);
-  window.addEventListener("keyup", upListener, false);
-  key.unsubscribe = () => {
-    window.removeEventListener("keydown", downListener);
-    window.removeEventListener("keyup", upListener);
-  };
-  return key;
-}
 function boxesIntersect(a, b)
 {
   const ab = a.getBounds();
@@ -192,7 +159,7 @@ class GameState {
     }
     if (Keyboard.isKeyDown('ArrowRight', 'KeyD')) {
       this.player.ax = 1;
-      this.player.isLastMoveRight = true;;
+      this.player.isLastMoveRight = true;
     }
     if (Keyboard.isKeyReleased('ArrowRight', 'KeyD')) {
       this.player.ax = 0;
@@ -235,7 +202,6 @@ import fallingObjectImg from './assets/eliquid.png'
 import bulletImg from './assets/bullet.png'
 import cloudImg from './assets/cloud.png'
 import bombImg from './assets/efest.png'
-import explosiveJson from './assets/explosive.js'
 import explosions from './assets/explosion/*.png'
 export const explosionFrames = Object.values(explosions);
 
@@ -252,7 +218,7 @@ $(document).ready(function () {
   const bullet = new Bullet(loader, app.renderer.view.width, app.renderer.view.height, container);
   const bomb = new Bomb(loader, explosionFrames, container);
   const fallingObject = new FallingObject(loader, app.renderer.view.width, app.renderer.view.height, container);
-  const displayText = new DisplayText(container);
+  const displayText = new DisplayText(app.renderer.height.width, app.renderer.view.height, container);
   const gameState = new GameState(
     player,
     enemy,

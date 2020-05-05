@@ -1,7 +1,9 @@
 import * as PIXI from 'pixi.js'
 export default class DisplayText {
-  constructor(container) {
+  constructor(rendererWidth, rendererHeight, container) {
     this.container = container;
+    this.rendererWidth = rendererWidth;
+    this.rendererHeight = rendererHeight;
     this.scoreText;
     this.hpText;
     this.score = 0;
@@ -59,7 +61,7 @@ export default class DisplayText {
       this.deathTextStyle
     );
     deathText.anchor.set(0.5);
-    deathText.position.set(app.renderer.width / 2, app.renderer.height / 2);
+    deathText.position.set(this.rendererWidth / 2, this.rendererHeight / 2);
     this.container.addChild(deathText);
   }
 }
