@@ -128,14 +128,15 @@ class GameState {
     });
   }
   handleBombCollision() {
+    // extract floor collision detect
     this.bomb.bombs.forEach((bomb) => {
       this.enemy.enemies.forEach((enemy) => {
         if(boxesIntersect(bomb, enemy)) {
-          this.bomb.explode(bomb.x, bomb.y);
-          enemy.hp -= 10;
+          this.bomb.explode(bomb.x, bomb.y, bomb);
+          enemy.hp -= 5;
           this.bomb.remove(bomb);
         } else if(bomb.y >= app.renderer.view.height) {
-          this.bomb.explode(bomb.x, bomb.y)
+          this.bomb.explode(bomb.x, bomb.y, bomb)
           this.bomb.remove(bomb);
         }
         // this.bomb.explosions.forEach((explosion) => {
