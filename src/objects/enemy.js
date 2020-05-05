@@ -40,7 +40,7 @@ export default class Enemy {
       this.container.removeChild(hpText);
     });
     this.enemies.forEach((enemy) => {
-      const hpText = new PIXI.Text(enemy.hp, this.hpTextStyle);
+      const hpText = new PIXI.Text(Math.floor(enemy.hp), this.hpTextStyle);
       hpText.position.set(enemy.x, enemy.y - enemy.height);
       this.hpTexts.push(hpText);
       this.container.addChild(hpText);

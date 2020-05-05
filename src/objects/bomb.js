@@ -9,7 +9,7 @@ export default class Bomb {
       this.animatedExplosionSprite = new PIXI.AnimatedSprite(explosionFrames.map(path => PIXI.Texture.from(path)));
     });
     this.bombs = [];
-    // this.explosions = [];
+    this.explosions = [];
     this.loadTime;
   }
   loadBomb() {
@@ -62,10 +62,11 @@ export default class Bomb {
     explosion.anchor.set(0.5, 0.5);
     // explosion.scale.set(0.75 + Math.random() * 0.5);
     explosion.play();
-    // this.explosions.push(explosion);
+    this.explosions.push(explosion);
     // this.container.removeChild(explosion);
     this.container.addChild(explosion);
     setTimeout(() => {
+        this.explosions = this.explosions.filter(ex => ex != explosion)
         this.container.removeChild(explosion);   
     }, 1000);
   }
