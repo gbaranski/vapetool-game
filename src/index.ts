@@ -208,7 +208,11 @@ class GameState {
     });
     this.enemies.forEach((_enemy) => {
       _enemy.updateHpText();
-      _enemy.checkIfDead();
+      if (_enemy.checkIfDead()) {
+        this.container.removeChild(_enemy.sprite);
+        this.container.removeChild(_enemy.hpText);
+        this.enemies = this.enemies.filter((e) => e !== _enemy);
+      }
       _enemy.render(this.player.sprite.x);
     });
 

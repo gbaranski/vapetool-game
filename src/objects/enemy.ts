@@ -13,7 +13,7 @@ export default class Enemy {
 
   private hpTextStyle: PIXI.TextStyle;
 
-  private hpText: PIXI.Text;
+  public hpText: PIXI.Text;
 
   private container: PIXI.Container;
 
