@@ -171,7 +171,7 @@ class GameState {
             _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
             this.removeBomb(_bomb);
           }
-          _bomb.explosions.forEach((explosion) => {
+          _bomb.explosions.forEach((explosion: any) => {
             if (boxesIntersect(explosion, _enemy.sprite)) {
               _enemy.setHp(_enemy.getHp() - 1);
             }

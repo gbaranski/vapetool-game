@@ -1,8 +1,6 @@
 import * as PIXI from 'pixi.js';
 
 export default class Bullet {
-  private texture: PIXI.Texture;
-
   public sprite: PIXI.Sprite;
 
   private container: PIXI.Container;
@@ -23,13 +21,12 @@ export default class Bullet {
     targetX: number,
     targetY: number,
   ) {
-    this.texture = loader.resources.bullet.texture;
     this.container = container;
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
 
     this.bulletSpeed = -50;
-    this.sprite = new PIXI.Sprite(this.texture);
+    this.sprite = new PIXI.Sprite(loader.resources.bullet.texture);
     this.sprite.x = startX;
     this.sprite.y = startY;
     this.sprite.anchor.set(0.5);
@@ -39,7 +36,7 @@ export default class Bullet {
     this.container.addChild(this.sprite);
   }
 
-  handleOutOfBounds(sprite) {
+  handleOutOfBounds(sprite: PIXI.Sprite) {
     if (
       sprite.x < 0 ||
       sprite.y < 0 ||
@@ -59,7 +56,7 @@ export default class Bullet {
   }
 }
 
-function rotateToPoint(mx, my, px, py) {
+function rotateToPoint(mx: number, my: number, px: number, py: number) {
   const dist_Y = my - py;
   const dist_X = mx - px;
   const angle = Math.atan2(dist_Y, dist_X);

@@ -33,7 +33,12 @@ export default class Player {
 
   private isLastMoveRight: boolean;
 
-  constructor(loader, rendererWidth, rendererHeight, container) {
+  constructor(
+    loader: PIXI.Loader,
+    rendererWidth: number,
+    rendererHeight: number,
+    container: PIXI.Container,
+  ) {
     this.loader = loader;
 
     this.loader.load((_loader, resources) => {
@@ -84,7 +89,7 @@ export default class Player {
     return this.vx > -10 && this.ax < 0;
   }
 
-  handlePhysics(gravity) {
+  handlePhysics(gravity: number) {
     if (this.checkIfOnGround()) {
       this.friction = 0.7; // friction on ground
     } else {

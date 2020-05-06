@@ -27,7 +27,7 @@ export default class Bomb {
 
   private explosionFrames: any;
 
-  constructor(loader: PIXI.Loader, explosionFrames, container) {
+  constructor(loader: PIXI.Loader, explosionFrames: any, container: PIXI.Container) {
     // this.created = false;
     this.container = container;
     this.loader = loader;
@@ -75,7 +75,7 @@ export default class Bomb {
 
   explode(x: number, y: number) {
     this.animatedExplosionSprite = new PIXI.AnimatedSprite(
-      this.explosionFrames.map((path) => PIXI.Texture.from(path)),
+      this.explosionFrames.map((path: any) => PIXI.Texture.from(path)),
     );
     const explosion = this.animatedExplosionSprite;
     this.exploded = true;
@@ -90,7 +90,7 @@ export default class Bomb {
     // this.container.removeChild(explosion);
     this.container.addChild(explosion);
     setTimeout(() => {
-      this.explosions = this.explosions.filter((ex) => ex !== explosion);
+      this.explosions = this.explosions.filter((_explosion: any) => _explosion !== explosion);
       this.container.removeChild(explosion);
     }, 1000);
   }

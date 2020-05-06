@@ -15,7 +15,12 @@ export default class FallingObject {
 
   private container: PIXI.Container;
 
-  constructor(loader: PIXI.Loader, rendererWidth, rendererHeight, container) {
+  constructor(
+    loader: PIXI.Loader,
+    rendererWidth: number,
+    rendererHeight: number,
+    container: PIXI.Container,
+  ) {
     loader.load(() => {
       this.texture = loader.resources.fallingObject.texture;
     });
