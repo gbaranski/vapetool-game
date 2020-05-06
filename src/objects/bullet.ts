@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 export default class Bullet {
   private texture: PIXI.Texture;
 
-  private bullet: PIXI.Sprite;
+  public sprite: PIXI.Sprite;
 
   private container: PIXI.Container;
 
@@ -13,26 +13,30 @@ export default class Bullet {
 
   private bulletSpeed: number;
 
-  constructor(loader, rendererWidth, rendererHeight, container) {
-    loader.load(({ resources }) => {
-      this.texture = new PIXI.Texture(resources.bullet.texture);
-    });
+  constructor(
+    loader: PIXI.Loader,
+    rendererWidth: number,
+    rendererHeight: number,
+    container: PIXI.Container,
+    startX: number,
+    startY: number,
+    targetX: number,
+    targetY: number,
+  ) {
+    this.texture = loader.resources.bullet.texture;
     this.container = container;
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
 
     this.bulletSpeed = -50;
-  }
-
-  shoot(startX, startY, targetX, targetY) {
-    this.bullet = new PIXI.Sprite(this.texture);
-    this.bullet.x = startX;
-    this.bullet.y = startY;
-    this.bullet.anchor.set(0.5);
-    this.bullet.scale.x = -0.1;
-    this.bullet.scale.y = -0.1;
-    this.bullet.rotation = rotateToPoint(startX, startY, targetX, targetY);
-    this.container.addChild(this.bullet);
+    this.sprite = new PIXI.Sprite(this.texture);
+    this.sprite.x = startX;
+    this.sprite.y = startY;
+    this.sprite.anchor.set(0.5);
+    this.sprite.scale.x = -0.1;
+    this.sprite.scale.y = -0.1;
+    this.sprite.rotation = rotateToPoint(startX, startY, targetX, targetY);
+    this.container.addChild(this.sprite);
   }
 
   handleOutOfBounds(sprite) {
@@ -49,8 +53,8 @@ export default class Bullet {
   }
 
   handleBulletPhysics() {
-    this.bullet.x += Math.cos(this.bullet.rotation) * this.bulletSpeed;
-    this.bullet.y += Math.sin(this.bullet.rotation) * this.bulletSpeed;
+    this.sprite.x += Math.cos(this.sprite.rotation) * this.bulletSpeed;
+    this.sprite.y += Math.sin(this.sprite.rotation) * this.bulletSpeed;
     // this.bullets = this.bullets.filter(this.handleOutOfBounds);
   }
 }

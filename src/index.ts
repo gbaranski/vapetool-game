@@ -45,7 +45,7 @@ class GameState {
 
   private gravity: number;
 
-  private shootInterval: NodeJS.Timer;
+  private shootInterval: NodeJS.Timeout;
 
   private rendererWidth: number;
 
@@ -85,27 +85,39 @@ class GameState {
 
     this.handleKeyboardPress();
 
-    const enemy = new Enemy(loader, rendererWidth, rendererHeight, container);
+    const enemy = new Enemy(loader, this.rendererWidth, this.rendererHeight, container);
     this.enemies.push(enemy);
 
     this.shootInterval = setInterval(() => {
-      this.enemies.forEach((aEnemy) => {
-        this.bullets.forEach((_bullet) => {
-          _bullet.shoot(
-            aEnemy.sprite.x + aEnemy.sprite.width / 2,
-            aEnemy.sprite.y,
-            this.player.sprite.x,
-            this.player.sprite.y,
-          );
-        });
+      this.enemies.forEach((_enemy) => {
+        const bullet = new Bullet(
+          loader,
+          rendererWidth,
+          rendererHeight,
+          container,
+          _enemy.sprite.x + _enemy.sprite.width / 2,
+          _enemy.sprite.y,
+          this.player.sprite.x,
+          this.player.sprite.y,
+        );
+        this.bullets.push(bullet);
+        // this.bullets.forEach((_bullet) => {
+        //   _bullet.shoot(
+        //     aEnemy.sprite.x + aEnemy.sprite.width / 2,
+        //     aEnemy.sprite.y,
+        //     this.player.sprite.x,
+        //     this.player.sprite.y,
+        //   );
+        // });
       });
     }, 2000);
   }
 
   handleFallingObjectCollision() {
     this.fallingObjects.forEach((_fallingObject) => {
-      if (boxesIntersect(this.player.sprite, _fallingObject.fallingObject)) {
+      if (boxesIntersect(this.player.sprite, _fallingObject.sprite)) {
         this.displayText.addScore(10);
+        this.container.removeChild(_fallingObject.sprite);
         this.fallingObjects = this.fallingObjects.filter((e) => e !== _fallingObject);
       }
     });
@@ -113,9 +125,10 @@ class GameState {
 
   private handleBulletCollision() {
     this.bullets.forEach((_bullet) => {
-      if (boxesIntersect(this.player.sprite, _bullet)) {
+      if (boxesIntersect(this.player.sprite, _bullet.sprite)) {
         this.player.setHp(this.player.getHp() - 10);
         this.bullets = this.bullets.filter((e) => e !== _bullet);
+        this.container.removeChild(_bullet.sprite);
         this.displayText.setHp(this.player.getHp());
       }
     });
@@ -240,7 +253,6 @@ class GameState {
       bomb.loadBomb();
     }
     if (Keyboard.isKeyReleased('KeyQ')) {
-      console.log('released Q');
       this.bombs[this.bombs.length - 1].create(
         this.player.sprite.x,
         this.player.sprite.y,
@@ -267,7 +279,6 @@ const container = new PIXI.Container();
 export const explosionFrames = Object.values(explosions);
 
 $(document).ready(() => {
-  console.log('Ready');
   const loader = PIXI.Loader.shared;
   loader.add('player', playerImg);
   loader.add('enemy', enemyImg);
@@ -281,8 +292,6 @@ $(document).ready(() => {
   const rendererHeight: number = app.renderer.view.height;
 
   const player = new Player(loader, rendererWidth, rendererHeight, container);
-
-  // const bullet = new Bullet(loader, rendererWidth, rendererHeight, container);
   const fallingObject = new FallingObject(loader, rendererWidth, rendererHeight, container);
   const displayText = new DisplayText(rendererWidth, rendererHeight, container);
 

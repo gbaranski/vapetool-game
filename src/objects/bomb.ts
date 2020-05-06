@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-export default class sprite {
+export default class Bomb {
   private spriteTexture: PIXI.Texture;
 
   private animatedExplosionSprite: PIXI.AnimatedSprite;

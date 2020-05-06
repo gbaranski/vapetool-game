@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 export default class FallingObject {
   private texture: PIXI.Texture;
 
-  public fallingObject: PIXI.Sprite;
+  public sprite: PIXI.Sprite;
 
   private vy: number;
 
@@ -26,18 +26,18 @@ export default class FallingObject {
   }
 
   create() {
-    this.fallingObject = new PIXI.Sprite(this.texture);
-    this.fallingObject.scale.x = 0.1;
-    this.fallingObject.scale.y = 0.1;
-    this.fallingObject.x = Math.floor(Math.random() * this.rendererWidth);
-    this.fallingObject.y = 0;
+    this.sprite = new PIXI.Sprite(this.texture);
+    this.sprite.scale.x = 0.1;
+    this.sprite.scale.y = 0.1;
+    this.sprite.x = Math.floor(Math.random() * this.rendererWidth);
+    this.sprite.y = 0;
     this.vy = this.objectGravity;
-    this.container.addChild(this.fallingObject);
+    this.container.addChild(this.sprite);
   }
 
   handlePhysics() {
-    if (this.fallingObject.y <= this.rendererHeight - this.fallingObject.height) {
-      this.fallingObject.y += this.vy;
+    if (this.sprite.y <= this.rendererHeight - this.sprite.height) {
+      this.sprite.y += this.vy;
     }
   }
 }

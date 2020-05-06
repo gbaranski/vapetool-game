@@ -22,7 +22,6 @@ export default class Enemy {
     container: PIXI.Container,
   ) {
     this.texture = loader.resources.enemy.texture;
-    console.log(this.texture);
     this.container = container;
     this.sprite = new PIXI.Sprite(this.texture);
     this.sprite.scale.x = 0.1;
