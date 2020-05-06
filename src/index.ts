@@ -17,7 +17,7 @@ import bombImg from './assets/efest.png';
 // eslint-disable-next-line import/no-unresolved
 import explosions from './assets/explosion/*.png';
 
-function boxesIntersect(a, b) {
+function boxesIntersect(a: PIXI.Sprite, b: PIXI.Sprite) {
   const ab = a.getBounds();
   const bb = b.getBounds();
   return (
@@ -101,19 +101,11 @@ class GameState {
           this.player.sprite.y,
         );
         this.bullets.push(bullet);
-        // this.bullets.forEach((_bullet) => {
-        //   _bullet.shoot(
-        //     aEnemy.sprite.x + aEnemy.sprite.width / 2,
-        //     aEnemy.sprite.y,
-        //     this.player.sprite.x,
-        //     this.player.sprite.y,
-        //   );
-        // });
       });
     }, 2000);
   }
 
-  handleFallingObjectCollision() {
+  private handleFallingObjectCollision() {
     this.fallingObjects.forEach((_fallingObject) => {
       if (boxesIntersect(this.player.sprite, _fallingObject.sprite)) {
         this.displayText.addScore(10);
@@ -147,7 +139,9 @@ class GameState {
 
   private removeBomb(bomb: Bomb) {
     this.container.removeChild(bomb.sprite);
-    this.bombs = this.bombs.filter((_bomb: Bomb) => bomb !== _bomb);
+    setTimeout(() => {
+      this.bombs = this.bombs.filter((_bomb: Bomb) => bomb !== _bomb);
+    }, 1000);
   }
 
   private handleBombCollision() {
@@ -162,24 +156,13 @@ class GameState {
             _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
             this.removeBomb(_bomb);
           }
-          // this.bomb.explosions.forEach((explosion) => {
-          //   if(boxesIntersect(explosion, enemy)) {
-          //     enemy.hp -= 1;
-          //   }
-          // });
-        }
-      });
-    });
-    this.bombs.forEach((_bomb) => {
-      if (_bomb.exploded) {
-        _bomb.explosions.forEach((_explosion) => {
-          this.enemies.forEach((_enemy) => {
-            if (boxesIntersect(_explosion, _enemy)) {
-              _enemy.setHp(_enemy.getHp() - 10);
+          _bomb.explosions.forEach((explosion) => {
+            if (boxesIntersect(explosion, _enemy.sprite)) {
+              _enemy.setHp(_enemy.getHp() - 1);
             }
           });
-        });
-      }
+        }
+      });
     });
   }
 
@@ -205,6 +188,7 @@ class GameState {
       }
     });
     this.enemies.forEach((_enemy) => {
+      _enemy.updateHpText();
       _enemy.checkIfDead();
       _enemy.render(this.player.sprite.x);
     });
