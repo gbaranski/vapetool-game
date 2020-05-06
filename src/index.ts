@@ -160,14 +160,14 @@ class GameState {
   }
 
   private handleBombCollision() {
-    // extract floor collision detect
     this.bombs.forEach((_bomb) => {
+      if (_bomb.sprite.y >= this.rendererHeight && !_bomb.exploded) {
+        _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
+        this.removeBomb(_bomb);
+      }
       this.enemies.forEach((_enemy) => {
         if (_bomb.created) {
           if (boxesIntersect(_bomb.sprite, _enemy.sprite) && !_bomb.exploded) {
-            _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
-            this.removeBomb(_bomb);
-          } else if (_bomb.sprite.y >= this.rendererHeight && !_bomb.exploded) {
             _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
             this.removeBomb(_bomb);
           }

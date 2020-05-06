@@ -54,7 +54,7 @@ export default class Bomb {
     } else {
       this.vx = -30;
     }
-    this.vy = -Math.abs(timeDifference / 20);
+    this.vy = -Math.abs(timeDifference / 50);
     this.gravity = 2;
     this.exploded = false;
     this.sprite.scale.x = 0.2;
