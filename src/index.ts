@@ -52,6 +52,8 @@ class GameState {
 
   private cloudLoadTime: number;
 
+  private bombLoadTime: number;
+
   private rendererWidth: number;
 
   private rendererHeight: number;
@@ -252,32 +254,35 @@ class GameState {
     }
 
     if (Keyboard.isKeyReleased('KeyE')) {
-      const cloudSprite = new CloudSprite(this.loader);
+      const cloud = new CloudSprite(this.loader);
       const timeDifference = new Date().getTime() - this.cloudLoadTime;
-      cloudSprite.attackCloud(
+      cloud.attackCloud(
         this.player.checkIfBunnyGoRight(),
         timeDifference,
         this.player.sprite.x,
         this.player.sprite.y,
         this.container,
       );
-      this.cloudSprites.push(cloudSprite);
+      this.cloudSprites.push(cloud);
       setTimeout(() => {
-        cloudSprite.shouldRemoveCloudSprite = true;
+        cloud.shouldRemoveCloudSprite = true;
       }, timeDifference);
     }
 
-    if (Keyboard.isKeyDown('KeyQ')) {
-      const bomb = new Bomb(this.loader, this.explosionFrames, this.container);
-      this.bombs.push(bomb);
-      bomb.loadBomb();
+    if (Keyboard.isKeyPressed('KeyQ')) {
+      this.bombLoadTime = new Date().getTime();
     }
+
     if (Keyboard.isKeyReleased('KeyQ')) {
-      this.bombs[this.bombs.length - 1].create(
+      const bomb = new Bomb(this.loader, this.explosionFrames, this.container);
+      const timeDifference = new Date().getTime() - this.bombLoadTime;
+      bomb.create(
         this.player.sprite.x,
         this.player.sprite.y,
         this.player.checkIfBunnyGoRight(),
+        timeDifference,
       );
+      this.bombs.push(bomb);
     }
   }
 }

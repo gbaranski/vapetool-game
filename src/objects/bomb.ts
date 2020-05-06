@@ -43,14 +43,9 @@ export default class Bomb {
     */
   }
 
-  loadBomb() {
-    this.loadTime = new Date().getTime();
-  }
-
-  create(x: number, y: number, isMoveDirectionRight: boolean) {
+  create(x: number, y: number, isMoveDirectionRight: boolean, timeDifference: number) {
     this.spriteTexture = this.loader.resources.bomb.texture;
     this.sprite = new PIXI.Sprite(this.spriteTexture);
-    const timeDifference = new Date().getTime() - this.loadTime;
 
     this.sprite.x = x;
     this.sprite.y = y;
