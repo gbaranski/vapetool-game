@@ -59,7 +59,6 @@ class GameState {
 
   constructor(
     player: Player,
-    enemy: Enemy,
     fallingObject: FallingObject,
     displayText: DisplayText,
     container: PIXI.Container,
@@ -75,7 +74,7 @@ class GameState {
     this.ticker = ticker;
     this.explosionFrames = explosionFrames;
     this.loader = loader;
-    this.enemies.push(enemy);
+
     this.fallingObjects.push(fallingObject);
 
     this.displayText = displayText;
@@ -85,6 +84,9 @@ class GameState {
     this.gravity = 1;
 
     this.handleKeyboardPress();
+
+    const enemy = new Enemy(loader, rendererWidth, rendererHeight, container);
+    this.enemies.push(enemy);
 
     this.shootInterval = setInterval(() => {
       this.enemies.forEach((aEnemy) => {
@@ -151,13 +153,15 @@ class GameState {
       });
     });
     this.bombs.forEach((_bomb) => {
-      _bomb.explosions.forEach((explosion) => {
-        this.enemies.forEach((_enemy) => {
-          if (boxesIntersect(explosion, _enemy)) {
-            _enemy.setHp(_enemy.getHp() - 10);
-          }
+      if (_bomb.exploded) {
+        _bomb.explosions.forEach((_explosion) => {
+          this.enemies.forEach((_enemy) => {
+            if (boxesIntersect(_explosion, _enemy)) {
+              _enemy.setHp(_enemy.getHp() - 10);
+            }
+          });
         });
-      });
+      }
     });
   }
 
@@ -228,11 +232,17 @@ class GameState {
     if (Keyboard.isKeyDown('KeyQ')) {
       console.log('Creating bomb'); // it goes in a loop
       const bomb = new Bomb(this.loader, this.explosionFrames, this.container);
-      // bomb.loadBomb();
-      // this.bombs.push(bomb);
+      this.bombs.push(bomb);
+      bomb.loadBomb();
+      this.bombs.push(bomb);
     }
     if (Keyboard.isKeyReleased('KeyQ')) {
       console.log('released Q');
+      this.bombs[this.bombs.length - 1].create(
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.player.checkIfBunnyGoRight(),
+      );
       // this.bombs[this.bombs.length - 1].create(
       //   this.player.sprite.x,
       //   this.player.sprite.y,
@@ -266,13 +276,12 @@ $(document).ready(() => {
   const rendererHeight: number = app.renderer.view.height;
 
   const player = new Player(loader, rendererWidth, rendererHeight, container);
-  const enemy = new Enemy(loader, rendererWidth, rendererHeight, container);
+
   // const bullet = new Bullet(loader, rendererWidth, rendererHeight, container);
   const fallingObject = new FallingObject(loader, rendererWidth, rendererHeight, container);
   const displayText = new DisplayText(rendererWidth, rendererHeight, container);
   const gameState = new GameState(
     player,
-    enemy,
     fallingObject,
     displayText,
     container,

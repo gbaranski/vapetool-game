@@ -17,15 +17,22 @@ export default class Bomb {
 
   public exploded: boolean;
 
-  public explosions: PIXI.AnimatedSprite;
+  public explosions: any = [];
 
   private loadTime: any;
 
   private container: PIXI.Container;
 
+  private loader: PIXI.Loader;
+
+  private explosionFrames: any;
+
   constructor(loader: PIXI.Loader, explosionFrames, container) {
-    this.created = false;
+    // this.created = false;
     this.container = container;
+    this.loader = loader;
+    this.explosionFrames = explosionFrames;
+    /*
     loader.load(() => {
       // this.bombTexture = new PIXI.Texture(resources.bomb.texture);
       this.bombTexture = loader.resources.bomb.texture;
@@ -33,6 +40,7 @@ export default class Bomb {
         explosionFrames.map((path) => PIXI.Texture.from(path)),
       );
     });
+    */
   }
 
   loadBomb() {
@@ -40,8 +48,10 @@ export default class Bomb {
   }
 
   create(x: number, y: number, isMoveDirectionRight: boolean) {
+    this.bombTexture = this.loader.resources.bomb.texture;
     this.bomb = new PIXI.Sprite(this.bombTexture);
     const timeDifference = new Date().getTime() - this.loadTime;
+
     this.bomb.x = x;
     this.bomb.y = y;
     if (isMoveDirectionRight) {
@@ -55,8 +65,8 @@ export default class Bomb {
     this.bomb.scale.x = 0.2;
     this.bomb.scale.y = 0.2;
     this.bomb.anchor.set(0.5, 0.5);
-    this.container.addChild(this.bomb);
     this.created = true;
+    this.container.addChild(this.bomb);
   }
 
   renderBombFrame() {
@@ -77,6 +87,9 @@ export default class Bomb {
   }
 
   explode(x: number, y: number) {
+    this.animatedExplosionSprite = new PIXI.AnimatedSprite(
+      this.explosionFrames.map((path) => PIXI.Texture.from(path)),
+    );
     const explosion = this.animatedExplosionSprite;
     this.exploded = true;
     explosion.scale.x = 4;
@@ -86,9 +99,11 @@ export default class Bomb {
     explosion.anchor.set(0.5, 0.5);
     // explosion.scale.set(0.75 + Math.random() * 0.5);
     explosion.play();
+    this.explosions.push(explosion);
     // this.container.removeChild(explosion);
     this.container.addChild(explosion);
     setTimeout(() => {
+      this.explosions = this.explosions.filter((ex) => ex !== explosion);
       this.container.removeChild(explosion);
     }, 1000);
   }
