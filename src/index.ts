@@ -6,8 +6,9 @@ import Enemy from './objects/enemy';
 import Bullet from './objects/bullet';
 import Bomb from './objects/bomb';
 import FallingObject from './objects/fallingObject';
-import DisplayText from './objects/displayText';
+import Text from './objects/text';
 import CloudSprite from './objects/cloudSprite';
+import { getFont1, getFont2 } from './objects/textStyles';
 
 import playerImg from './assets/bunny.png';
 import enemyImg from './assets/police.png';
@@ -42,13 +43,13 @@ class GameState {
 
   private cloudSprites: CloudSprite[] = [];
 
-  private displayText: DisplayText;
-
   private container: PIXI.Container;
 
   private gravity: number;
 
   private shootInterval: NodeJS.Timeout;
+
+  private enemyCreateInterval: NodeJS.Timeout;
 
   private cloudLoadTime: number;
 
@@ -62,12 +63,17 @@ class GameState {
 
   private explosionFrames: Object;
 
+  private hpText: Text;
+
+  private scoreText: Text;
+
+  private deathText: Text;
+
   private loader: PIXI.Loader;
 
   constructor(
     player: Player,
     fallingObject: FallingObject,
-    displayText: DisplayText,
     container: PIXI.Container,
     rendererWidth: number,
     rendererHeight: number,
@@ -84,16 +90,23 @@ class GameState {
 
     this.fallingObjects.push(fallingObject);
 
-    this.displayText = displayText;
-
     this.container = container;
 
     this.gravity = 1;
 
     this.handleKeyboardPress();
 
-    const enemy = new Enemy(loader, this.rendererWidth, this.rendererHeight, container);
-    this.enemies.push(enemy);
+    this.createNewEnemy();
+    // ENEMY CREATION INTERVAL
+    // setInterval(() => {
+    //   this.createNewEnemy();
+    // }, 1000);
+
+    this.hpText = new Text(0, 0, `HP: ${player.getHp()}`, getFont1(), this.container);
+    this.hpText.updateText();
+
+    this.scoreText = new Text(0, 40, `Score: ${player.score}ml`, getFont1(), this.container);
+    this.scoreText.updateText();
 
     this.shootInterval = setInterval(() => {
       this.enemies.forEach((_enemy) => {
@@ -112,10 +125,16 @@ class GameState {
     }, 2000);
   }
 
+  private createNewEnemy() {
+    const enemy = new Enemy(this.loader, this.rendererWidth, this.rendererHeight, this.container);
+    this.enemies.push(enemy);
+  }
+
   private handleFallingObjectCollision() {
     this.fallingObjects.forEach((_fallingObject) => {
       if (boxesIntersect(this.player.sprite, _fallingObject.sprite)) {
-        this.displayText.addScore(10);
+        this.scoreText.text = `Score: ${this.player.score + 10}ml`;
+        this.scoreText.updateText();
         this.container.removeChild(_fallingObject.sprite);
         this.fallingObjects = this.fallingObjects.filter((e) => e !== _fallingObject);
       }
@@ -128,7 +147,8 @@ class GameState {
         this.player.setHp(this.player.getHp() - 10);
         this.bullets = this.bullets.filter((e) => e !== _bullet);
         this.container.removeChild(_bullet.sprite);
-        this.displayText.setHp(this.player.getHp());
+        this.hpText.text = `HP: ${this.player.getHp()}`;
+        this.hpText.updateText();
       }
     });
   }
@@ -142,15 +162,6 @@ class GameState {
       });
     });
   }
-  // handleCloudCollision() {
-  //   this.cloudSprites.forEach((cloudSprite) => {
-  //     this.enemies = this.enemies
-  //       .filter((aEnemy) => boxesIntersect(cloudSprite, aEnemy))
-  //       .map((aEnemy) => {
-  //         aEnemy.hp -= 1;
-  //       });
-  //   });
-  // }
 
   private removeBomb(bomb: Bomb) {
     this.container.removeChild(bomb.sprite);
@@ -183,7 +194,17 @@ class GameState {
 
   handlePlayerDie() {
     if (this.player.getHp() <= 0) {
-      this.displayText.showDeathScreen();
+      this.deathText = new Text(
+        this.rendererWidth / 2,
+        this.rendererHeight / 2,
+        `
+        You're dead\n
+        Score: ${this.player.score}ml
+        `,
+        getFont2(),
+        this.container,
+      );
+      this.deathText.updateText();
       this.ticker.stop();
     }
   }
@@ -313,16 +334,11 @@ $(document).ready(() => {
 
   const player = new Player(loader, rendererWidth, rendererHeight, container);
   const fallingObject = new FallingObject(loader, rendererWidth, rendererHeight, container);
-  const displayText = new DisplayText(rendererWidth, rendererHeight, container);
 
-  // function scheduleEnemyCreation() {
-  //   setTimeout(() => { enemy.create(); scheduleEnemyCreation() }, 3000)
-  // }
   loader.onComplete.add(() => {
     const gameState = new GameState(
       player,
       fallingObject,
-      displayText,
       container,
       rendererWidth,
       rendererHeight,
@@ -334,11 +350,6 @@ $(document).ready(() => {
     app.stage.addChild(container);
     fallingObject.create();
     player.create();
-    displayText.updateScoreText();
-    // displayText.setHp(this.player.hp
-    displayText.updateHpText();
-
-    // scheduleEnemyCreation()
 
     app.ticker.add(() => gameState.gameLoop());
   });

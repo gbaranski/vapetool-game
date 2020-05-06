@@ -31,6 +31,8 @@ export default class Player {
 
   private hp: number;
 
+  public score: number;
+
   private isLastMoveRight: boolean;
 
   constructor(
@@ -45,6 +47,8 @@ export default class Player {
       this.sprite = new PIXI.Sprite(resources.player.texture);
       // this.cloudTexture = new PIXI.Texture(resources.cloud.texture);
     });
+
+    this.score = 0;
 
     this.container = container;
 
