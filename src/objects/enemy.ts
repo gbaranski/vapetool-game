@@ -16,14 +16,12 @@ export default class Enemy {
   private container: PIXI.Container;
 
   constructor(
-    loader: any,
+    loader: PIXI.Loader,
     rendererWidth: number,
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    loader.load(({ resources }) => {
-      this.texture = new PIXI.Texture(resources.enemy.texture);
-    });
+    this.texture = loader.resources.enemy.texture;
     console.log(this.texture);
     this.container = container;
     this.sprite = new PIXI.Sprite(this.texture);

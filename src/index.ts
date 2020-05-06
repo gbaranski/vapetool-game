@@ -111,7 +111,7 @@ class GameState {
     });
   }
 
-  handleBulletCollision() {
+  private handleBulletCollision() {
     this.bullets.forEach((_bullet) => {
       if (boxesIntersect(this.player.sprite, _bullet)) {
         this.player.setHp(this.player.getHp() - 10);
@@ -132,17 +132,22 @@ class GameState {
   }
   */
 
-  handleBombCollision() {
+  private removeBomb(bomb: Bomb) {
+    this.container.removeChild(bomb.sprite);
+    this.bombs = this.bombs.filter((_bomb: Bomb) => bomb !== _bomb);
+  }
+
+  private handleBombCollision() {
     // extract floor collision detect
     this.bombs.forEach((_bomb) => {
       this.enemies.forEach((_enemy) => {
         if (_bomb.created) {
-          if (boxesIntersect(_bomb.bomb, _enemy.sprite) && !_bomb.exploded) {
-            _bomb.explode(_bomb.bomb.x, _bomb.bomb.y);
-            _bomb.remove(_bomb.bomb);
-          } else if (_bomb.bomb.y >= this.rendererHeight && !_bomb.exploded) {
-            _bomb.explode(_bomb.bomb.x, _bomb.bomb.y);
-            _bomb.remove(_bomb.bomb);
+          if (boxesIntersect(_bomb.sprite, _enemy.sprite) && !_bomb.exploded) {
+            _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
+            this.removeBomb(_bomb);
+          } else if (_bomb.sprite.y >= this.rendererHeight && !_bomb.exploded) {
+            _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
+            this.removeBomb(_bomb);
           }
           // this.bomb.explosions.forEach((explosion) => {
           //   if(boxesIntersect(explosion, enemy)) {
@@ -183,7 +188,7 @@ class GameState {
     });
     this.bombs.forEach((_bomb) => {
       if (_bomb.created) {
-        _bomb.renderBombFrame();
+        _bomb.renderSpriteFrame();
       }
     });
     this.enemies.forEach((_enemy) => {
@@ -230,11 +235,9 @@ class GameState {
       // this.player.attackCloud(); ADD LATER
     }
     if (Keyboard.isKeyDown('KeyQ')) {
-      console.log('Creating bomb'); // it goes in a loop
       const bomb = new Bomb(this.loader, this.explosionFrames, this.container);
       this.bombs.push(bomb);
       bomb.loadBomb();
-      this.bombs.push(bomb);
     }
     if (Keyboard.isKeyReleased('KeyQ')) {
       console.log('released Q');
@@ -272,6 +275,8 @@ $(document).ready(() => {
   loader.add('bullet', bulletImg);
   loader.add('cloud', cloudImg);
   loader.add('bomb', bombImg);
+  // TODO consider removing
+  explosionFrames.forEach((frame: string) => loader.add(frame, frame));
   const rendererWidth: number = app.renderer.view.width;
   const rendererHeight: number = app.renderer.view.height;
 
@@ -280,23 +285,24 @@ $(document).ready(() => {
   // const bullet = new Bullet(loader, rendererWidth, rendererHeight, container);
   const fallingObject = new FallingObject(loader, rendererWidth, rendererHeight, container);
   const displayText = new DisplayText(rendererWidth, rendererHeight, container);
-  const gameState = new GameState(
-    player,
-    fallingObject,
-    displayText,
-    container,
-    rendererWidth,
-    rendererHeight,
-    app.ticker,
-    explosionFrames,
-    loader,
-  );
-  document.body.appendChild(app.view);
-  app.stage.addChild(container);
+
   // function scheduleEnemyCreation() {
   //   setTimeout(() => { enemy.create(); scheduleEnemyCreation() }, 3000)
   // }
   loader.onComplete.add(() => {
+    const gameState = new GameState(
+      player,
+      fallingObject,
+      displayText,
+      container,
+      rendererWidth,
+      rendererHeight,
+      app.ticker,
+      explosionFrames,
+      loader,
+    );
+    document.body.appendChild(app.view);
+    app.stage.addChild(container);
     fallingObject.create();
     player.create();
     displayText.updateScoreText();

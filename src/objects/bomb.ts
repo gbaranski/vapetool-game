@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js';
 
-export default class Bomb {
-  private bombTexture: PIXI.Texture;
+export default class sprite {
+  private spriteTexture: PIXI.Texture;
 
   private animatedExplosionSprite: PIXI.AnimatedSprite;
 
-  public bomb: PIXI.Sprite;
+  public sprite: PIXI.Sprite;
 
   public created: boolean;
 
@@ -34,8 +34,8 @@ export default class Bomb {
     this.explosionFrames = explosionFrames;
     /*
     loader.load(() => {
-      // this.bombTexture = new PIXI.Texture(resources.bomb.texture);
-      this.bombTexture = loader.resources.bomb.texture;
+      // this.spriteTexture = new PIXI.Texture(resources.sprite.texture);
+      this.spriteTexture = loader.resources.sprite.texture;
       this.animatedExplosionSprite = new PIXI.AnimatedSprite(
         explosionFrames.map((path) => PIXI.Texture.from(path)),
       );
@@ -48,12 +48,12 @@ export default class Bomb {
   }
 
   create(x: number, y: number, isMoveDirectionRight: boolean) {
-    this.bombTexture = this.loader.resources.bomb.texture;
-    this.bomb = new PIXI.Sprite(this.bombTexture);
+    this.spriteTexture = this.loader.resources.bomb.texture;
+    this.sprite = new PIXI.Sprite(this.spriteTexture);
     const timeDifference = new Date().getTime() - this.loadTime;
 
-    this.bomb.x = x;
-    this.bomb.y = y;
+    this.sprite.x = x;
+    this.sprite.y = y;
     if (isMoveDirectionRight) {
       this.vx = 30;
     } else {
@@ -62,28 +62,20 @@ export default class Bomb {
     this.vy = -Math.abs(timeDifference / 20);
     this.gravity = 2;
     this.exploded = false;
-    this.bomb.scale.x = 0.2;
-    this.bomb.scale.y = 0.2;
-    this.bomb.anchor.set(0.5, 0.5);
+    this.sprite.scale.x = 0.2;
+    this.sprite.scale.y = 0.2;
+    this.sprite.anchor.set(0.5, 0.5);
     this.created = true;
-    this.container.addChild(this.bomb);
+    this.container.addChild(this.sprite);
   }
 
-  renderBombFrame() {
+  renderSpriteFrame() {
     if (!this.exploded) {
-      this.bomb.x += this.vx;
+      this.sprite.x += this.vx;
       this.vy += this.gravity;
-      this.bomb.y += this.vy;
-      this.bomb.angle += +10;
+      this.sprite.y += this.vy;
+      this.sprite.angle += +10;
     }
-  }
-
-  remove(bomb: PIXI.Sprite) {
-    this.container.removeChild(bomb);
-    // setTimeout(() => {
-    //   this.bombs = this.bombs.filter((e) => e !== bomb);
-    //   this.container.removeChild(bomb);
-    // }, 300);
   }
 
   explode(x: number, y: number) {
