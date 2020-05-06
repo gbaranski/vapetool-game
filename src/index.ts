@@ -7,6 +7,7 @@ import Bullet from './objects/bullet';
 import Bomb from './objects/bomb';
 import FallingObject from './objects/fallingObject';
 import DisplayText from './objects/displayText';
+import CloudSprite from './objects/cloudSprite';
 
 import playerImg from './assets/bunny.png';
 import enemyImg from './assets/police.png';
@@ -39,6 +40,8 @@ class GameState {
 
   private fallingObjects: FallingObject[] = [];
 
+  private cloudSprites: CloudSprite[] = [];
+
   private displayText: DisplayText;
 
   private container: PIXI.Container;
@@ -46,6 +49,8 @@ class GameState {
   private gravity: number;
 
   private shootInterval: NodeJS.Timeout;
+
+  private cloudLoadTime: number;
 
   private rendererWidth: number;
 
@@ -125,17 +130,25 @@ class GameState {
       }
     });
   }
-  /* add clouds to new class then fix
-  handleCloudCollision() {
-    this.player.cloudSprites.forEach((cloudSprite) => {
-      this.enemy.enemies = this.enemy.enemies
-        .filter((aEnemy) => boxesIntersect(cloudSprite, aEnemy))
-        .map((aEnemy) => {
-          aEnemy.hp -= 1;
-        });
+
+  private handleCloudCollision() {
+    this.cloudSprites.forEach((_cloudSprite) => {
+      this.enemies.forEach((_enemy) => {
+        if (boxesIntersect(_cloudSprite.sprite, _enemy.sprite)) {
+          _enemy.setHp(_enemy.getHp() - 1);
+        }
+      });
     });
   }
-  */
+  // handleCloudCollision() {
+  //   this.cloudSprites.forEach((cloudSprite) => {
+  //     this.enemies = this.enemies
+  //       .filter((aEnemy) => boxesIntersect(cloudSprite, aEnemy))
+  //       .map((aEnemy) => {
+  //         aEnemy.hp -= 1;
+  //       });
+  //   });
+  // }
 
   private removeBomb(bomb: Bomb) {
     this.container.removeChild(bomb.sprite);
@@ -178,7 +191,13 @@ class GameState {
     Keyboard.update();
     this.player.handlePhysics(this.gravity);
     this.player.handleFlips();
-    // this.player.updateCloudFrame(); ADD LATER
+    this.cloudSprites.forEach((_cloudSprite) => {
+      _cloudSprite.updateFrame();
+      if (_cloudSprite.sprite.scale.x < 0.1) {
+        this.container.removeChild(_cloudSprite.sprite);
+        this.cloudSprites = this.cloudSprites.filter((e) => e !== _cloudSprite);
+      }
+    });
     this.bullets.forEach((_bullet) => {
       _bullet.handleBulletPhysics();
     });
@@ -192,9 +211,8 @@ class GameState {
       _enemy.checkIfDead();
       _enemy.render(this.player.sprite.x);
     });
-    // this.enemy.printHpText(); ADD LATER
 
-    // this.handleCloudCollision(); ADD LATER
+    this.handleCloudCollision();
     this.handleBombCollision();
     this.handleFallingObjectCollision();
     this.handleBulletCollision();
@@ -226,11 +244,25 @@ class GameState {
       this.player.setFlipping(true);
     }
     if (Keyboard.isKeyPressed('KeyE')) {
-      // this.player.loadCloud(); ADD LATER
+      this.cloudLoadTime = new Date().getTime();
     }
+
     if (Keyboard.isKeyReleased('KeyE')) {
-      // this.player.attackCloud(); ADD LATER
+      const cloudSprite = new CloudSprite(this.loader);
+      const timeDifference = new Date().getTime() - this.cloudLoadTime;
+      cloudSprite.attackCloud(
+        this.player.checkIfBunnyGoRight(),
+        timeDifference,
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.container,
+      );
+      this.cloudSprites.push(cloudSprite);
+      setTimeout(() => {
+        cloudSprite.shouldRemoveCloudSprite = true;
+      }, timeDifference);
     }
+
     if (Keyboard.isKeyDown('KeyQ')) {
       const bomb = new Bomb(this.loader, this.explosionFrames, this.container);
       this.bombs.push(bomb);
@@ -242,11 +274,6 @@ class GameState {
         this.player.sprite.y,
         this.player.checkIfBunnyGoRight(),
       );
-      // this.bombs[this.bombs.length - 1].create(
-      //   this.player.sprite.x,
-      //   this.player.sprite.y,
-      //   this.player.checkIfBunnyGoRight(),
-      // );
     }
   }
 }
