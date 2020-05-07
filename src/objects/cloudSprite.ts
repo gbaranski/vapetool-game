@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js';
 
 export default class CloudSprite {
+  private preSprite: PIXI.Sprite;
+
   public sprite: PIXI.Sprite;
 
   private vx: number;
@@ -15,8 +17,8 @@ export default class CloudSprite {
 
   private container: PIXI.Container;
 
-  constructor(loader: PIXI.Loader) {
-    this.loader = loader;
+  constructor(sprite: PIXI.Sprite) {
+    this.preSprite = sprite;
   }
 
   attackCloud(
@@ -27,7 +29,7 @@ export default class CloudSprite {
     container: PIXI.Container,
   ) {
     this.container = container;
-    this.sprite = new PIXI.Sprite(this.loader.resources.cloud.texture);
+    this.sprite = new PIXI.Sprite(this.preSprite.texture);
 
     this.shouldRemoveCloudSprite = false;
     this.scaleMultiplier = 1.05;

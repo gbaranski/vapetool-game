@@ -36,18 +36,16 @@ export default class Player {
   private isLastMoveRight: boolean;
 
   constructor(
-    loader: PIXI.Loader,
+    sprite: PIXI.Sprite,
     rendererWidth: number,
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    this.loader = loader;
+    // this.loader.load((_loader, resources) => {
+    //   this.sprite = new PIXI.Sprite(resources.player.texture);
+    // });
 
-    this.loader.load((_loader, resources) => {
-      this.sprite = new PIXI.Sprite(resources.player.texture);
-      // this.cloudTexture = new PIXI.Texture(resources.cloud.texture);
-    });
-
+    this.sprite = new PIXI.Sprite(sprite.texture);
     this.score = 0;
 
     this.container = container;
@@ -55,16 +53,13 @@ export default class Player {
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
 
-    this.cloudSprites = [];
     this.flipping = false;
     this.flipVelocity = 0;
     this.friction = 0.5;
     this.ax = 0;
     this.axErrorMargin = 0.1;
     this.hp = 10000;
-  }
 
-  create() {
     this.vx = 0;
     this.vy = 0;
     this.sprite.scale.x = 2;

@@ -12,7 +12,7 @@ export default class Bullet {
   private bulletSpeed: number;
 
   constructor(
-    loader: PIXI.Loader,
+    sprite: PIXI.Sprite,
     rendererWidth: number,
     rendererHeight: number,
     container: PIXI.Container,
@@ -26,7 +26,7 @@ export default class Bullet {
     this.rendererHeight = rendererHeight;
 
     this.bulletSpeed = -50;
-    this.sprite = new PIXI.Sprite(loader.resources.bullet.texture);
+    this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.x = startX;
     this.sprite.y = startY;
     this.sprite.anchor.set(0.5);

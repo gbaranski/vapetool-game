@@ -1,8 +1,6 @@
 import * as PIXI from 'pixi.js';
 
 export default class FallingObject {
-  private texture: PIXI.Texture;
-
   public sprite: PIXI.Sprite;
 
   private vy: number;
@@ -16,22 +14,17 @@ export default class FallingObject {
   private container: PIXI.Container;
 
   constructor(
-    loader: PIXI.Loader,
+    sprite: PIXI.Sprite,
     rendererWidth: number,
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    loader.load(() => {
-      this.texture = loader.resources.fallingObject.texture;
-    });
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
     this.container = container;
     this.objectGravity = 3;
-  }
 
-  create() {
-    this.sprite = new PIXI.Sprite(this.texture);
+    this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.scale.x = 0.1;
     this.sprite.scale.y = 0.1;
     this.sprite.x = Math.floor(Math.random() * this.rendererWidth);

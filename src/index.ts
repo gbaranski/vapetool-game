@@ -32,17 +32,26 @@ $(document).ready(() => {
   loader.add('bomb', bombImg);
   // TODO consider removing
   explosionFrames.forEach((frame: string) => loader.add(frame, frame));
+
+  const sprites: any = {};
+  loader.load((_loader, resources) => {
+    sprites.player = new PIXI.Sprite(resources.player.texture);
+    sprites.enemy = new PIXI.Sprite(resources.enemy.texture);
+    sprites.fallingObject = new PIXI.Sprite(resources.fallingObject.texture);
+    sprites.bullet = new PIXI.Sprite(resources.bullet.texture);
+    sprites.cloud = new PIXI.Sprite(resources.cloud.texture);
+    sprites.bomb = new PIXI.Sprite(resources.bomb.texture);
+  });
   const rendererWidth: number = app.renderer.view.width;
   const rendererHeight: number = app.renderer.view.height;
-
   loader.onComplete.add(() => {
     const gameState = new GameState(
       container,
       rendererWidth,
       rendererHeight,
-      app.ticker,
       explosionFrames,
       loader,
+      sprites,
     );
     document.body.appendChild(app.view);
     app.stage.addChild(container);

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 export default class Bomb {
-  private spriteTexture: PIXI.Texture;
+  private preSprite: PIXI.Sprite;
 
   private animatedExplosionSprite: PIXI.AnimatedSprite;
 
@@ -27,10 +27,9 @@ export default class Bomb {
 
   private explosionFrames: any;
 
-  constructor(loader: PIXI.Loader, explosionFrames: any, container: PIXI.Container) {
-    // this.created = false;
+  constructor(sprite: PIXI.Sprite, explosionFrames: any, container: PIXI.Container) {
     this.container = container;
-    this.loader = loader;
+    this.preSprite = new PIXI.Sprite(sprite.texture);
     this.explosionFrames = explosionFrames;
     /*
     loader.load(() => {
@@ -44,8 +43,7 @@ export default class Bomb {
   }
 
   create(x: number, y: number, isMoveDirectionRight: boolean, timeDifference: number) {
-    this.spriteTexture = this.loader.resources.bomb.texture;
-    this.sprite = new PIXI.Sprite(this.spriteTexture);
+    this.sprite = this.preSprite;
 
     this.sprite.x = x;
     this.sprite.y = y;

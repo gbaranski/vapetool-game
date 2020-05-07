@@ -10,6 +10,8 @@ import { getFont1, getFont2 } from './objects/textStyles';
 import { boxesIntersect } from './helpers';
 
 export default class GameState {
+  private sprites: any;
+
   private player: Player;
 
   private enemies: Enemy[] = [];
@@ -52,40 +54,46 @@ export default class GameState {
     container: PIXI.Container,
     rendererWidth: number,
     rendererHeight: number,
-    ticker: PIXI.Ticker,
     explosionFrames: Object,
     loader: PIXI.Loader,
+    sprites: any,
   ) {
-    this.player = new Player(loader, rendererWidth, rendererHeight, container);
-    const fallingObject = new FallingObject(loader, rendererWidth, rendererHeight, container);
-    fallingObject.create();
-    this.player.create();
+    this.sprites = sprites;
+    this.container = container;
+    this.loader = loader;
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
-    this.ticker = ticker;
     this.explosionFrames = explosionFrames;
-    this.loader = loader;
 
+    this.player = new Player(
+      this.sprites.player,
+      this.rendererWidth,
+      this.rendererHeight,
+      this.container,
+    );
+
+    const fallingObject = new FallingObject(
+      this.sprites.fallingObject,
+      this.rendererWidth,
+      this.rendererHeight,
+      this.container,
+    );
     this.fallingObjects.push(fallingObject);
 
-    this.container = container;
-
     this.gravity = 1;
-
-    this.handleKeyboardPress();
-
     this.createNewEnemy();
-
+    setTimeout(() => {
+      this.createNewEnemy();
+    }, 500);
     this.hpText = new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), this.container);
     this.hpText.updateText();
 
     this.scoreText = new Text(0, 40, `Score: ${this.player.score}ml`, getFont1(), this.container);
     this.scoreText.updateText();
-
     this.shootInterval = setInterval(() => {
       this.enemies.forEach((_enemy) => {
         const bullet = new Bullet(
-          loader,
+          this.sprites.bullet,
           rendererWidth,
           rendererHeight,
           container,
@@ -100,7 +108,12 @@ export default class GameState {
   }
 
   private createNewEnemy() {
-    const enemy = new Enemy(this.loader, this.rendererWidth, this.rendererHeight, this.container);
+    const enemy = new Enemy(
+      this.sprites.enemy,
+      this.rendererWidth,
+      this.rendererHeight,
+      this.container,
+    );
     this.enemies.push(enemy);
   }
 
@@ -249,7 +262,7 @@ export default class GameState {
     }
 
     if (Keyboard.isKeyReleased('KeyE')) {
-      const cloud = new CloudSprite(this.loader);
+      const cloud = new CloudSprite(this.sprites.cloud);
       const timeDifference = new Date().getTime() - this.cloudLoadTime;
       cloud.attackCloud(
         this.player.checkIfBunnyGoRight(),
@@ -269,7 +282,7 @@ export default class GameState {
     }
 
     if (Keyboard.isKeyReleased('KeyQ')) {
-      const bomb = new Bomb(this.loader, this.explosionFrames, this.container);
+      const bomb = new Bomb(this.sprites.bomb, this.explosionFrames, this.container);
       const timeDifference = new Date().getTime() - this.bombLoadTime;
       bomb.create(
         this.player.sprite.x,
