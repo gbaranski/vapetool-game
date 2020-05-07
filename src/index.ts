@@ -9,6 +9,7 @@ import FallingObject from './objects/fallingObject';
 import Text from './objects/text';
 import CloudSprite from './objects/cloudSprite';
 import { getFont1, getFont2 } from './objects/textStyles';
+import { boxesIntersect } from './helpers';
 
 import playerImg from './assets/bunny.png';
 import enemyImg from './assets/police.png';
@@ -18,17 +19,6 @@ import cloudImg from './assets/cloud.png';
 import bombImg from './assets/efest.png';
 // eslint-disable-next-line import/no-unresolved
 import explosions from './assets/explosion/*.png';
-
-function boxesIntersect(a: PIXI.Sprite, b: PIXI.Sprite) {
-  const ab = a.getBounds();
-  const bb = b.getBounds();
-  return (
-    ab.x + ab.width > bb.x &&
-    ab.x < bb.x + bb.width &&
-    ab.y + ab.height > bb.y &&
-    ab.y < bb.y + bb.height
-  );
-}
 
 class GameState {
   private player: Player;
