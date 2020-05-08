@@ -50,6 +50,14 @@ export default class GameState {
 
   private yText: Text;
 
+  private vxText: Text;
+
+  private vyText: Text;
+
+  private frictionText: Text;
+
+  private axText: Text;
+
   private deathText: Text;
 
   private loader: PIXI.Loader;
@@ -96,6 +104,20 @@ export default class GameState {
     this.xText = new Text(0, 80, `x: ${this.player.sprite.x}`, getFont3(), this.container);
 
     this.yText = new Text(0, 100, `y: ${this.player.sprite.y}`, getFont3(), this.container);
+
+    this.vxText = new Text(0, 120, `vx: ${this.player.getVx()}`, getFont3(), this.container);
+
+    this.vyText = new Text(0, 140, `vy: ${this.player.getVy()}`, getFont3(), this.container);
+
+    this.frictionText = new Text(
+      0,
+      160,
+      `friction: ${this.player.getFriction()}`,
+      getFont3(),
+      this.container,
+    );
+
+    this.axText = new Text(0, 180, `ax: ${this.player.getAx()}`, getFont3(), this.container);
 
     this.shootInterval = setInterval(() => {
       this.enemies.forEach((_enemy) => {
@@ -209,8 +231,13 @@ export default class GameState {
   }
 
   gameLoop() {
+    console.log(this.player.getVy());
     this.xText.updateText(`x: ${this.player.sprite.x}`);
     this.yText.updateText(`y: ${this.player.sprite.y}`);
+    this.vxText.updateText(`vx: ${this.player.getVx()}`);
+    this.vyText.updateText(`vy: ${this.player.getVy()}`);
+    this.frictionText.updateText(`friction: ${this.player.getFriction()}`);
+    this.axText.updateText(`ax: ${this.player.getAx()}`);
     this.handleKeyboardPress();
     Keyboard.update();
     this.player.handlePhysics(this.gravity);

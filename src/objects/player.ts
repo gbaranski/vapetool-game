@@ -114,8 +114,6 @@ export default class Player {
         }
       }
     }
-    this.sprite.x += this.vx;
-    this.sprite.y += this.vy;
 
     if (this.sprite.y <= this.rendererHeight - this.sprite.height / 2) {
       this.vy += gravity;
@@ -124,6 +122,9 @@ export default class Player {
     }
     this.ax = Math.floor(this.ax);
     this.sprite.y = Math.min(this.sprite.y, this.rendererHeight - this.sprite.height / 2);
+
+    this.sprite.x += this.vx;
+    this.sprite.y += this.vy;
   }
 
   checkIfBunnyGoRight() {
@@ -167,7 +168,20 @@ export default class Player {
   setAx(newAx: number) {
     this.ax = newAx;
   }
-  /*
 
-  */
+  getVx() {
+    return this.vx;
+  }
+
+  getVy() {
+    return this.vy;
+  }
+
+  getFriction() {
+    return this.friction;
+  }
+
+  getAx() {
+    return this.ax;
+  }
 }
