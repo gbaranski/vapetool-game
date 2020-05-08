@@ -231,7 +231,6 @@ export default class GameState {
   }
 
   gameLoop() {
-    console.log(this.player.getVy());
     this.xText.updateText(`x: ${this.player.sprite.x}`);
     this.yText.updateText(`y: ${this.player.sprite.y}`);
     this.vxText.updateText(`vx: ${this.player.getVx()}`);
@@ -295,6 +294,13 @@ export default class GameState {
     if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
       this.player.jump();
     }
+    // if (Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
+    //   this.player.crouch();
+    // }
+    // if (Keyboard.isKeyReleased('ArrowDown', 'KeyS')) {
+    //   this.player.unCrouch();
+    // }
+
     if (Keyboard.isKeyDown('Space')) {
       this.player.setFlipping(true);
     }

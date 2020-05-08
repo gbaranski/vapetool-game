@@ -7,17 +7,11 @@ export default class Player {
 
   private vy: number;
 
-  // private cloudTexture: PIXI.Texture; MOVE TO DIFFERENT CLASS
-
-  private loader: PIXI.Loader;
-
   private container: PIXI.Container;
 
   private rendererWidth: number;
 
   private rendererHeight: number;
-
-  private cloudSprites: PIXI.Sprite[];
 
   private flipping: boolean;
 
@@ -88,7 +82,7 @@ export default class Player {
     return this.vx > -10 && this.ax < 0;
   }
 
-  handlePhysics(gravity: number) {
+  handleFriction() {
     if (this.checkIfOnGround()) {
       this.friction = 0.7; // friction on ground
     } else {
@@ -114,14 +108,19 @@ export default class Player {
         }
       }
     }
+  }
 
+  handlePhysics(gravity: number) {
     if (this.sprite.y <= this.rendererHeight - this.sprite.height / 2) {
       this.vy += gravity;
     } else {
       this.vy = 0;
     }
+
     this.ax = Math.floor(this.ax);
     this.sprite.y = Math.min(this.sprite.y, this.rendererHeight - this.sprite.height / 2);
+
+    this.handleFriction();
 
     this.sprite.x += this.vx;
     this.sprite.y += this.vy;
