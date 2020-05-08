@@ -133,6 +133,14 @@ export default class GameState {
         this.bullets = this.bullets.filter((e) => e !== _bullet);
         this.container.removeChild(_bullet.sprite);
         this.hpText.updateText(`HP: ${this.player.getHp()}`);
+      } else if (
+        _bullet.sprite.x < 0 ||
+        _bullet.sprite.x > this.rendererWidth ||
+        _bullet.sprite.y < 0 ||
+        _bullet.sprite.y > this.rendererHeight
+      ) {
+        this.bullets = this.bullets.filter((e) => e !== _bullet);
+        this.container.removeChild(_bullet.sprite);
       }
     });
   }
@@ -193,6 +201,7 @@ export default class GameState {
   }
 
   gameLoop() {
+    console.log(this.bullets);
     this.handleKeyboardPress();
     Keyboard.update();
     this.player.handlePhysics(this.gravity);

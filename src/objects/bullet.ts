@@ -25,7 +25,7 @@ export default class Bullet {
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
 
-    this.bulletSpeed = -50;
+    this.bulletSpeed = -5; // default -50
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.x = startX;
     this.sprite.y = startY;
@@ -52,7 +52,6 @@ export default class Bullet {
   handleBulletPhysics() {
     this.sprite.x += Math.cos(this.sprite.rotation) * this.bulletSpeed;
     this.sprite.y += Math.sin(this.sprite.rotation) * this.bulletSpeed;
-    // this.bullets = this.bullets.filter(this.handleOutOfBounds);
   }
 }
 
