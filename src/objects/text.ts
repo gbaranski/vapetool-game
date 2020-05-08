@@ -23,9 +23,5 @@ export default class Text {
 
   updateText(newText: string) {
     this.textObject.text = newText;
-    // this.container.removeChild(this.textObject);
-    // this.textObject = new PIXI.Text(this.text, this.textStyle);
-    // this.textObject.position.set(this.x, this.y);
-    // this.container.addChild(this.textObject);
   }
 }

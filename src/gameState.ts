@@ -201,7 +201,6 @@ export default class GameState {
   }
 
   gameLoop() {
-    console.log(this.bullets);
     this.handleKeyboardPress();
     Keyboard.update();
     this.player.handlePhysics(this.gravity);
