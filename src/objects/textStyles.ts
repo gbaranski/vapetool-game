@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 export function getFont1() {
-  const textStyle = new PIXI.TextStyle({
+  return new PIXI.TextStyle({
     fontFamily: 'Arial',
     fontSize: 36,
     fill: 'white',
@@ -13,11 +13,10 @@ export function getFont1() {
     dropShadowAngle: Math.PI / 6,
     dropShadowDistance: 6,
   });
-  return textStyle;
 }
 
 export function getFont2() {
-  const textStyle = new PIXI.TextStyle({
+  return new PIXI.TextStyle({
     fontFamily: 'Montserrat',
     fontSize: 100,
     fill: 'white',
@@ -29,5 +28,11 @@ export function getFont2() {
     dropShadowAngle: Math.PI / 6,
     dropShadowDistance: 6,
   });
-  return textStyle;
+}
+export function getFont3() {
+  return new PIXI.TextStyle({
+    fontFamily: '"Courier New", Courier, monospace',
+    fontSize: 16,
+    fontStyle: 'italic',
+  });
 }

@@ -6,7 +6,7 @@ import Bomb from './objects/bomb';
 import FallingObject from './objects/fallingObject';
 import Text from './objects/text';
 import CloudSprite from './objects/cloudSprite';
-import { getFont1, getFont2 } from './objects/textStyles';
+import { getFont1, getFont2, getFont3 } from './objects/textStyles';
 import { boxesIntersect } from './helpers';
 
 export default class GameState {
@@ -45,6 +45,10 @@ export default class GameState {
   private hpText: Text;
 
   private scoreText: Text;
+
+  private xText: Text;
+
+  private yText: Text;
 
   private deathText: Text;
 
@@ -88,6 +92,10 @@ export default class GameState {
     this.hpText = new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), this.container);
 
     this.scoreText = new Text(0, 40, `Score: ${this.player.score}ml`, getFont1(), this.container);
+
+    this.xText = new Text(0, 80, `x: ${this.player.sprite.x}`, getFont3(), this.container);
+
+    this.yText = new Text(0, 100, `y: ${this.player.sprite.y}`, getFont3(), this.container);
 
     this.shootInterval = setInterval(() => {
       this.enemies.forEach((_enemy) => {
@@ -201,6 +209,8 @@ export default class GameState {
   }
 
   gameLoop() {
+    this.xText.updateText(`x: ${this.player.sprite.x}`);
+    this.yText.updateText(`y: ${this.player.sprite.y}`);
     this.handleKeyboardPress();
     Keyboard.update();
     this.player.handlePhysics(this.gravity);
