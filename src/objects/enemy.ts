@@ -34,10 +34,7 @@ export default class Enemy {
     this.sprite.y = rendererHeight - this.sprite.height / 2;
     this.sprite.anchor.set(0.5);
     this.container.addChild(this.sprite);
-  }
 
-  updateHpText() {
-    this.container.removeChild(this.hpText);
     this.hpTextStyle = new PIXI.TextStyle({
       fontFamily: 'Arial',
       fontSize: 36,
@@ -52,6 +49,11 @@ export default class Enemy {
     this.hpText = new PIXI.Text(this.hp.toString(), this.hpTextStyle);
     this.hpText.position.set(this.sprite.x, this.sprite.y - this.sprite.height);
     this.container.addChild(this.hpText);
+  }
+
+  updateHpText() {
+    this.hpText.text = this.hp.toString();
+    this.hpText.x = this.sprite.x;
   }
 
   render(playerX: number) {

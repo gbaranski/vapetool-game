@@ -86,10 +86,9 @@ export default class GameState {
       this.createNewEnemy();
     }, 500);
     this.hpText = new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), this.container);
-    this.hpText.updateText();
 
     this.scoreText = new Text(0, 40, `Score: ${this.player.score}ml`, getFont1(), this.container);
-    this.scoreText.updateText();
+
     this.shootInterval = setInterval(() => {
       this.enemies.forEach((_enemy) => {
         const bullet = new Bullet(
@@ -120,8 +119,7 @@ export default class GameState {
   private handleFallingObjectCollision() {
     this.fallingObjects.forEach((_fallingObject) => {
       if (boxesIntersect(this.player.sprite, _fallingObject.sprite)) {
-        this.scoreText.text = `Score: ${this.player.score + 10}ml`;
-        this.scoreText.updateText();
+        this.scoreText.updateText(`Score: ${this.player.score + 10}ml`);
         this.container.removeChild(_fallingObject.sprite);
         this.fallingObjects = this.fallingObjects.filter((e) => e !== _fallingObject);
       }
@@ -134,8 +132,7 @@ export default class GameState {
         this.player.setHp(this.player.getHp() - 10);
         this.bullets = this.bullets.filter((e) => e !== _bullet);
         this.container.removeChild(_bullet.sprite);
-        this.hpText.text = `HP: ${this.player.getHp()}`;
-        this.hpText.updateText();
+        this.hpText.updateText(`HP: ${this.player.getHp()}`);
       }
     });
   }
@@ -191,7 +188,6 @@ export default class GameState {
         getFont2(),
         this.container,
       );
-      this.deathText.updateText();
       this.ticker.stop();
     }
   }
