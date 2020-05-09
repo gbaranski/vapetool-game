@@ -29,6 +29,8 @@ export default class Player {
 
   private isLastMoveRight: boolean;
 
+  private allowedDoubleJump: boolean;
+
   constructor(
     sprite: PIXI.Sprite,
     rendererWidth: number,
@@ -65,8 +67,9 @@ export default class Player {
   }
 
   jump() {
-    if (this.checkIfOnGround()) {
+    if (this.checkIfOnGround() || this.allowedDoubleJump) {
       this.vy = -18;
+      this.allowedDoubleJump = false;
     }
   }
 
@@ -85,6 +88,7 @@ export default class Player {
   handleFriction() {
     if (this.checkIfOnGround()) {
       this.friction = 0.7; // friction on ground
+      this.allowedDoubleJump = false;
     } else {
       this.friction = 0.1; // friction in air
     }
@@ -110,7 +114,7 @@ export default class Player {
     }
   }
 
-  handlePhysics(gravity: number) {
+  handlePhysics(gravity: number, isPlayerCollidingWithWall: boolean) {
     if (this.sprite.y <= this.rendererHeight - this.sprite.height / 2) {
       this.vy += gravity;
     } else {
@@ -156,10 +160,9 @@ export default class Player {
     }
   }
 
-  pushPlayer(pushMultiplier: number) {
-    this.vx += pushMultiplier;
-    Math.min(this.vx, 10);
-    this.sprite.x += this.vx;
+  pushPlayer() {
+    this.allowedDoubleJump = true;
+    this.vx = 0;
   }
 
   getHp() {

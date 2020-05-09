@@ -65,6 +65,8 @@ export default class GameState {
 
   private loader: PIXI.Loader;
 
+  private playerCollideWithWall: boolean;
+
   constructor(
     container: PIXI.Container,
     rendererWidth: number,
@@ -221,12 +223,10 @@ export default class GameState {
 
   private handleWallCollision() {
     if (boxesIntersect(this.player.sprite, this.wall.rectangle)) {
-      console.log('Collide');
-      if (this.player.checkIfBunnyGoRight()) {
-        this.player.pushPlayer(-8);
-      } else {
-        this.player.pushPlayer(8);
-      }
+      this.player.pushPlayer();
+      this.playerCollideWithWall = true;
+    } else {
+      this.playerCollideWithWall = false;
     }
   }
 
@@ -256,7 +256,7 @@ export default class GameState {
     this.handleKeyboardPress();
     this.handleWallCollision();
     Keyboard.update();
-    this.player.handlePhysics(this.gravity);
+    this.player.handlePhysics(this.gravity, this.playerCollideWithWall);
     this.player.handleFlips();
     this.cloudSprites.forEach((_cloudSprite) => {
       _cloudSprite.updateFrame();
