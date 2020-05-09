@@ -156,6 +156,12 @@ export default class Player {
     }
   }
 
+  pushPlayer(pushMultiplier: number) {
+    this.vx += pushMultiplier;
+    Math.min(this.vx, 10);
+    this.sprite.x += this.vx;
+  }
+
   getHp() {
     return this.hp;
   }

@@ -80,7 +80,7 @@ export default class GameState {
     this.rendererHeight = rendererHeight;
     this.explosionFrames = explosionFrames;
 
-    this.wall = new Wall(rendererHeight, container);
+    this.wall = new Wall(rendererWidth, rendererHeight, container);
 
     this.player = new Player(
       this.sprites.player,
@@ -223,6 +223,9 @@ export default class GameState {
     if (boxesIntersect(this.player.sprite, this.wall.rectangle)) {
       console.log('Collide');
       if (this.player.checkIfBunnyGoRight()) {
+        this.player.pushPlayer(-8);
+      } else {
+        this.player.pushPlayer(8);
       }
     }
   }
