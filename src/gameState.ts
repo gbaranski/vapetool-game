@@ -6,6 +6,7 @@ import Bomb from './objects/bomb';
 import FallingObject from './objects/fallingObject';
 import Text from './objects/text';
 import CloudSprite from './objects/cloudSprite';
+import Wall from './objects/wall';
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
 import { boxesIntersect } from './helpers';
 
@@ -60,6 +61,8 @@ export default class GameState {
 
   private deathText: Text;
 
+  private wall: Wall;
+
   private loader: PIXI.Loader;
 
   constructor(
@@ -76,6 +79,8 @@ export default class GameState {
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
     this.explosionFrames = explosionFrames;
+
+    this.wall = new Wall(rendererHeight, container);
 
     this.player = new Player(
       this.sprites.player,
@@ -214,6 +219,14 @@ export default class GameState {
     });
   }
 
+  private handleWallCollision() {
+    if (boxesIntersect(this.player.sprite, this.wall.rectangle)) {
+      console.log('Collide');
+      if (this.player.checkIfBunnyGoRight()) {
+      }
+    }
+  }
+
   handlePlayerDie() {
     if (this.player.getHp() <= 0) {
       this.deathText = new Text(
@@ -238,6 +251,7 @@ export default class GameState {
     this.frictionText.updateText(`friction: ${this.player.getFriction()}`);
     this.axText.updateText(`ax: ${this.player.getAx()}`);
     this.handleKeyboardPress();
+    this.handleWallCollision();
     Keyboard.update();
     this.player.handlePhysics(this.gravity);
     this.player.handleFlips();
