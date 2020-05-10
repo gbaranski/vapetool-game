@@ -29,7 +29,7 @@ export default class Player {
 
   private isLastMoveRight: boolean;
 
-  private allowedDoubleJump: boolean;
+  public allowedDoubleJump: boolean;
 
   public blockRightSideMovement: boolean;
 

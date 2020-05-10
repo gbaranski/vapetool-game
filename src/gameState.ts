@@ -223,17 +223,7 @@ export default class GameState {
 
   private handleWallCollision() {
     if (boxesIntersect(this.player.sprite, this.wall.sprite)) {
-      // this.player.pushPlayer(this.wall.sprite.y);
-      // console.log(this.wall.sprite.getBounds().left - this.player.sprite.width);
-      // // console.log(checkIfCollideFromRight(this.wall.sprite, this.player.sprite));
-      // console.log(
-      //   this.wall.sprite.getBounds().x + this.wall.sprite.getBounds().width > this.player.sprite.x,
-      // );
-
-      // console.log(
-      //   this.wall.sprite.getBounds().x + this.wall.sprite.getBounds().width / 2 <
-      //     this.player.sprite.getBounds().x + this.player.sprite.getBounds().width / 2,
-      // );
+      this.player.allowedDoubleJump = true;
       if (checkIfCollideFromRight(this.wall.sprite, this.player.sprite)) {
         this.player.blockLeftSideMovement = true;
       } else {
