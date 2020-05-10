@@ -31,16 +31,16 @@ export default class Player {
 
   private allowedDoubleJump: boolean;
 
+  public blockRightSideMovement: boolean;
+
+  public blockLeftSideMovement: boolean;
+
   constructor(
     sprite: PIXI.Sprite,
     rendererWidth: number,
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    // this.loader.load((_loader, resources) => {
-    //   this.sprite = new PIXI.Sprite(resources.player.texture);
-    // });
-
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.score = 0;
 
@@ -114,7 +114,17 @@ export default class Player {
     }
   }
 
-  handlePhysics(gravity: number, isPlayerCollidingWithWall: boolean) {
+  checkIfAllowedMovement(vx: number) {
+    if (vx > 0 && !this.blockRightSideMovement) {
+      return true;
+    }
+    if (vx < 0 && !this.blockLeftSideMovement) {
+      return true;
+    }
+    return false;
+  }
+
+  handlePhysics(gravity: number) {
     if (this.sprite.y <= this.rendererHeight - this.sprite.height / 2) {
       this.vy += gravity;
     } else {
@@ -126,7 +136,12 @@ export default class Player {
 
     this.handleFriction();
 
-    this.sprite.x += this.vx;
+    if (this.checkIfAllowedMovement(this.vx)) {
+      this.sprite.x += this.vx;
+    } else {
+      this.vx = 0;
+    }
+
     this.sprite.y += this.vy;
   }
 
@@ -160,9 +175,28 @@ export default class Player {
     }
   }
 
-  pushPlayer() {
+  pushPlayer(wallY: number) {
+    let xPushMultiplier: number = 0;
+    let yPushMultiplier: number = 0;
+
+    if (this.checkIfBunnyGoRight() && this.vx > 0) {
+      xPushMultiplier = -8;
+    } else if (this.vx < 0.1) {
+      xPushMultiplier = 8;
+    } else {
+      xPushMultiplier = 0;
+      this.vx = 0;
+    }
+    if (this.sprite.y <= wallY) {
+      xPushMultiplier = 0;
+      yPushMultiplier = -5;
+      this.vy = 0;
+    }
     this.allowedDoubleJump = true;
-    this.vx = 0;
+    this.vx += xPushMultiplier;
+    this.vy += yPushMultiplier;
+    Math.min(this.vx, 10);
+    // this.sprite.x += this.vx;
   }
 
   getHp() {

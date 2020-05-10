@@ -8,7 +8,7 @@ import Text from './objects/text';
 import CloudSprite from './objects/cloudSprite';
 import Wall from './objects/wall';
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
-import { boxesIntersect } from './helpers';
+import { boxesIntersect, checkIfCollideFromRight } from './helpers';
 
 export default class GameState {
   private sprites: any;
@@ -222,11 +222,28 @@ export default class GameState {
   }
 
   private handleWallCollision() {
-    if (boxesIntersect(this.player.sprite, this.wall.rectangle)) {
-      this.player.pushPlayer();
+    if (boxesIntersect(this.player.sprite, this.wall.sprite)) {
+      // this.player.pushPlayer(this.wall.sprite.y);
+      // console.log(this.wall.sprite.getBounds().left - this.player.sprite.width);
+      // // console.log(checkIfCollideFromRight(this.wall.sprite, this.player.sprite));
+      // console.log(
+      //   this.wall.sprite.getBounds().x + this.wall.sprite.getBounds().width > this.player.sprite.x,
+      // );
+
+      // console.log(
+      //   this.wall.sprite.getBounds().x + this.wall.sprite.getBounds().width / 2 <
+      //     this.player.sprite.getBounds().x + this.player.sprite.getBounds().width / 2,
+      // );
+      if (checkIfCollideFromRight(this.wall.sprite, this.player.sprite)) {
+        this.player.blockLeftSideMovement = true;
+      } else {
+        this.player.blockRightSideMovement = true;
+      }
       this.playerCollideWithWall = true;
     } else {
       this.playerCollideWithWall = false;
+      this.player.blockLeftSideMovement = false;
+      this.player.blockRightSideMovement = false;
     }
   }
 
@@ -256,7 +273,7 @@ export default class GameState {
     this.handleKeyboardPress();
     this.handleWallCollision();
     Keyboard.update();
-    this.player.handlePhysics(this.gravity, this.playerCollideWithWall);
+    this.player.handlePhysics(this.gravity);
     this.player.handleFlips();
     this.cloudSprites.forEach((_cloudSprite) => {
       _cloudSprite.updateFrame();

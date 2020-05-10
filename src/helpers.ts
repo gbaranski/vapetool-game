@@ -8,3 +8,7 @@ export function boxesIntersect(a: PIXI.Sprite, b: PIXI.Sprite) {
     ab.y < bb.y + bb.height
   );
 }
+
+export function checkIfCollideFromRight(a: PIXI.Sprite, b: PIXI.Sprite) {
+  return a.getBounds().x + a.getBounds().width / 2 < b.getBounds().x + b.getBounds().width;
+}

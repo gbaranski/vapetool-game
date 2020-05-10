@@ -1,19 +1,21 @@
 import * as PIXI from 'pixi.js';
 
 export default class Wall {
-  public rectangle: PIXI.Sprite;
+  public sprite: PIXI.Sprite;
 
   constructor(rendererWidth: number, rendererHeight: number, container: PIXI.Container) {
-    this.rectangle = PIXI.Sprite.from(PIXI.Texture.WHITE);
+    this.sprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
 
-    this.rectangle.width = 100;
-    this.rectangle.height = 300;
-    this.rectangle.tint = 0x212121;
+    this.sprite.width = 100;
+    this.sprite.height = 300;
+    this.sprite.tint = 0x212121;
 
-    this.rectangle.x = rendererWidth / 3;
+    this.sprite.x = rendererWidth / 3;
 
-    this.rectangle.y = rendererHeight - this.rectangle.height;
+    this.sprite.anchor.set(0.5, 0.5);
 
-    container.addChild(this.rectangle);
+    this.sprite.y = rendererHeight - this.sprite.height / 2;
+
+    container.addChild(this.sprite);
   }
 }
