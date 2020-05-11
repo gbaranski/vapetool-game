@@ -136,12 +136,11 @@ export default class Player {
 
     this.handleFriction();
 
-    if (this.checkIfAllowedMovement(this.vx)) {
-      this.sprite.x += this.vx;
-    } else {
+    if (!this.checkIfAllowedMovement(this.vx)) {
       this.vx = 0;
     }
 
+    this.sprite.x += this.vx;
     this.sprite.y += this.vy;
   }
 

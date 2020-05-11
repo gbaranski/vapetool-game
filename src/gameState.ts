@@ -237,7 +237,7 @@ export default class GameState {
     }
   }
 
-  handlePlayerDie() {
+  private handlePlayerDie() {
     if (this.player.getHp() <= 0) {
       this.deathText = new Text(
         this.rendererWidth / 2,
@@ -300,7 +300,7 @@ export default class GameState {
     });
   }
 
-  handleKeyboardPress() {
+  private handleKeyboardPress() {
     if (Keyboard.isKeyDown('ArrowLeft', 'KeyA')) {
       this.player.setAx(-1);
       this.player.setLastMoveRight(false);
