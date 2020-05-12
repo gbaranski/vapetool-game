@@ -8,6 +8,7 @@ import fallingObjectImg from './assets/eliquid.png';
 import bulletImg from './assets/bullet.png';
 import cloudImg from './assets/cloud.png';
 import bombImg from './assets/efest.png';
+import bodyguardImg from './assets/bodyguard.png';
 // eslint-disable-next-line import/no-unresolved
 import explosions from './assets/explosion/*.png';
 
@@ -30,6 +31,7 @@ $(document).ready(() => {
   loader.add('bullet', bulletImg);
   loader.add('cloud', cloudImg);
   loader.add('bomb', bombImg);
+  loader.add('bodyguard', bodyguardImg);
   // TODO consider removing
   explosionFrames.forEach((frame: string) => loader.add(frame, frame));
 
@@ -41,6 +43,7 @@ $(document).ready(() => {
     sprites.bullet = new PIXI.Sprite(resources.bullet.texture);
     sprites.cloud = new PIXI.Sprite(resources.cloud.texture);
     sprites.bomb = new PIXI.Sprite(resources.bomb.texture);
+    sprites.bodyguard = new PIXI.Sprite(resources.bodyguard.texture);
   });
   const rendererWidth: number = app.renderer.view.width;
   const rendererHeight: number = app.renderer.view.height;
