@@ -7,8 +7,11 @@ import FallingObject from './objects/fallingObject';
 import Text from './objects/text';
 import CloudSprite from './objects/cloudSprite';
 import Wall from './objects/wall';
+import Bodyguard from './objects/bodyguard';
+
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
 import { boxesIntersect, checkIfCollideFromRight } from './helpers';
+
 
 export default class GameState {
   private sprites: any;
@@ -16,6 +19,8 @@ export default class GameState {
   private player: Player;
 
   private enemies: Enemy[] = [];
+
+  private bodyguards: Bodyguard[] = [];
 
   private bullets: Bullet[] = [];
 
@@ -94,6 +99,8 @@ export default class GameState {
     setTimeout(() => {
       this.createNewEnemy();
     }, 500);
+
+    this.createNewBodyguard();
     this.hpText = new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), this.container);
 
     this.scoreText = new Text(0, 40, `Score: ${this.player.score}ml`, getFont1(), this.container);
@@ -125,6 +132,16 @@ export default class GameState {
       this.container,
     );
     this.enemies.push(enemy);
+  }
+
+  private createNewBodyguard() {
+    const bodyguard = new Bodyguard(
+      this.sprites.bodyguard,
+      this.rendererWidth,
+      this.rendererHeight,
+      this.container
+    )
+    this.bodyguards.push(bodyguard);
   }
 
   private handleFallingObjectCollision() {
@@ -263,7 +280,24 @@ export default class GameState {
         this.container.removeChild(_enemy.hpText);
         this.enemies = this.enemies.filter((e) => e !== _enemy);
       }
-      _enemy.render(this.player.sprite.x);
+      let closestObjectX: number = 0;
+      this.bodyguards.forEach((_bodyguard) => {
+        if(_bodyguard.sprite.x > closestObjectX) {
+          closestObjectX = _bodyguard.sprite.x;
+        }
+      });
+      if(this.player.sprite.x > closestObjectX) {
+        closestObjectX = this.player.sprite.x;
+      }
+      _enemy.render(closestObjectX);
+    });
+
+    this.bodyguards.forEach((_bodyguard) => {
+      if(this.enemies.length > 0) {
+        _bodyguard.render(this.enemies[0].sprite.x);
+        _bodyguard.updateHpText();
+      }
+      
     });
 
     this.handleCloudCollision();
