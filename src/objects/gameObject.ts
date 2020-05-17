@@ -5,9 +5,9 @@ export default abstract class GameObject {
 
   public vy: number = 0;
 
-  public ax: number;
+  public ax: number = 0;
 
-  public ay: number;
+  public ay: number = 0;
 
   public isColliding: boolean;
 
@@ -45,6 +45,7 @@ export default abstract class GameObject {
 
   update(secondsPassed: number) {
     if (this.mass !== Number.MAX_VALUE) {
+      // this.vx += this.ax * secondsPassed;
       this.sprite.x += this.vx * secondsPassed;
       this.sprite.y += this.vy * secondsPassed;
     }
