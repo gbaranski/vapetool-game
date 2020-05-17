@@ -18,6 +18,7 @@ export default abstract class GameObject {
   constructor(name: string, public mass: number) {
     GameObject.objectCounter += 1;
     this.name = `${name}_${GameObject.objectCounter}`;
+    console.log(this.name);
   }
 
   draw() {

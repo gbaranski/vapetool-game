@@ -6,7 +6,7 @@ import Bomb from './objects/bomb';
 import FallingObject from './objects/fallingObject';
 import Text from './objects/text';
 import CloudSprite from './objects/cloudSprite';
-import Wall from './objects/wall';
+// import Wall from './objects/wall';
 import Bodyguard from './objects/bodyguard';
 
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
@@ -52,14 +52,6 @@ export default class GameState {
 
   private debugText: Text;
 
-  private deathText: Text;
-
-  private wall: Wall;
-
-  private loader: PIXI.Loader;
-
-  private playerCollideWithWall: boolean;
-
   private gameObjects: GameObject[] = [];
 
   constructor(
@@ -72,7 +64,6 @@ export default class GameState {
   ) {
     this.sprites = sprites;
     this.container = container;
-    this.loader = loader;
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
     this.explosionFrames = explosionFrames;
@@ -179,24 +170,6 @@ export default class GameState {
         this.container.removeChild(_bullet.sprite);
       }
     });
-    this.bullets.forEach((_bullet) => {
-      this.bodyguards.forEach((bodyguard) => {
-        if (boxesIntersect(bodyguard.sprite, _bullet.sprite)) {
-          bodyguard.setHp(bodyguard.getHp() - 10);
-          this.bullets = this.bullets.filter((e) => e !== _bullet);
-          this.container.removeChild(_bullet.sprite);
-        } else if (
-          _bullet.sprite.x < 0 ||
-          _bullet.sprite.x > this.rendererWidth ||
-          _bullet.sprite.y < 0 ||
-          _bullet.sprite.y > this.rendererHeight
-        ) {
-          this.bullets = this.bullets.filter((e) => e !== _bullet);
-          this.gameObjects = this.gameObjects.filter((e) => e !== _bullet);
-          this.container.removeChild(_bullet.sprite);
-        }
-      });
-    });
   }
 
   private handleCloudCollision() {
@@ -218,7 +191,8 @@ export default class GameState {
 
   private handleBombCollision() {
     this.bombs.forEach((_bomb) => {
-      if (_bomb.sprite.y >= this.rendererHeight && !_bomb.exploded) {
+      if (_bomb.sprite.y > this.rendererHeight && !_bomb.exploded) {
+        console.log('Bomb on ground');
         _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
         this.removeBomb(_bomb);
       }
@@ -241,7 +215,8 @@ export default class GameState {
 
   private handlePlayerDie() {
     if (this.player.getHp() <= 0) {
-      this.deathText = new Text(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const deathText = new Text(
         this.rendererWidth / 2,
         this.rendererHeight / 2,
         `
@@ -358,7 +333,9 @@ export default class GameState {
         `vy: ${this.player.getVy()}\n` +
         `friction: ${this.player.getFriction()}\n` +
         `ax: ${this.player.getAx()}\n` +
-        `delta: ${delta}\n`,
+        `delta: ${delta}\n` +
+        `bullets: ${this.bullets.length}\n` +
+        `bombs: ${this.bombs.length}\n`,
     );
     this.bodyguards.forEach((_bodyguard) => {
       if (this.enemies.length > 0) {
@@ -470,7 +447,6 @@ export default class GameState {
 
     if (Keyboard.isKeyReleased('KeyE')) {
       const cloud = new CloudSprite(this.sprites.cloud);
-      this.gameObjects.push(cloud);
       const timeDifference = new Date().getTime() - this.cloudLoadTime;
       cloud.attackCloud(
         this.player.checkIfBunnyGoRight(),
@@ -490,15 +466,20 @@ export default class GameState {
     }
 
     if (Keyboard.isKeyReleased('KeyQ')) {
-      const bomb = new Bomb(this.sprites.bomb, this.explosionFrames, this.container);
-      this.gameObjects.push(bomb);
       const timeDifference = new Date().getTime() - this.bombLoadTime;
-      bomb.create(
+      const vx = this.player.checkIfBunnyGoRight() ? 10 : -10;
+      const vy = -Math.abs(timeDifference / 20);
+      const bomb = new Bomb(
+        this.sprites.bomb,
+        this.explosionFrames,
         this.player.sprite.x,
         this.player.sprite.y,
-        this.player.checkIfBunnyGoRight(),
+        vx,
+        vy,
         timeDifference,
+        this.container,
       );
+      this.gameObjects.push(bomb);
       this.bombs.push(bomb);
     }
   }
