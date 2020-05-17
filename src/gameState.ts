@@ -275,7 +275,7 @@ export default class GameState {
         obj.handleGravity(delta);
       } else {
         obj.preventFalling();
-        // obj.sprite.y = this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y;
+        obj.sprite.y = this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y;
       }
     });
   }
