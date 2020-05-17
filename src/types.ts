@@ -1,4 +1,4 @@
-export enum objectTypes {
+export enum ObjectType {
   PLAYER = 'player',
   BODYGUARD = 'bodyguard',
   BOMB = 'bomb',

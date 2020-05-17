@@ -265,7 +265,7 @@ export default class GameState {
         obj.handleGravity(delta);
       } else {
         obj.preventFalling();
-        obj.sprite.y = this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y;
+        obj.setSpriteY(this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y);
       }
     });
   }
@@ -345,6 +345,8 @@ export default class GameState {
 
   private canCreateBodyguard = true;
 
+  private canCreateEnemy = true;
+
   private handleKeyboardPress() {
     if (Keyboard.isKeyDown('ArrowLeft', 'KeyA')) {
       this.player.setAx(-1);
@@ -370,6 +372,14 @@ export default class GameState {
     }
     if (Keyboard.isKeyReleased('Digit1')) {
       this.canCreateBodyguard = true;
+    }
+    if (Keyboard.isKeyDown('Digit2') && this.canCreateEnemy) {
+      this.canCreateEnemy = false;
+      console.log('canCreateEnemy');
+      this.createNewEnemy();
+    }
+    if (Keyboard.isKeyReleased('Digit2')) {
+      this.canCreateEnemy = true;
     }
     // if (Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
     //   this.player.crouch();

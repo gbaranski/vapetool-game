@@ -1,3 +1,11 @@
+import { ObjectType } from './types';
+import GameObject from './objects/gameObject';
+
+const blacklistedObjects: { [key: string]: ObjectType[] } = {
+  [ObjectType.PLAYER]: [ObjectType.BODYGUARD],
+  [ObjectType.FALLING_OBJECT]: [ObjectType.PLAYER, ObjectType.BODYGUARD],
+};
+
 export function boxesIntersect(a: PIXI.Sprite, b: PIXI.Sprite) {
   const ab = a.getBounds();
   const bb = b.getBounds();
@@ -45,7 +53,11 @@ export function circleIntersect(
   return squareDistance <= (r1 + r2) * (r1 + r2);
 }
 
-export function detectCollision(gameObjects: any[]) {
+function isObjectBlacklisted(obj1: GameObject, obj2: GameObject) {
+  return blacklistedObjects[obj1.objectType]?.some((objType) => objType === obj2.objectType);
+}
+
+export function detectCollision(gameObjects: GameObject[]) {
   let obj1;
   let obj2;
 
@@ -72,43 +84,45 @@ export function detectCollision(gameObjects: any[]) {
       //     Math.max(obj2.sprite.width / 2, obj2.sprite.height / 2),
       //   )
       // ) {
-      if (
-        rectIntersect(
-          obj1.sprite.x,
-          obj1.sprite.y,
-          obj1.sprite.width,
-          obj1.sprite.height,
-          obj2.sprite.x,
-          obj2.sprite.y,
-          obj2.sprite.width,
-          obj2.sprite.height,
-        )
-      ) {
-        const vCollision = { x: obj2.sprite.x - obj1.sprite.x, y: obj2.sprite.y - obj1.sprite.y };
-        const distance = Math.sqrt(
-          (obj2.sprite.x - obj1.sprite.x) * (obj2.sprite.x - obj1.sprite.x) +
-            (obj2.sprite.y - obj1.sprite.y) * (obj2.sprite.y - obj1.sprite.y),
-        );
-        const vCollisionNorm = { x: vCollision.x / distance, y: vCollision.y / distance };
-        const vRelativeVelocity = { x: obj1.vx - obj2.vx, y: obj1.vy - obj2.vy };
-        const speed =
-          vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y;
-        if (speed < 0) {
-          break;
+      if (!isObjectBlacklisted(obj1, obj2)) {
+        if (
+          rectIntersect(
+            obj1.sprite.x,
+            obj1.sprite.y,
+            obj1.sprite.width,
+            obj1.sprite.height,
+            obj2.sprite.x,
+            obj2.sprite.y,
+            obj2.sprite.width,
+            obj2.sprite.height,
+          )
+        ) {
+          const vCollision = { x: obj2.sprite.x - obj1.sprite.x, y: obj2.sprite.y - obj1.sprite.y };
+          const distance = Math.sqrt(
+            (obj2.sprite.x - obj1.sprite.x) * (obj2.sprite.x - obj1.sprite.x) +
+              (obj2.sprite.y - obj1.sprite.y) * (obj2.sprite.y - obj1.sprite.y),
+          );
+          const vCollisionNorm = { x: vCollision.x / distance, y: vCollision.y / distance };
+          const vRelativeVelocity = { x: obj1.vx - obj2.vx, y: obj1.vy - obj2.vy };
+          const speed =
+            vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y;
+          if (speed < 0) {
+            break;
+          }
+          obj1.vx -= speed * vCollisionNorm.x;
+          obj1.vy -= speed * vCollisionNorm.y;
+          obj2.vx += speed * vCollisionNorm.x;
+          obj2.vy += speed * vCollisionNorm.y;
+
+          const impulse = speed / (obj1.mass + obj2.mass) / 1000;
+          obj1.vx -= impulse * obj2.mass * vCollisionNorm.x;
+          obj1.vy -= impulse * obj2.mass * vCollisionNorm.y;
+          obj2.vx += impulse * obj1.mass * vCollisionNorm.x;
+          obj2.vy += impulse * obj1.mass * vCollisionNorm.y;
+
+          obj1.isColliding = true;
+          obj2.isColliding = true;
         }
-        obj1.vx -= speed * vCollisionNorm.x;
-        obj1.vy -= speed * vCollisionNorm.y;
-        obj2.vx += speed * vCollisionNorm.x;
-        obj2.vy += speed * vCollisionNorm.y;
-
-        const impulse = speed / (obj1.mass + obj2.mass) / 1000;
-        obj1.vx -= impulse * obj2.mass * vCollisionNorm.x;
-        obj1.vy -= impulse * obj2.mass * vCollisionNorm.y;
-        obj2.vx += impulse * obj1.mass * vCollisionNorm.x;
-        obj2.vy += impulse * obj1.mass * vCollisionNorm.y;
-
-        obj1.isColliding = true;
-        obj2.isColliding = true;
       }
     }
   }

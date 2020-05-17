@@ -1,4 +1,4 @@
-import { objectTypes } from '../types';
+import { ObjectType } from '../types';
 
 export default abstract class GameObject {
   public sprite: PIXI.Sprite;
@@ -15,12 +15,13 @@ export default abstract class GameObject {
 
   static objectCounter: number = 0;
 
-  public name: string;
+  public objectType: ObjectType;
 
-  constructor(objectType: objectTypes, public mass: number) {
+  constructor(objectType: ObjectType, public mass: number) {
     GameObject.objectCounter += 1;
-    this.name = `${objectType}_${GameObject.objectCounter}`;
-    console.log(this.name);
+    this.objectType = objectType;
+    const name = `${objectType}_${GameObject.objectCounter}`;
+    console.log(name);
   }
 
   draw() {
@@ -29,10 +30,6 @@ export default abstract class GameObject {
     } else {
       this.sprite.tint = 0xffffff;
     }
-  }
-
-  setCollidingFalse() {
-    this.isColliding = false;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -55,5 +52,13 @@ export default abstract class GameObject {
       this.sprite.x += this.vx * secondsPassed;
       this.sprite.y += this.vy * secondsPassed;
     }
+  }
+
+  setCollidingFalse() {
+    this.isColliding = false;
+  }
+
+  setSpriteY(newY: number) {
+    this.sprite.y = newY;
   }
 }
