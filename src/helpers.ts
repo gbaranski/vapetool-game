@@ -44,3 +44,61 @@ export function circleIntersect(
   // of the two radius, the circles touch or overlap
   return squareDistance <= (r1 + r2) * (r1 + r2);
 }
+
+export function detectCollision(gameObjects: any[]) {
+  let obj1;
+  let obj2;
+
+  // Reset collision state of all objects
+  for (let i = 0; i < gameObjects.length; i += 1) {
+    gameObjects[i].isColliding = false;
+  }
+
+  // Start checking for collisions
+  for (let i = 0; i < gameObjects.length; i += 1) {
+    obj1 = gameObjects[i];
+    for (let j = i + 1; j < gameObjects.length; j += 1) {
+      obj2 = gameObjects[j];
+
+      // Compare object1 with object2
+      if (
+        rectIntersect(
+          obj1.sprite.x,
+          obj1.sprite.y,
+          obj1.sprite.width,
+          obj1.sprite.height,
+          obj2.sprite.x,
+          obj2.sprite.y,
+          obj2.sprite.width,
+          obj2.sprite.height,
+        )
+      ) {
+        const vCollision = { x: obj2.sprite.x - obj1.sprite.x, y: obj2.sprite.y - obj1.sprite.y };
+        const distance = Math.sqrt(
+          (obj2.sprite.x - obj1.sprite.x) * (obj2.sprite.x - obj1.sprite.x) +
+            (obj2.sprite.y - obj1.sprite.y) * (obj2.sprite.y - obj1.sprite.y),
+        );
+        const vCollisionNorm = { x: vCollision.x / distance, y: vCollision.y / distance };
+        const vRelativeVelocity = { x: obj1.vx - obj2.vx, y: obj1.vy - obj2.vy };
+        const speed =
+          vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y;
+        if (speed < 0) {
+          break;
+        }
+        obj1.vx -= speed * vCollisionNorm.x;
+        obj1.vy -= speed * vCollisionNorm.y;
+        obj2.vx += speed * vCollisionNorm.x;
+        obj2.vy += speed * vCollisionNorm.y;
+
+        const impulse = speed / (obj1.mass + obj2.mass) / 1000;
+        obj1.vx -= impulse * obj2.mass * vCollisionNorm.x;
+        obj1.vy -= impulse * obj2.mass * vCollisionNorm.y;
+        obj2.vx += impulse * obj1.mass * vCollisionNorm.x;
+        obj2.vy += impulse * obj1.mass * vCollisionNorm.y;
+
+        obj1.isColliding = true;
+        obj2.isColliding = true;
+      }
+    }
+  }
+}
