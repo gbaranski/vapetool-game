@@ -2,11 +2,7 @@ import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
 
 export default class Enemy extends GameObject {
-  public sprite: PIXI.Sprite;
-
   private texture: PIXI.Texture;
-
-  private vx: number;
 
   private hp: number;
 
@@ -24,7 +20,7 @@ export default class Enemy extends GameObject {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    super(1);
+    super('Enemy', 80);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.scale.x = 0.1;
@@ -58,16 +54,14 @@ export default class Enemy extends GameObject {
     this.hpText.x = this.sprite.x;
   }
 
-  render(playerX: number) {
+  targetEnemy(playerX: number) {
     const distanceFromPlayer = this.melee ? 0 : 200;
-    this.vx = 0;
     if (this.sprite.x > playerX && this.sprite.x - playerX > distanceFromPlayer) {
       this.vx = -2;
     }
     if (this.sprite.x < playerX && playerX - this.sprite.x > distanceFromPlayer) {
       this.vx = 2;
     }
-    this.sprite.x += this.vx;
   }
 
   checkIfDead() {

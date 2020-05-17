@@ -10,8 +10,8 @@ import Wall from './objects/wall';
 import Bodyguard from './objects/bodyguard';
 
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
-import { boxesIntersect, checkIfCollideFromRight } from './helpers';
-
+import { boxesIntersect, rectIntersect } from './helpers';
+import GameObject from './objects/gameObject';
 
 export default class GameState {
   private sprites: any;
@@ -62,6 +62,8 @@ export default class GameState {
 
   private playerCollideWithWall: boolean;
 
+  private gameObjects: GameObject[] = [];
+
   constructor(
     container: PIXI.Container,
     rendererWidth: number,
@@ -79,12 +81,15 @@ export default class GameState {
 
     this.wall = new Wall(rendererWidth, rendererHeight, container);
 
+    this.gameObjects.push(this.wall);
+
     this.player = new Player(
       this.sprites.player,
       this.rendererWidth,
       this.rendererHeight,
       this.container,
     );
+    this.gameObjects.push(this.player);
 
     const fallingObject = new FallingObject(
       this.sprites.fallingObject,
@@ -92,6 +97,7 @@ export default class GameState {
       this.rendererHeight,
       this.container,
     );
+    this.gameObjects.push(fallingObject);
     this.fallingObjects.push(fallingObject);
 
     this.gravity = 1;
@@ -132,6 +138,7 @@ export default class GameState {
       this.container,
     );
     this.enemies.push(enemy);
+    this.gameObjects.push(enemy);
   }
 
   private createNewBodyguard() {
@@ -139,8 +146,10 @@ export default class GameState {
       this.sprites.bodyguard,
       this.rendererWidth,
       this.rendererHeight,
-      this.container
-    )
+      this.container,
+    );
+
+    this.gameObjects.push(bodyguard);
     this.bodyguards.push(bodyguard);
   }
 
@@ -212,22 +221,6 @@ export default class GameState {
     });
   }
 
-  private handleWallCollision() {
-    if (boxesIntersect(this.player.sprite, this.wall.sprite)) {
-      this.player.allowedDoubleJump = true;
-      if (checkIfCollideFromRight(this.wall.sprite, this.player.sprite)) {
-        this.player.blockLeftSideMovement = true;
-      } else {
-        this.player.blockRightSideMovement = true;
-      }
-      this.playerCollideWithWall = true;
-    } else {
-      this.playerCollideWithWall = false;
-      this.player.blockLeftSideMovement = false;
-      this.player.blockRightSideMovement = false;
-    }
-  }
-
   private handlePlayerDie() {
     if (this.player.getHp() <= 0) {
       this.deathText = new Text(
@@ -244,34 +237,62 @@ export default class GameState {
     }
   }
 
-  gameLoop() {
-    this.debugText.updateText(`x: ${this.player.sprite.x}\n` +
-    `y: ${this.player.sprite.y}\n` +
-    `vx: ${this.player.getVx()}\n` +
-    `vy: ${this.player.getVy()}\n` +
-    `friction: ${this.player.getFriction()}\n` +
-    `ax: ${this.player.getAx()}\n` + 
-    `isOnSurface: ${this.player.isOnSurface}`
-    );
-    this.handleKeyboardPress();
-    this.handleWallCollision();
-    Keyboard.update();
-    this.player.handlePhysics(this.gravity);
-    this.player.handleFlips();
+  private handleExpiredClouds() {
     this.cloudSprites.forEach((_cloudSprite) => {
-      _cloudSprite.updateFrame();
+      _cloudSprite.handlePhysics();
       if (_cloudSprite.sprite.scale.x < 0.1) {
         this.container.removeChild(_cloudSprite.sprite);
         this.cloudSprites = this.cloudSprites.filter((e) => e !== _cloudSprite);
+        this.gameObjects = this.gameObjects.filter((e) => e !== _cloudSprite);
       }
     });
-    this.bullets.forEach((_bullet) => {
-      _bullet.handleBulletPhysics();
+  }
+
+  gameLoop(delta: number) {
+    this.handleCloudCollision();
+    this.handleBombCollision();
+    this.handleFallingObjectCollision();
+    this.handleBulletCollision();
+    this.handlePlayerDie();
+    this.handleKeyboardPress();
+    this.handleExpiredClouds();
+
+    this.handleGravity(delta);
+
+    this.handlePhysics();
+
+    this.update(delta);
+
+    GameState.detectCollision(this.gameObjects); // TODO consider reordering
+
+    Keyboard.update();
+    this.draw(delta);
+  }
+
+  handleGravity(delta: number) {
+    this.gameObjects.forEach((obj) => {
+      if (obj.sprite.y < this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y) {
+        obj.handleGravity(delta);
+      } else {
+        obj.preventFalling();
+        // obj.sprite.y = this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y;
+      }
     });
+  }
+
+  handlePhysics() {
     this.bombs.forEach((_bomb) => {
       if (_bomb.created) {
-        _bomb.renderSpriteFrame();
+        _bomb.handlePhysics();
       }
+    });
+    this.player.handlePhysics();
+    this.bullets.forEach((_bullet) => {
+      _bullet.handlePhysics();
+    });
+
+    this.cloudSprites.forEach((_cloudSprite) => {
+      _cloudSprite.handlePhysics();
     });
     this.enemies.forEach((_enemy) => {
       _enemy.updateHpText();
@@ -282,32 +303,101 @@ export default class GameState {
       }
       let closestObjectX: number = 0;
       this.bodyguards.forEach((_bodyguard) => {
-        if(_bodyguard.sprite.x > closestObjectX) {
+        if (_bodyguard.sprite.x > closestObjectX) {
           closestObjectX = _bodyguard.sprite.x;
         }
       });
-      if(this.player.sprite.x > closestObjectX) {
+      if (this.player.sprite.x > closestObjectX) {
         closestObjectX = this.player.sprite.x;
       }
-      _enemy.render(closestObjectX);
+      _enemy.targetEnemy(closestObjectX);
     });
 
+    this.gameObjects.forEach((gameObject) => gameObject.handlePhysics());
+  }
+
+  update(delta: number) {
+    this.gameObjects.forEach((obj) => obj.update(delta));
+  }
+
+  draw(delta: number) {
+    this.gameObjects.forEach((_gameObject) => {
+      _gameObject.draw();
+    });
+
+    this.debugText.updateText(
+      `x: ${this.player.sprite.x}\n` +
+        `y: ${this.player.sprite.y}\n` +
+        `vx: ${this.player.getVx()}\n` +
+        `vy: ${this.player.getVy()}\n` +
+        `friction: ${this.player.getFriction()}\n` +
+        `ax: ${this.player.getAx()}\n` +
+        `delta: ${delta}\n`,
+    );
     this.bodyguards.forEach((_bodyguard) => {
-      if(this.enemies.length > 0) {
+      if (this.enemies.length > 0) {
         _bodyguard.render(this.enemies[0].sprite.x);
         _bodyguard.updateHpText();
       }
-      
     });
+  }
 
-    this.handleCloudCollision();
-    this.handleBombCollision();
-    this.handleFallingObjectCollision();
-    this.handleBulletCollision();
-    this.handlePlayerDie();
-    this.fallingObjects.forEach((_fallingObject) => {
-      _fallingObject.handlePhysics();
-    });
+  static detectCollision(gameObjects: GameObject[]) {
+    let obj1;
+    let obj2;
+
+    // Reset collision state of all objects
+    for (let i = 0; i < gameObjects.length; i += 1) {
+      gameObjects[i].isColliding = false;
+    }
+
+    // Start checking for collisions
+    for (let i = 0; i < gameObjects.length; i += 1) {
+      obj1 = gameObjects[i];
+      for (let j = i + 1; j < gameObjects.length; j += 1) {
+        obj2 = gameObjects[j];
+
+        // Compare object1 with object2
+        if (
+          rectIntersect(
+            obj1.sprite.x,
+            obj1.sprite.y,
+            obj1.sprite.width,
+            obj1.sprite.height,
+            obj2.sprite.x,
+            obj2.sprite.y,
+            obj2.sprite.width,
+            obj2.sprite.height,
+          )
+        ) {
+          const vCollision = { x: obj2.sprite.x - obj1.sprite.x, y: obj2.sprite.y - obj1.sprite.y };
+          const distance = Math.sqrt(
+            (obj2.sprite.x - obj1.sprite.x) * (obj2.sprite.x - obj1.sprite.x) +
+              (obj2.sprite.y - obj1.sprite.y) * (obj2.sprite.y - obj1.sprite.y),
+          );
+          const vCollisionNorm = { x: vCollision.x / distance, y: vCollision.y / distance };
+          const vRelativeVelocity = { x: obj1.vx - obj2.vx, y: obj1.vy - obj2.vy };
+          const speed =
+            vRelativeVelocity.x * vCollisionNorm.x + vRelativeVelocity.y * vCollisionNorm.y;
+          if (speed < 0) {
+            break;
+          }
+          obj1.vx -= speed * vCollisionNorm.x;
+          obj1.vy -= speed * vCollisionNorm.y;
+          obj2.vx += speed * vCollisionNorm.x;
+          obj2.vy += speed * vCollisionNorm.y;
+
+          const impulse = (2 * speed) / (obj1.mass + obj2.mass);
+          obj1.vx -= impulse * obj2.mass * vCollisionNorm.x;
+          obj1.vy -= impulse * obj2.mass * vCollisionNorm.y;
+          obj2.vx += impulse * obj1.mass * vCollisionNorm.x;
+          obj2.vy += impulse * obj1.mass * vCollisionNorm.y;
+
+          obj1.isColliding = true;
+          obj2.isColliding = true;
+        }
+      }
+    }
   }
 
   private handleKeyboardPress() {
@@ -344,6 +434,7 @@ export default class GameState {
 
     if (Keyboard.isKeyReleased('KeyE')) {
       const cloud = new CloudSprite(this.sprites.cloud);
+      this.gameObjects.push(cloud);
       const timeDifference = new Date().getTime() - this.cloudLoadTime;
       cloud.attackCloud(
         this.player.checkIfBunnyGoRight(),
@@ -364,6 +455,7 @@ export default class GameState {
 
     if (Keyboard.isKeyReleased('KeyQ')) {
       const bomb = new Bomb(this.sprites.bomb, this.explosionFrames, this.container);
+      this.gameObjects.push(bomb);
       const timeDifference = new Date().getTime() - this.bombLoadTime;
       bomb.create(
         this.player.sprite.x,

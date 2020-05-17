@@ -58,6 +58,6 @@ $(document).ready(() => {
     );
     document.body.appendChild(app.view);
     app.stage.addChild(container);
-    app.ticker.add(() => gameState.gameLoop());
+    app.ticker.add((delta) => gameState.gameLoop(delta));
   });
 });

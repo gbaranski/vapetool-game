@@ -20,7 +20,7 @@ export default class Bullet extends GameObject {
     targetX: number,
     targetY: number,
   ) {
-    super(1);
+    super('Bullet', 1);
     this.container = container;
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
@@ -49,7 +49,7 @@ export default class Bullet extends GameObject {
     return true;
   }
 
-  handleBulletPhysics() {
+  handlePhysics() {
     this.sprite.x += Math.cos(this.sprite.rotation) * this.bulletSpeed;
     this.sprite.y += Math.sin(this.sprite.rotation) * this.bulletSpeed;
   }

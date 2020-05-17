@@ -2,10 +2,6 @@ import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
 
 export default class Player extends GameObject {
-  private vx: number;
-
-  private vy: number;
-
   private container: PIXI.Container;
 
   private rendererWidth: number;
@@ -17,8 +13,6 @@ export default class Player extends GameObject {
   private flipVelocity: number;
 
   private friction: number;
-
-  private ax: number;
 
   private axErrorMargin: number;
 
@@ -40,7 +34,7 @@ export default class Player extends GameObject {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    super(1);
+    super('Player', 50);
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.score = 0;
 
@@ -56,8 +50,6 @@ export default class Player extends GameObject {
     this.axErrorMargin = 0.1;
     this.hp = 10000;
 
-    this.vx = 0;
-    this.vy = 0;
     this.sprite.scale.x = 2;
     this.sprite.scale.y = 3;
     this.sprite.anchor.set(0.5, 0.5);
@@ -114,34 +106,10 @@ export default class Player extends GameObject {
     }
   }
 
-  checkIfAllowedMovement(vx: number) {
-    if (vx > 0 && !this.blockRightSideMovement) {
-      return true;
-    }
-    if (vx < 0 && !this.blockLeftSideMovement) {
-      return true;
-    }
-    return false;
-  }
-
-  handlePhysics(gravity: number) {
-    if (this.sprite.y <= this.rendererHeight - this.sprite.height / 2) {
-      this.vy += gravity;
-    } else {
-      this.vy = 0;
-    }
-
+  handlePhysics() {
     this.ax = Math.floor(this.ax);
-    this.sprite.y = Math.min(this.sprite.y, this.rendererHeight - this.sprite.height / 2);
-
     this.handleFriction();
-
-    if (!this.checkIfAllowedMovement(this.vx)) {
-      this.vx = 0;
-    }
-
-    this.sprite.x += this.vx;
-    this.sprite.y += this.vy;
+    this.handleFlips();
   }
 
   checkIfBunnyGoRight() {
@@ -177,7 +145,6 @@ export default class Player extends GameObject {
   pushPlayer(wallY: number) {
     let xPushMultiplier: number = 0;
     let yPushMultiplier: number = 0;
-
     if (this.checkIfBunnyGoRight() && this.vx > 0) {
       xPushMultiplier = -8;
     } else if (this.vx < 0.1) {
