@@ -1,3 +1,5 @@
+import { objectTypes } from '../types';
+
 export default abstract class GameObject {
   public sprite: PIXI.Sprite;
 
@@ -15,9 +17,9 @@ export default abstract class GameObject {
 
   public name: string;
 
-  constructor(name: string, public mass: number) {
+  constructor(objectType: objectTypes, public mass: number) {
     GameObject.objectCounter += 1;
-    this.name = `${name}_${GameObject.objectCounter}`;
+    this.name = `${objectType}_${GameObject.objectCounter}`;
     console.log(this.name);
   }
 
@@ -27,6 +29,10 @@ export default abstract class GameObject {
     } else {
       this.sprite.tint = 0xffffff;
     }
+  }
+
+  setCollidingFalse() {
+    this.isColliding = false;
   }
 
   // eslint-disable-next-line class-methods-use-this

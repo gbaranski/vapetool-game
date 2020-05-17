@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
+import { objectTypes } from '../types';
 
 export default class Enemy extends GameObject {
   private texture: PIXI.Texture;
@@ -20,7 +21,7 @@ export default class Enemy extends GameObject {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    super('Enemy', 80);
+    super(objectTypes.ENEMY, 100);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.scale.x = 0.1;

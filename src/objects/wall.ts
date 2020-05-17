@@ -1,11 +1,12 @@
 import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
+import { objectTypes } from '../types';
 
 export default class Wall extends GameObject {
   public sprite: PIXI.Sprite;
 
   constructor(rendererWidth: number, rendererHeight: number, container: PIXI.Container) {
-    super('Wall', Number.MAX_VALUE);
+    super(objectTypes.WALL, Number.MAX_VALUE);
     this.sprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
 
     this.sprite.width = 100;

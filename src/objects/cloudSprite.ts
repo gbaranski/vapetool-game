@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
+import { objectTypes } from '../types';
 
 export default class CloudSprite extends GameObject {
   private preSprite: PIXI.Sprite;
@@ -13,7 +14,7 @@ export default class CloudSprite extends GameObject {
   private container: PIXI.Container;
 
   constructor(sprite: PIXI.Sprite) {
-    super('Cloud', 1);
+    super(objectTypes.CLOUD, 100);
     this.preSprite = sprite;
   }
 

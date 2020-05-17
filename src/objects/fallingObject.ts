@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
+import { objectTypes } from '../types';
 
 export default class FallingObject extends GameObject {
   private rendererWidth: number;
@@ -16,7 +17,7 @@ export default class FallingObject extends GameObject {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    super('FallingObject', 10);
+    super(objectTypes.FALLING_OBJECT, 100);
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
     this.container = container;

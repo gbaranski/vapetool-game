@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
-import GameObject from './gameObject';
 
-export default class Text extends GameObject {
+export default class Text {
   private textObject: PIXI.Text;
 
   private textStyle: PIXI.TextStyle;
@@ -13,7 +12,6 @@ export default class Text extends GameObject {
   private y: number;
 
   constructor(x: number, y: number, text: any, style: PIXI.TextStyle, container: PIXI.Container) {
-    super(1);
     this.textStyle = style;
     this.container = container;
     this.x = x;

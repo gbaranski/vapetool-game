@@ -10,7 +10,7 @@ import CloudSprite from './objects/cloudSprite';
 import Bodyguard from './objects/bodyguard';
 
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
-import { boxesIntersect, rectIntersect, detectCollision } from './helpers';
+import { boxesIntersect, detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
 
 export default class GameState {
@@ -91,9 +91,6 @@ export default class GameState {
     this.fallingObjects.push(fallingObject);
 
     this.createNewEnemy();
-    setTimeout(() => {
-      this.createNewEnemy();
-    }, 500);
 
     this.createNewBodyguard();
     this.hpText = new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), this.container);

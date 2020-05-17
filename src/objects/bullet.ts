@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
+import { objectTypes } from '../types';
 
 export default class Bullet extends GameObject {
   private container: PIXI.Container;
@@ -20,7 +21,7 @@ export default class Bullet extends GameObject {
     targetX: number,
     targetY: number,
   ) {
-    super('Bullet', 1);
+    super(objectTypes.BULLET, 1);
     this.container = container;
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;

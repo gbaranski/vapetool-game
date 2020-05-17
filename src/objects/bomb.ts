@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
+import { objectTypes } from '../types';
 
 export default class Bomb extends GameObject {
   private animatedExplosionSprite: PIXI.AnimatedSprite;
@@ -28,7 +29,7 @@ export default class Bomb extends GameObject {
     timeDifference: number,
     container: PIXI.Container,
   ) {
-    super('Bomb', 1);
+    super(objectTypes.BOMB, 10);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.explosionFrames = explosionFrames;

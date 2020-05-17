@@ -50,9 +50,9 @@ export function detectCollision(gameObjects: any[]) {
   let obj2;
 
   // Reset collision state of all objects
-  for (let i = 0; i < gameObjects.length; i += 1) {
-    gameObjects[i].isColliding = false;
-  }
+  gameObjects.forEach((_gameObject) => {
+    _gameObject.setCollidingFalse();
+  });
 
   // Start checking for collisions
   for (let i = 0; i < gameObjects.length; i += 1) {
@@ -72,18 +72,18 @@ export function detectCollision(gameObjects: any[]) {
       //     Math.max(obj2.sprite.width / 2, obj2.sprite.height / 2),
       //   )
       // ) {
-        if (
-          rectIntersect(
-            obj1.sprite.x,
-            obj1.sprite.y,
-            obj1.sprite.width,
-            obj1.sprite.height,
-            obj2.sprite.x,
-            obj2.sprite.y,
-            obj2.sprite.width,
-            obj2.sprite.height,
-          )
+      if (
+        rectIntersect(
+          obj1.sprite.x,
+          obj1.sprite.y,
+          obj1.sprite.width,
+          obj1.sprite.height,
+          obj2.sprite.x,
+          obj2.sprite.y,
+          obj2.sprite.width,
+          obj2.sprite.height,
         )
+      ) {
         const vCollision = { x: obj2.sprite.x - obj1.sprite.x, y: obj2.sprite.y - obj1.sprite.y };
         const distance = Math.sqrt(
           (obj2.sprite.x - obj1.sprite.x) * (obj2.sprite.x - obj1.sprite.x) +

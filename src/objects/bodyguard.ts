@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import GameObject from './gameObject';
+import { objectTypes } from '../types';
 
 export default class Bodyguard extends GameObject {
   private texture: PIXI.Texture;
@@ -20,7 +21,7 @@ export default class Bodyguard extends GameObject {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    super('Bodyguard', 100);
+    super(objectTypes.BODYGUARD, 100);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.scale.x = 1;
