@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
+import GameObject from './gameObject';
 
-export default class Enemy {
+export default class Enemy extends GameObject {
   public sprite: PIXI.Sprite;
 
   private texture: PIXI.Texture;
@@ -23,6 +24,7 @@ export default class Enemy {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
+    super(1);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.scale.x = 0.1;
@@ -30,8 +32,7 @@ export default class Enemy {
     this.hp = 100;
     this.melee = Math.round(Math.random());
 
-    
-    this.sprite.x = rendererWidth
+    this.sprite.x = rendererWidth;
     this.sprite.y = rendererHeight - this.sprite.height / 2;
     this.sprite.anchor.set(0.5);
     this.container.addChild(this.sprite);

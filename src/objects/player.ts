@@ -1,8 +1,7 @@
 import * as PIXI from 'pixi.js';
+import GameObject from './gameObject';
 
-export default class Player {
-  public sprite: PIXI.Sprite;
-
+export default class Player extends GameObject {
   private vx: number;
 
   private vy: number;
@@ -41,6 +40,7 @@ export default class Player {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
+    super(1);
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.score = 0;
 
