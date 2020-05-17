@@ -86,6 +86,7 @@ export default class GameState {
       this.rendererHeight,
       this.container,
     );
+
     this.gameObjects.push(fallingObject);
     this.fallingObjects.push(fallingObject);
 
