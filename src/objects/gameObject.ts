@@ -33,10 +33,10 @@ export default abstract class GameObject {
 
   handleGravity(secondsPassed: number) {
     if (this.mass !== Number.MAX_VALUE) {
-      const gravity = 9.81;
+      const gravity = 1;
       this.vy += gravity * secondsPassed;
+      console.log('Handling gravity for', this.name);
     }
-    console.log('handle gravity', this.name);
   }
 
   preventFalling() {
@@ -44,7 +44,9 @@ export default abstract class GameObject {
   }
 
   update(secondsPassed: number) {
-    this.sprite.x += this.vx * secondsPassed;
-    this.sprite.y += this.vy * secondsPassed;
+    if (this.mass !== Number.MAX_VALUE) {
+      this.sprite.x += this.vx * secondsPassed;
+      this.sprite.y += this.vy * secondsPassed;
+    }
   }
 }
