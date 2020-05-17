@@ -36,7 +36,7 @@ export default class Player extends GameObject {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    super('Player', 30);
+    super('Player', 50);
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.score = 0;
 
@@ -146,6 +146,29 @@ export default class Player extends GameObject {
         this.sprite.angle = 0;
       }
     }
+  }
+
+  pushPlayer(wallY: number) {
+    let xPushMultiplier: number = 0;
+    let yPushMultiplier: number = 0;
+    if (this.checkIfBunnyGoRight() && this.vx > 0) {
+      xPushMultiplier = -8;
+    } else if (this.vx < 0.1) {
+      xPushMultiplier = 8;
+    } else {
+      xPushMultiplier = 0;
+      this.vx = 0;
+    }
+    if (this.sprite.y <= wallY) {
+      xPushMultiplier = 0;
+      yPushMultiplier = -5;
+      this.vy = 0;
+    }
+    this.allowedDoubleJump = true;
+    this.vx += xPushMultiplier;
+    this.vy += yPushMultiplier;
+    Math.min(this.vx, 10);
+    // this.sprite.x += this.vx;
   }
 
   getHp() {
