@@ -1,8 +1,7 @@
 import * as PIXI from 'pixi.js';
+import GameObject from './gameObject';
 
-export default class Bodyguard {
-  public sprite: PIXI.Sprite;
-
+export default class Bodyguard extends GameObject {
   private texture: PIXI.Texture;
 
   private vx: number;
@@ -23,13 +22,14 @@ export default class Bodyguard {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
+    super(1);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.scale.x = 1;
     this.sprite.scale.y = 1;
     this.hp = 100;
 
-    this.sprite.x = 0
+    this.sprite.x = 0;
     this.sprite.y = rendererHeight - this.sprite.height / 2;
     this.sprite.anchor.set(0.5);
     this.container.addChild(this.sprite);
@@ -47,7 +47,7 @@ export default class Bodyguard {
     });
     this.hpText = new PIXI.Text(this.hp.toString(), this.hpTextStyle);
     this.hpText.position.set(this.sprite.x, this.sprite.y - this.sprite.height);
-    this.hpText.anchor.set(0.5,0.5);
+    this.hpText.anchor.set(0.5, 0.5);
     this.container.addChild(this.hpText);
   }
 
@@ -59,10 +59,10 @@ export default class Bodyguard {
   render(enemyX: number) {
     const distanceFromPlayer = 200;
     this.vx = 0;
-    if(enemyX - this.sprite.x < distanceFromPlayer) {
-        this.vx = 0;
+    if (enemyX - this.sprite.x < distanceFromPlayer) {
+      this.vx = 0;
     } else {
-        this.vx = 2;
+      this.vx = 2;
     }
     this.sprite.x += this.vx;
   }
