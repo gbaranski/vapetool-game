@@ -4,12 +4,6 @@ import GameObject from './gameObject';
 export default class CloudSprite extends GameObject {
   private preSprite: PIXI.Sprite;
 
-  public sprite: PIXI.Sprite;
-
-  private vx: number;
-
-  private vy: number;
-
   private loader: PIXI.Loader;
 
   public shouldRemoveCloudSprite: boolean;
@@ -19,7 +13,7 @@ export default class CloudSprite extends GameObject {
   private container: PIXI.Container;
 
   constructor(sprite: PIXI.Sprite) {
-    super(1);
+    super('Cloud', 1);
     this.preSprite = sprite;
   }
 
@@ -51,7 +45,7 @@ export default class CloudSprite extends GameObject {
     this.container.addChild(this.sprite);
   }
 
-  updateFrame() {
+  handlePhysics() {
     if (!this.shouldRemoveCloudSprite) {
       this.scaleMultiplier = 1.05;
     } else {
@@ -63,6 +57,5 @@ export default class CloudSprite extends GameObject {
     }
     this.sprite.scale.x = Math.min(this.sprite.scale.x * this.scaleMultiplier, 4);
     this.sprite.scale.y = Math.min(this.sprite.scale.y * this.scaleMultiplier, 4);
-    this.sprite.x += this.vx;
   }
 }

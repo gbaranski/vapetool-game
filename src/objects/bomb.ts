@@ -4,13 +4,7 @@ import GameObject from './gameObject';
 export default class Bomb extends GameObject {
   private animatedExplosionSprite: PIXI.AnimatedSprite;
 
-  public sprite: PIXI.Sprite;
-
   public created: boolean;
-
-  private vx: number;
-
-  private vy: number;
 
   private gravity: number;
 
@@ -27,7 +21,7 @@ export default class Bomb extends GameObject {
   private explosionFrames: any;
 
   constructor(sprite: PIXI.Sprite, explosionFrames: any, container: PIXI.Container) {
-    super(1);
+    super('Bomb', 1);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.explosionFrames = explosionFrames;
@@ -50,8 +44,6 @@ export default class Bomb extends GameObject {
     } else {
       this.vx = -30;
     }
-    this.vy = -Math.abs(timeDifference / 50);
-    this.gravity = 2;
     this.exploded = false;
     this.sprite.scale.x = 0.2;
     this.sprite.scale.y = 0.2;
@@ -60,11 +52,8 @@ export default class Bomb extends GameObject {
     this.container.addChild(this.sprite);
   }
 
-  renderSpriteFrame() {
+  handlePhysics() {
     if (!this.exploded) {
-      this.sprite.x += this.vx;
-      this.vy += this.gravity;
-      this.sprite.y += this.vy;
       this.sprite.angle += +10;
     }
   }

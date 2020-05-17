@@ -5,7 +5,7 @@ export default class Wall extends GameObject {
   public sprite: PIXI.Sprite;
 
   constructor(rendererWidth: number, rendererHeight: number, container: PIXI.Container) {
-    super(Number.MAX_VALUE);
+    super('Wall', Number.MAX_VALUE);
     this.sprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
 
     this.sprite.width = 100;
