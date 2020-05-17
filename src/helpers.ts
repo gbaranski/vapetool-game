@@ -61,18 +61,29 @@ export function detectCollision(gameObjects: any[]) {
       obj2 = gameObjects[j];
 
       // Compare object1 with object2
-      if (
-        rectIntersect(
-          obj1.sprite.x,
-          obj1.sprite.y,
-          obj1.sprite.width,
-          obj1.sprite.height,
-          obj2.sprite.x,
-          obj2.sprite.y,
-          obj2.sprite.width,
-          obj2.sprite.height,
+
+      // if (
+      //   circleIntersect(
+      //     obj1.sprite.x,
+      //     obj1.sprite.y,
+      //     Math.max(obj1.sprite.width / 2, obj1.sprite.height / 2),
+      //     obj2.sprite.x,
+      //     obj2.sprite.y,
+      //     Math.max(obj2.sprite.width / 2, obj2.sprite.height / 2),
+      //   )
+      // ) {
+        if (
+          rectIntersect(
+            obj1.sprite.x,
+            obj1.sprite.y,
+            obj1.sprite.width,
+            obj1.sprite.height,
+            obj2.sprite.x,
+            obj2.sprite.y,
+            obj2.sprite.width,
+            obj2.sprite.height,
+          )
         )
-      ) {
         const vCollision = { x: obj2.sprite.x - obj1.sprite.x, y: obj2.sprite.y - obj1.sprite.y };
         const distance = Math.sqrt(
           (obj2.sprite.x - obj1.sprite.x) * (obj2.sprite.x - obj1.sprite.x) +
