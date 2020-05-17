@@ -79,9 +79,9 @@ export default class GameState {
     this.rendererHeight = rendererHeight;
     this.explosionFrames = explosionFrames;
 
-    this.wall = new Wall(rendererWidth, rendererHeight, container);
+    // this.wall = new Wall(rendererWidth, rendererHeight, container);
 
-    this.gameObjects.push(this.wall);
+    // this.gameObjects.push(this.wall);
 
     this.player = new Player(
       this.sprites.player,
@@ -177,6 +177,7 @@ export default class GameState {
         _bullet.sprite.y > this.rendererHeight
       ) {
         this.bullets = this.bullets.filter((e) => e !== _bullet);
+        this.gameObjects = this.gameObjects.filter((e) => e !== _bullet);
         this.container.removeChild(_bullet.sprite);
       }
     });
@@ -210,6 +211,7 @@ export default class GameState {
           if (boxesIntersect(_bomb.sprite, _enemy.sprite) && !_bomb.exploded) {
             _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
             this.removeBomb(_bomb);
+            this.gameObjects = this.gameObjects.filter((e) => e !== _bomb);
           }
           _bomb.explosions.forEach((explosion: any) => {
             if (boxesIntersect(explosion, _enemy.sprite)) {
