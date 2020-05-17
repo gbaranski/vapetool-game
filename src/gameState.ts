@@ -32,8 +32,6 @@ export default class GameState {
 
   private container: PIXI.Container;
 
-  private gravity: number;
-
   private shootInterval: NodeJS.Timeout;
 
   private cloudLoadTime: number;
@@ -100,7 +98,6 @@ export default class GameState {
     this.gameObjects.push(fallingObject);
     this.fallingObjects.push(fallingObject);
 
-    this.gravity = 1;
     this.createNewEnemy();
     setTimeout(() => {
       this.createNewEnemy();
@@ -159,6 +156,7 @@ export default class GameState {
         this.scoreText.updateText(`Score: ${this.player.score + 10}ml`);
         this.container.removeChild(_fallingObject.sprite);
         this.fallingObjects = this.fallingObjects.filter((e) => e !== _fallingObject);
+        this.gameObjects = this.gameObjects.filter((obj) => obj !== _fallingObject);
       }
     });
   }
@@ -180,6 +178,24 @@ export default class GameState {
         this.gameObjects = this.gameObjects.filter((e) => e !== _bullet);
         this.container.removeChild(_bullet.sprite);
       }
+    });
+    this.bullets.forEach((_bullet) => {
+      this.bodyguards.forEach((bodyguard) => {
+        if (boxesIntersect(bodyguard.sprite, _bullet.sprite)) {
+          bodyguard.setHp(bodyguard.getHp() - 10);
+          this.bullets = this.bullets.filter((e) => e !== _bullet);
+          this.container.removeChild(_bullet.sprite);
+        } else if (
+          _bullet.sprite.x < 0 ||
+          _bullet.sprite.x > this.rendererWidth ||
+          _bullet.sprite.y < 0 ||
+          _bullet.sprite.y > this.rendererHeight
+        ) {
+          this.bullets = this.bullets.filter((e) => e !== _bullet);
+          this.gameObjects = this.gameObjects.filter((e) => e !== _bullet);
+          this.container.removeChild(_bullet.sprite);
+        }
+      });
     });
   }
 
@@ -263,9 +279,8 @@ export default class GameState {
 
     this.handlePhysics();
 
-    this.update(delta);
-
     GameState.detectCollision(this.gameObjects); // TODO consider reordering
+    this.update(delta);
 
     Keyboard.update();
     this.draw(delta);
@@ -313,6 +328,15 @@ export default class GameState {
         closestObjectX = this.player.sprite.x;
       }
       _enemy.targetEnemy(closestObjectX);
+    });
+    this.bodyguards.forEach((bodyguard) => {
+      bodyguard.updateHpText();
+      if (bodyguard.checkIfDead()) {
+        this.container.removeChild(bodyguard.sprite);
+        this.container.removeChild(bodyguard.hpText);
+        this.bodyguards = this.bodyguards.filter((e) => e !== bodyguard);
+        this.gameObjects = this.gameObjects.filter((e) => e !== bodyguard);
+      }
     });
 
     this.gameObjects.forEach((gameObject) => gameObject.handlePhysics());
@@ -389,7 +413,7 @@ export default class GameState {
           obj2.vx += speed * vCollisionNorm.x;
           obj2.vy += speed * vCollisionNorm.y;
 
-          const impulse = (2 * speed) / (obj1.mass + obj2.mass);
+          const impulse = speed / (obj1.mass + obj2.mass) / 1000;
           obj1.vx -= impulse * obj2.mass * vCollisionNorm.x;
           obj1.vy -= impulse * obj2.mass * vCollisionNorm.y;
           obj2.vx += impulse * obj1.mass * vCollisionNorm.x;
@@ -401,6 +425,8 @@ export default class GameState {
       }
     }
   }
+
+  private canCreateBodyguard = true;
 
   private handleKeyboardPress() {
     if (Keyboard.isKeyDown('ArrowLeft', 'KeyA')) {
@@ -419,6 +445,14 @@ export default class GameState {
     }
     if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
       this.player.jump();
+    }
+    if (Keyboard.isKeyDown('Digit1') && this.canCreateBodyguard) {
+      this.canCreateBodyguard = false;
+      console.log('createBodybuard');
+      this.createNewBodyguard();
+    }
+    if (Keyboard.isKeyReleased('Digit1')) {
+      this.canCreateBodyguard = true;
     }
     // if (Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
     //   this.player.crouch();

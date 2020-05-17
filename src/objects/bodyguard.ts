@@ -20,7 +20,7 @@ export default class Bodyguard extends GameObject {
     rendererHeight: number,
     container: PIXI.Container,
   ) {
-    super('Bodyguard', 1);
+    super('Bodyguard', 100);
     this.container = container;
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.scale.x = 1;

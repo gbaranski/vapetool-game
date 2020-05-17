@@ -35,7 +35,6 @@ export default abstract class GameObject {
     if (this.mass !== Number.MAX_VALUE) {
       const gravity = 1;
       this.vy += gravity * secondsPassed;
-      console.log('Handling gravity for', this.name);
     }
   }
 
