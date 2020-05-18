@@ -2,8 +2,8 @@ import { ObjectType } from './types';
 import GameObject from './objects/gameObject';
 
 const blacklistedObjects: { [key: string]: ObjectType[] } = {
-  [ObjectType.PLAYER]: [ObjectType.BODYGUARD],
-  [ObjectType.PLAYER]: [ObjectType.FALLING_OBJECT],
+  [ObjectType.PLAYER]: [ObjectType.FALLING_OBJECT, ObjectType.BODYGUARD],
+  [ObjectType.BODYGUARD]: [ObjectType.BOMB],
 };
 
 export function boxesIntersect(a: PIXI.Sprite, b: PIXI.Sprite) {
