@@ -99,8 +99,8 @@ export default class Bomb extends GameObject {
       clearInterval(blurInterval);
       explodeFinished = true;
       blurFilter.blur = 0;
-      this.container.x = preContainerXY.x;
-      this.container.y = preContainerXY.y;
+      this.container.x = 0;
+      this.container.y = 0;
       this.explosions = this.explosions.filter((_explosion: any) => _explosion !== explosion);
       this.container.removeChild(explosion);
     }, 1000);
