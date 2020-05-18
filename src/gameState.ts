@@ -189,8 +189,7 @@ export default class GameState {
 
   private handleBombCollision() {
     this.bombs.forEach((_bomb) => {
-      if (_bomb.sprite.y > this.rendererHeight && !_bomb.exploded) {
-        console.log('Bomb on ground');
+      if (_bomb.sprite.y + _bomb.sprite.height / 2 > this.rendererHeight && !_bomb.exploded) {
         _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
         this.removeBomb(_bomb);
       }
