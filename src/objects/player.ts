@@ -133,13 +133,13 @@ export default class Player extends GameObject {
 
   handleFlips() {
     if (this.checkIfBunnyGoRight() && !this.flipping) {
-      this.flipVelocity = 10;
+      this.flipVelocity = 5;
     } else if (!this.flipping) {
-      this.flipVelocity = -10;
+      this.flipVelocity = -5;
     }
 
     if (this.flipping) {
-      this.vy = Math.max(Math.min(this.vy < 0 ? this.vy * 1.05 : this.vy, 30), -30);
+      this.vy = Math.max(Math.min(this.vy < 0 ? this.vy * 1.02 : this.vy, 30), -30);
       this.vx = Math.max(Math.min(this.vx * 1.3, 10), -10);
       this.sprite.angle += this.flipVelocity;
       if (Math.abs(this.sprite.angle) > 360) {
