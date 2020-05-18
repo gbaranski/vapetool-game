@@ -190,11 +190,24 @@ export default class GameState {
   }
 
   private handleBombCollision() {
+    this.container.filters = [];
     this.bombs.forEach((_bomb) => {
+      const blurFilter = new PIXI.filters.BlurFilter();
+
+      _bomb.explosions.forEach((explosion: any) => {
+        if (_bomb.exploded && boxesIntersect(this.player.sprite, explosion)) {
+          this.container.filters = [blurFilter];
+          blurFilter.blur = 20;
+        } else {
+          blurFilter.blur = 0;
+        }
+      });
+
       if (_bomb.sprite.y + _bomb.sprite.height / 2 > this.rendererHeight && !_bomb.exploded) {
         _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
         this.removeBomb(_bomb);
       }
+
       this.enemies.forEach((_enemy) => {
         if (_bomb.created) {
           if (boxesIntersect(_bomb.sprite, _enemy.sprite) && !_bomb.exploded) {
