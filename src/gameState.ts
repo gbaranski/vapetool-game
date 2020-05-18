@@ -94,7 +94,7 @@ export default class GameState {
 
     this.createNewEnemy();
 
-    this.createNewBodyguard();
+    // this.createNewBodyguard();
     this.hpText = new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), this.container);
 
     this.scoreText = new Text(0, 40, `Score: ${this.player.score}ml`, getFont1(), this.container);
@@ -227,6 +227,17 @@ export default class GameState {
           }
           _bomb.explosions.forEach((explosion: any) => {
             if (boxesIntersect(explosion, _enemy.sprite)) {
+              const vCollision = {
+                x: explosion.x - _enemy.sprite.x,
+                y: explosion.y - _enemy.sprite.y,
+              };
+              console.log(vCollision);
+
+              if (vCollision.x < 0) {
+                _enemy.setVx(20);
+              } else {
+                _enemy.setVx(-20);
+              }
               _enemy.setHp(_enemy.getHp() - 1);
             }
           });
@@ -265,15 +276,15 @@ export default class GameState {
 
   gameLoop(delta: number) {
     this.handleCloudCollision();
-    this.handleBombCollision();
+
     this.handleFallingObjectCollision();
     this.handleBulletCollision();
     this.handlePlayerDie();
     this.handleKeyboardPress();
     this.handleExpiredClouds();
+    this.handleBombCollision();
 
     this.handleGravity(delta);
-
     this.handlePhysics();
 
     detectCollision(this.gameObjects); // TODO consider reordering

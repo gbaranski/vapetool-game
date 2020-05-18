@@ -58,10 +58,10 @@ export default class Enemy extends GameObject {
   targetEnemy(playerX: number) {
     const distanceFromPlayer = this.melee ? 0 : 200;
     if (this.sprite.x > playerX && this.sprite.x - playerX > distanceFromPlayer) {
-      this.vx = -2;
+      Math.min((this.vx += -0.2), 10);
     }
     if (this.sprite.x < playerX && playerX - this.sprite.x > distanceFromPlayer) {
-      this.vx = 2;
+      Math.min((this.vx += 0.2), 10);
     }
   }
 
@@ -75,5 +75,9 @@ export default class Enemy extends GameObject {
 
   getHp() {
     return this.hp;
+  }
+
+  setVx(newVx: number) {
+    this.vx = newVx;
   }
 }
