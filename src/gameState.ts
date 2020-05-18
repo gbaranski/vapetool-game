@@ -196,6 +196,16 @@ export default class GameState {
 
       _bomb.explosions.forEach((explosion: any) => {
         if (_bomb.exploded && boxesIntersect(this.player.sprite, explosion)) {
+          const vCollision = {
+            x: explosion.x - this.player.sprite.x,
+            y: explosion.y - this.player.sprite.y,
+          };
+          if (vCollision.x < 0) {
+            this.player.vx = 10;
+          } else {
+            this.player.vx = -10;
+          }
+          this.player.vy = -20;
           this.container.filters = [blurFilter];
           blurFilter.blur = 20;
         } else {
