@@ -68,7 +68,39 @@ export default class Bomb extends GameObject {
     this.explosions.push(explosion);
     // this.container.removeChild(explosion);
     this.container.addChild(explosion);
+
+    const blurFilter = new PIXI.filters.BlurFilter();
+    this.container.filters = [blurFilter];
+    let i: number = 0;
+
+    const preContainerXY = {
+      x: this.container.x,
+      y: this.container.y,
+    };
+    let explodeFinished: boolean = false;
+
+    const blurInterval = setInterval(() => {
+      i += 1;
+      blurFilter.blur = i / 20;
+
+      this.container.x = preContainerXY.x - 2;
+      this.container.y = preContainerXY.y - 2;
+      console.log(this.container.x);
+      setTimeout(() => {
+        if (!explodeFinished) {
+          this.container.x = preContainerXY.x + 4;
+          this.container.y = preContainerXY.y + 4;
+        }
+      }, 10);
+      console.log(this.container.x);
+    });
+
     setTimeout(() => {
+      clearInterval(blurInterval);
+      explodeFinished = true;
+      blurFilter.blur = 0;
+      this.container.x = preContainerXY.x;
+      this.container.y = preContainerXY.y;
       this.explosions = this.explosions.filter((_explosion: any) => _explosion !== explosion);
       this.container.removeChild(explosion);
     }, 1000);

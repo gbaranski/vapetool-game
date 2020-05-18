@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js';
+
 import Keyboard from 'pixi.js-keyboard';
 import Player from './objects/player';
 import Enemy from './objects/enemy';
