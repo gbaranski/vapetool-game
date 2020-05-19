@@ -19,6 +19,8 @@ export default class Bomb extends GameObject {
 
   private explosionFrames: any;
 
+  public explodeFinished: boolean;
+
   constructor(
     sprite: PIXI.Sprite,
     explosionFrames: any,
@@ -73,13 +75,13 @@ export default class Bomb extends GameObject {
       x: this.container.x,
       y: this.container.y,
     };
-    let explodeFinished: boolean = false;
+    this.explodeFinished = false;
 
     const blurInterval = setInterval(() => {
       this.container.x = preContainerXY.x - 2;
       this.container.y = preContainerXY.y - 2;
       setTimeout(() => {
-        if (!explodeFinished) {
+        if (!this.explodeFinished) {
           this.container.x = preContainerXY.x + 4;
           this.container.y = preContainerXY.y + 4;
         }
@@ -88,7 +90,7 @@ export default class Bomb extends GameObject {
 
     setTimeout(() => {
       clearInterval(blurInterval);
-      explodeFinished = true;
+      this.explodeFinished = true;
       this.container.x = 0;
       this.container.y = 0;
       this.explosions = this.explosions.filter((_explosion: any) => _explosion !== explosion);

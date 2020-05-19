@@ -231,14 +231,21 @@ export default class GameState {
                 x: explosion.x - _enemy.sprite.x,
                 y: explosion.y - _enemy.sprite.y,
               };
-              console.log(vCollision);
 
+              _enemy.isBeingPushed = true;
               if (vCollision.x < 0) {
-                _enemy.setVx(20);
+                _enemy.setVx(5);
               } else {
-                _enemy.setVx(-20);
+                _enemy.setVx(-5);
               }
               _enemy.setHp(_enemy.getHp() - 1);
+	      const checkIfFinishedInterval = setInterval(() => {
+		if(_bomb.explodeFinished) {
+			clearInterval(checkIfFinishedInterval);
+			_enemy.isBeingPushed = false;
+		}
+
+	      })
             }
           });
         }
