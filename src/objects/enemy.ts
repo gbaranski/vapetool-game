@@ -13,6 +13,8 @@ export default class Enemy extends GameObject {
 
   public hpText: PIXI.Text;
 
+  public isBeingPushed: boolean = false;
+
   private container: PIXI.Container;
 
   constructor(
@@ -28,7 +30,7 @@ export default class Enemy extends GameObject {
     this.sprite.scale.y = 0.1;
     this.hp = 100;
     this.melee = Math.round(Math.random());
-
+    this.vx = -2;
     this.sprite.x = rendererWidth;
     this.sprite.y = rendererHeight - this.sprite.height / 2;
     this.sprite.anchor.set(0.5);
@@ -58,10 +60,14 @@ export default class Enemy extends GameObject {
   targetEnemy(playerX: number) {
     const distanceFromPlayer = this.melee ? 0 : 200;
     if (this.sprite.x > playerX && this.sprite.x - playerX > distanceFromPlayer) {
-      Math.min((this.vx += -0.2), 10);
+      if (!this.isBeingPushed) {
+        this.vx = -2;
+      }
     }
     if (this.sprite.x < playerX && playerX - this.sprite.x > distanceFromPlayer) {
-      Math.min((this.vx += 0.2), 10);
+      if (!this.isBeingPushed) {
+        this.vx = 2;
+      }
     }
   }
 
