@@ -215,6 +215,7 @@ export default class GameState {
 
       if (_bomb.sprite.y + _bomb.sprite.height / 2 > this.rendererHeight && !_bomb.exploded) {
         _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
+        this.gameObjects = this.gameObjects.filter((e) => e !== _bomb);
         this.removeBomb(_bomb);
       }
 
@@ -231,21 +232,19 @@ export default class GameState {
                 x: explosion.x - _enemy.sprite.x,
                 y: explosion.y - _enemy.sprite.y,
               };
-
-              _enemy.isBeingPushed = true;
+              _enemy.setPushVariable(true);
               if (vCollision.x < 0) {
                 _enemy.setVx(5);
               } else {
                 _enemy.setVx(-5);
               }
               _enemy.setHp(_enemy.getHp() - 1);
-	      const checkIfFinishedInterval = setInterval(() => {
-		if(_bomb.explodeFinished) {
-			clearInterval(checkIfFinishedInterval);
-			_enemy.isBeingPushed = false;
-		}
-
-	      })
+              const checkIfFinishedInterval = setInterval(() => {
+                if (_bomb.explodeFinished) {
+                  clearInterval(checkIfFinishedInterval);
+                  _enemy.setPushVariable(false);
+                }
+              });
             }
           });
         }
@@ -332,7 +331,7 @@ export default class GameState {
         this.container.removeChild(_enemy.sprite);
         this.container.removeChild(_enemy.hpText);
         this.enemies = this.enemies.filter((e) => e !== _enemy);
-	this.gameObjects = this.gameObjects.filter(e => e !==  _enemy);
+        this.gameObjects = this.gameObjects.filter((e) => e !== _enemy);
       }
       let closestObjectX: number = 0;
       this.bodyguards.forEach((_bodyguard) => {

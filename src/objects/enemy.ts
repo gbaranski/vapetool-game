@@ -86,4 +86,8 @@ export default class Enemy extends GameObject {
   setVx(newVx: number) {
     this.vx = newVx;
   }
+
+  setPushVariable(newPush: boolean) {
+    this.isBeingPushed = newPush;
+  }
 }
