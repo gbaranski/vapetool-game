@@ -332,6 +332,7 @@ export default class GameState {
         this.container.removeChild(_enemy.sprite);
         this.container.removeChild(_enemy.hpText);
         this.enemies = this.enemies.filter((e) => e !== _enemy);
+	this.gameObjects = this.gameObjects.filter(e => e !==  _enemy);
       }
       let closestObjectX: number = 0;
       this.bodyguards.forEach((_bodyguard) => {
