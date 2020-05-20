@@ -57,9 +57,6 @@ export default class GameState {
   ) {
     this.rendererWidth = this.app.renderer.view.width;
     this.rendererHeight = this.app.renderer.view.height;
-    // this.wall = new Wall(rendererWidth, rendererHeight, container);
-
-    // this.gameObjects.push(this.wall);
 
     this.mobileTouch = new MobileTouch();
 
@@ -107,7 +104,7 @@ export default class GameState {
           this.sprites.bullet,
           this.rendererWidth,
           this.rendererHeight,
-          container,
+          this.container,
           _enemy.sprite.x + _enemy.sprite.width / 2,
           _enemy.sprite.y,
           this.player.sprite.x,
@@ -137,8 +134,8 @@ export default class GameState {
       this.container,
     );
 
-    this.gameObjects.push(bodyguard);
     this.bodyguards.push(bodyguard);
+    this.gameObjects.push(bodyguard);
   }
 
   private handleFallingObjectCollision() {
