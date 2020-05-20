@@ -30,6 +30,10 @@ export default class GameState {
 
   private cloudSprites: CloudSprite[] = [];
 
+  private rendererWidth: number;
+
+  private rendererHeight: number;
+
   private shootInterval: NodeJS.Timeout;
 
   private cloudLoadTime: number;
@@ -48,11 +52,13 @@ export default class GameState {
 
   constructor(
     private container: PIXI.Container,
-    private rendererWidth: number,
-    private rendererHeight: number,
+    private app: PIXI.Application,
     private explosionFrames: Object,
     private sprites: any,
   ) {
+    this.rendererWidth = this.app.renderer.view.width;
+    this.rendererHeight = this.app.renderer.view.height;
+    this.container.interactive = true;
     // this.wall = new Wall(rendererWidth, rendererHeight, container);
 
     // this.gameObjects.push(this.wall);
@@ -88,8 +94,8 @@ export default class GameState {
       this.enemies.forEach((_enemy) => {
         const bullet = new Bullet(
           this.sprites.bullet,
-          rendererWidth,
-          rendererHeight,
+          this.rendererWidth,
+          this.rendererHeight,
           container,
           _enemy.sprite.x + _enemy.sprite.width / 2,
           _enemy.sprite.y,
@@ -264,6 +270,9 @@ export default class GameState {
   }
 
   gameLoop(delta: number) {
+    this.container.on('touchstart', (e) => {
+      console.log(e);
+    });
     this.handleCloudCollision();
 
     this.handleFallingObjectCollision();
