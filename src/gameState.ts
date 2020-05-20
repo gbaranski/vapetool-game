@@ -16,6 +16,7 @@ import Bodyguard from './objects/bodyguard';
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
 import { boxesIntersect, detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
+import { TextTypes } from './types';
 
 export default class GameState {
   private player: Player;
@@ -36,19 +37,11 @@ export default class GameState {
 
   private rendererHeight: number;
 
-  private shootInterval: NodeJS.Timeout;
-
   private cloudLoadTime: number;
 
   private bombLoadTime: number;
 
-  private ticker: PIXI.Ticker;
-
-  private hpText: Text;
-
-  private scoreText: Text;
-
-  private debugText: Text;
+  private displayTexts: Text[] = [];
 
   private gameObjects: GameObject[] = [];
 
@@ -90,14 +83,25 @@ export default class GameState {
 
     this.createNewEnemy();
 
-    // this.createNewBodyguard();
-    this.hpText = new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), this.container);
+    this.displayTexts.push(
+      new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), TextTypes.HP_TEXT, this.container),
+    );
+    this.displayTexts.push(
+      new Text(
+        0,
+        40,
+        `Score: ${this.player.score}ml`,
+        getFont1(),
+        TextTypes.SCORE_TEXT,
+        this.container,
+      ),
+    );
 
-    this.scoreText = new Text(0, 40, `Score: ${this.player.score}ml`, getFont1(), this.container);
+    this.displayTexts.push(
+      new Text(0, 80, `Loading...`, getFont3(), TextTypes.DEBUG_TEXT, this.container),
+    );
 
-    this.debugText = new Text(0, 80, `Loading...`, getFont3(), this.container);
-
-    this.shootInterval = setInterval(() => {
+    setInterval(() => {
       this.enemies.forEach((_enemy) => {
         const bullet = new Bullet(
           this.sprites.bullet,
@@ -140,7 +144,9 @@ export default class GameState {
   private handleFallingObjectCollision() {
     this.fallingObjects.forEach((_fallingObject) => {
       if (boxesIntersect(this.player.sprite, _fallingObject.sprite)) {
-        this.scoreText.updateText(`Score: ${this.player.score + 10}ml`);
+        this.displayTexts
+          .find((element) => element.textType === TextTypes.SCORE_TEXT)
+          .updateText(`Score: ${this.player.score + 10}ml`);
         this.container.removeChild(_fallingObject.sprite);
         this.fallingObjects = this.fallingObjects.filter((e) => e !== _fallingObject);
         this.gameObjects = this.gameObjects.filter((obj) => obj !== _fallingObject);
@@ -154,7 +160,9 @@ export default class GameState {
         this.player.setHp(this.player.getHp() - 10);
         this.bullets = this.bullets.filter((e) => e !== _bullet);
         this.container.removeChild(_bullet.sprite);
-        this.hpText.updateText(`HP: ${this.player.getHp()}`);
+        this.displayTexts
+          .find((text) => text.textType === TextTypes.HP_TEXT)
+          .updateText(`HP: ${this.player.getHp()}`);
       } else if (
         _bullet.sprite.x < 0 ||
         _bullet.sprite.x > this.rendererWidth ||
@@ -259,6 +267,7 @@ export default class GameState {
         Score: ${this.player.score}ml
         `,
         getFont2(),
+        TextTypes.DEATH_TEXT,
         this.container,
       );
       this.app.ticker.stop();
@@ -362,18 +371,19 @@ export default class GameState {
     this.gameObjects.forEach((_gameObject) => {
       _gameObject.draw();
     });
-
-    this.debugText.updateText(
-      `x: ${this.player.sprite.x}\n` +
-        `y: ${this.player.sprite.y}\n` +
-        `vx: ${this.player.getVx()}\n` +
-        `vy: ${this.player.getVy()}\n` +
-        `friction: ${this.player.getFriction()}\n` +
-        `ax: ${this.player.getAx()}\n` +
-        `delta: ${delta}\n` +
-        `bullets: ${this.bullets.length}\n` +
-        `bombs: ${this.bombs.length}\n`,
-    );
+    this.displayTexts
+      .find((text) => text.textType === TextTypes.DEBUG_TEXT)
+      .updateText(
+        `x: ${this.player.sprite.x}\n` +
+          `y: ${this.player.sprite.y}\n` +
+          `vx: ${this.player.getVx()}\n` +
+          `vy: ${this.player.getVy()}\n` +
+          `friction: ${this.player.getFriction()}\n` +
+          `ax: ${this.player.getAx()}\n` +
+          `delta: ${delta}\n` +
+          `bullets: ${this.bullets.length}\n` +
+          `bombs: ${this.bombs.length}\n`,
+      );
     this.bodyguards.forEach((_bodyguard) => {
       if (this.enemies.length > 0) {
         _bodyguard.render(this.enemies[0].sprite.x);
@@ -406,7 +416,6 @@ export default class GameState {
     }
     if (Keyboard.isKeyDown('Digit1') && this.canCreateBodyguard) {
       this.canCreateBodyguard = false;
-      console.log('createBodybuard');
       this.createNewBodyguard();
     }
     if (Keyboard.isKeyReleased('Digit1')) {
@@ -414,19 +423,11 @@ export default class GameState {
     }
     if (Keyboard.isKeyDown('Digit2') && this.canCreateEnemy) {
       this.canCreateEnemy = false;
-      console.log('canCreateEnemy');
       this.createNewEnemy();
     }
     if (Keyboard.isKeyReleased('Digit2')) {
       this.canCreateEnemy = true;
     }
-    // if (Keyboard.isKeyDown('ArrowDown', 'KeyS')) {
-    //   this.player.crouch();
-    // }
-    // if (Keyboard.isKeyReleased('ArrowDown', 'KeyS')) {
-    //   this.player.unCrouch();
-    // }
-
     if (Keyboard.isKeyDown('Space')) {
       this.player.setFlipping(true);
     }
