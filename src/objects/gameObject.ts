@@ -21,7 +21,7 @@ export default abstract class GameObject {
     GameObject.objectCounter += 1;
     this.objectType = objectType;
     const name = `${objectType}_${GameObject.objectCounter}`;
-    console.log(name);
+    // console.log(name || "asda");
   }
 
   draw() {

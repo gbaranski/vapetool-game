@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js';
 
 import Keyboard from 'pixi.js-keyboard';
+import MobileTouch from './pixijs-mobile/index';
+
 import Player from './objects/player';
 import Enemy from './objects/enemy';
 import Bullet from './objects/bullet';
@@ -50,6 +52,10 @@ export default class GameState {
 
   private gameObjects: GameObject[] = [];
 
+  private mobileTouch: MobileTouch;
+
+  private topPressLastDate: number;
+
   constructor(
     private container: PIXI.Container,
     private app: PIXI.Application,
@@ -58,10 +64,11 @@ export default class GameState {
   ) {
     this.rendererWidth = this.app.renderer.view.width;
     this.rendererHeight = this.app.renderer.view.height;
-    this.container.interactive = true;
     // this.wall = new Wall(rendererWidth, rendererHeight, container);
 
     // this.gameObjects.push(this.wall);
+
+    this.mobileTouch = new MobileTouch();
 
     this.player = new Player(
       this.sprites.player,
@@ -270,15 +277,13 @@ export default class GameState {
   }
 
   gameLoop(delta: number) {
-    this.container.on('touchstart', (e) => {
-      console.log(e);
-    });
-    this.handleCloudCollision();
+    this.handleKeyboardPress();
+    this.handleTouches();
 
+    this.handleCloudCollision();
     this.handleFallingObjectCollision();
     this.handleBulletCollision();
     this.handlePlayerDie();
-    this.handleKeyboardPress();
     this.handleExpiredClouds();
     this.handleBombCollision();
 
@@ -465,6 +470,41 @@ export default class GameState {
       );
       this.gameObjects.push(bomb);
       this.bombs.push(bomb);
+    }
+  }
+
+  handleTouches() {
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    ) {
+      const touches = this.mobileTouch.getCurrentTouches();
+      if (touches) {
+        if (touches.length < 1) {
+          this.player.setAx(0);
+        }
+        for (let i = 0; i < touches.length; i += 1) {
+          if (
+            touches[i].clientX > this.rendererWidth / 2 &&
+            touches[i].clientY > this.rendererHeight / 2
+          ) {
+            this.player.setAx(1);
+            this.player.setLastMoveRight(true);
+          } else if (touches[i].clientY > this.rendererHeight / 2) {
+            this.player.setAx(-1);
+            this.player.setLastMoveRight(false);
+          }
+          if (touches[i].clientY < this.rendererHeight / 2) {
+            if (
+              new Date().getTime() - this.topPressLastDate > 20 &&
+              new Date().getTime() - this.topPressLastDate < 500
+            ) {
+              this.player.setFlipping(true);
+            }
+            this.player.jump();
+            this.topPressLastDate = new Date().getTime();
+          }
+        }
+      }
     }
   }
 }
