@@ -45,16 +45,8 @@ $(document).ready(() => {
     sprites.bomb = new PIXI.Sprite(resources.bomb.texture);
     sprites.bodyguard = new PIXI.Sprite(resources.bodyguard.texture);
   });
-  const rendererWidth: number = app.renderer.view.width;
-  const rendererHeight: number = app.renderer.view.height;
   loader.onComplete.add(() => {
-    const gameState = new GameState(
-      container,
-      rendererWidth,
-      rendererHeight,
-      explosionFrames,
-      sprites,
-    );
+    const gameState = new GameState(container, app, explosionFrames, sprites);
     document.body.appendChild(app.view);
     app.stage.addChild(container);
     app.ticker.add((delta) => gameState.gameLoop(delta));
