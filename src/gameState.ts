@@ -16,8 +16,6 @@ import { boxesIntersect, detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
 
 export default class GameState {
-  private sprites: any;
-
   private player: Player;
 
   private enemies: Enemy[] = [];
@@ -32,21 +30,13 @@ export default class GameState {
 
   private cloudSprites: CloudSprite[] = [];
 
-  private container: PIXI.Container;
-
   private shootInterval: NodeJS.Timeout;
 
   private cloudLoadTime: number;
 
   private bombLoadTime: number;
 
-  private rendererWidth: number;
-
-  private rendererHeight: number;
-
   private ticker: PIXI.Ticker;
-
-  private explosionFrames: Object;
 
   private hpText: Text;
 
@@ -57,19 +47,12 @@ export default class GameState {
   private gameObjects: GameObject[] = [];
 
   constructor(
-    container: PIXI.Container,
-    rendererWidth: number,
-    rendererHeight: number,
-    explosionFrames: Object,
-    loader: PIXI.Loader,
-    sprites: any,
+    private container: PIXI.Container,
+    private rendererWidth: number,
+    private rendererHeight: number,
+    private explosionFrames: Object,
+    private sprites: any,
   ) {
-    this.sprites = sprites;
-    this.container = container;
-    this.rendererWidth = rendererWidth;
-    this.rendererHeight = rendererHeight;
-    this.explosionFrames = explosionFrames;
-
     // this.wall = new Wall(rendererWidth, rendererHeight, container);
 
     // this.gameObjects.push(this.wall);

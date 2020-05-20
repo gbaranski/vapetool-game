@@ -53,7 +53,6 @@ $(document).ready(() => {
       rendererWidth,
       rendererHeight,
       explosionFrames,
-      loader,
       sprites,
     );
     document.body.appendChild(app.view);
