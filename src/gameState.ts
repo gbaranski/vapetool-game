@@ -252,8 +252,8 @@ export default class GameState {
     if (this.player.getHp() <= 0) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const deathText = new Text(
-        this.rendererWidth / 2,
-        this.rendererHeight / 2,
+        this.rendererWidth / 4,
+        this.rendererHeight / 4,
         `
         You're dead\n
         Score: ${this.player.score}ml
@@ -261,7 +261,7 @@ export default class GameState {
         getFont2(),
         this.container,
       );
-      this.ticker.stop();
+      this.app.ticker.stop();
     }
   }
 

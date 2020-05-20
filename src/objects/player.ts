@@ -51,7 +51,7 @@ export default class Player extends GameObject {
     this.friction = 0.5;
     this.ax = 0;
     this.axErrorMargin = 0.1;
-    this.hp = 10000;
+    this.hp = 100;
 
     this.sprite.scale.x = 2;
     this.sprite.scale.y = 3;
