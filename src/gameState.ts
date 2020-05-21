@@ -54,6 +54,7 @@ export default class GameState {
 
   private buttonStates: any = {
     bombButton: false,
+    cloudButton: false,
   };
 
   private topPressLastDate: number;
@@ -73,10 +74,10 @@ export default class GameState {
       this.isOnMobile = true;
 
       const bombButton = new Button(
-        ButtonTypes.THROW_BOMB,
+        ButtonTypes.BOMB,
         this.sprites.bombButton,
-        this.rendererWidth,
-        this.rendererHeight,
+        this.rendererWidth - this.sprites.bombButton.width,
+        0,
         this.container,
       );
       bombButton.sprite.on('touchstart', () => {
@@ -87,7 +88,24 @@ export default class GameState {
         this.buttonStates.bombButton = false;
         this.throwBomb();
       });
+
       this.buttons.push(bombButton);
+
+      const cloudButton = new Button(
+        ButtonTypes.CLOUD,
+        this.sprites.cloudButton,
+        this.rendererWidth - this.sprites.bombButton.width - this.sprites.cloudButton.width,
+        0,
+        this.container,
+      );
+      cloudButton.sprite.on('touchstart', () => {
+        this.buttonStates.cloudButton = true;
+        this.cloudLoadTime = new Date().getTime();
+      });
+      cloudButton.sprite.on('touchend', () => {
+        this.buttonStates.cloudButton = false;
+        this.attackCloud();
+      });
     } else {
       this.isOnMobile = false;
     }
@@ -441,6 +459,22 @@ export default class GameState {
     this.bombs.push(bomb);
   }
 
+  attackCloud() {
+    const cloud = new CloudSprite(this.sprites.cloud);
+    const timeDifference = new Date().getTime() - this.cloudLoadTime;
+    cloud.attackCloud(
+      this.player.checkIfBunnyGoRight(),
+      timeDifference,
+      this.player.sprite.x,
+      this.player.sprite.y,
+      this.container,
+    );
+    this.cloudSprites.push(cloud);
+    setTimeout(() => {
+      cloud.shouldRemoveCloudSprite = true;
+    }, timeDifference);
+  }
+
   private canCreateBodyguard = true;
 
   private canCreateEnemy = true;
@@ -485,19 +519,7 @@ export default class GameState {
     }
 
     if (Keyboard.isKeyReleased('KeyE')) {
-      const cloud = new CloudSprite(this.sprites.cloud);
-      const timeDifference = new Date().getTime() - this.cloudLoadTime;
-      cloud.attackCloud(
-        this.player.checkIfBunnyGoRight(),
-        timeDifference,
-        this.player.sprite.x,
-        this.player.sprite.y,
-        this.container,
-      );
-      this.cloudSprites.push(cloud);
-      setTimeout(() => {
-        cloud.shouldRemoveCloudSprite = true;
-      }, timeDifference);
+      this.attackCloud();
     }
 
     if (Keyboard.isKeyPressed('KeyQ')) {
@@ -527,7 +549,11 @@ export default class GameState {
             this.player.setAx(-1);
             this.player.setLastMoveRight(false);
           }
-          if (touches[i].clientY < this.rendererHeight / 2 && !this.buttonStates.bombButton) {
+          if (
+            touches[i].clientY < this.rendererHeight / 2 &&
+            !this.buttonStates.bombButton &&
+            !this.buttonStates.cloudButton
+          ) {
             if (
               new Date().getTime() - this.topPressLastDate > 20 &&
               new Date().getTime() - this.topPressLastDate < 500
