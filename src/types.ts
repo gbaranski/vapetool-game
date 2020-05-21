@@ -14,3 +14,6 @@ export enum TextTypes {
   DEBUG_TEXT = 'DEBUG_TEXT',
   DEATH_TEXT = 'DEATH_TEXT',
 }
+export enum ButtonTypes {
+  THROW_BOMB = 'THROW_BOMB_BUTTON',
+}

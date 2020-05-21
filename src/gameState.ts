@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 import Keyboard from 'pixi.js-keyboard';
-import MobileTouch from './pixijs-mobile/index';
+import MobileTouch from './mobileDevices/index';
 
 import Player from './objects/player';
 import Enemy from './objects/enemy';
@@ -16,7 +16,8 @@ import Bodyguard from './objects/bodyguard';
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
 import { boxesIntersect, detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
-import { TextTypes } from './types';
+import { TextTypes, ButtonTypes } from './types';
+import Button from './objects/button';
 
 export default class GameState {
   private player: Player;
@@ -33,6 +34,8 @@ export default class GameState {
 
   private cloudSprites: CloudSprite[] = [];
 
+  private buttons: Button[] = [];
+
   private rendererWidth: number;
 
   private rendererHeight: number;
@@ -47,6 +50,12 @@ export default class GameState {
 
   private mobileTouch: MobileTouch;
 
+  private isOnMobile: boolean;
+
+  private buttonStates: any = {
+    bombButton: false,
+  };
+
   private topPressLastDate: number;
 
   constructor(
@@ -57,6 +66,31 @@ export default class GameState {
   ) {
     this.rendererWidth = this.app.renderer.view.width;
     this.rendererHeight = this.app.renderer.view.height;
+
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    ) {
+      this.isOnMobile = true;
+
+      const bombButton = new Button(
+        ButtonTypes.THROW_BOMB,
+        this.sprites.bombButton,
+        this.rendererWidth,
+        this.rendererHeight,
+        this.container,
+      );
+      bombButton.sprite.on('touchstart', () => {
+        this.buttonStates.bombButton = true;
+        this.bombLoadTime = new Date().getTime();
+      });
+      bombButton.sprite.on('touchend', () => {
+        this.buttonStates.bombButton = false;
+        this.throwBomb();
+      });
+      this.buttons.push(bombButton);
+    } else {
+      this.isOnMobile = false;
+    }
 
     this.mobileTouch = new MobileTouch();
 
@@ -389,6 +423,24 @@ export default class GameState {
     });
   }
 
+  throwBomb() {
+    const timeDifference = new Date().getTime() - this.bombLoadTime;
+    const vx = this.player.checkIfBunnyGoRight() ? 10 : -10;
+    const vy = -Math.abs(timeDifference / 20);
+    const bomb = new Bomb(
+      this.sprites.bomb,
+      this.explosionFrames,
+      this.player.sprite.x,
+      this.player.sprite.y,
+      vx,
+      vy,
+      timeDifference,
+      this.container,
+    );
+    this.gameObjects.push(bomb);
+    this.bombs.push(bomb);
+  }
+
   private canCreateBodyguard = true;
 
   private canCreateEnemy = true;
@@ -453,28 +505,12 @@ export default class GameState {
     }
 
     if (Keyboard.isKeyReleased('KeyQ')) {
-      const timeDifference = new Date().getTime() - this.bombLoadTime;
-      const vx = this.player.checkIfBunnyGoRight() ? 10 : -10;
-      const vy = -Math.abs(timeDifference / 20);
-      const bomb = new Bomb(
-        this.sprites.bomb,
-        this.explosionFrames,
-        this.player.sprite.x,
-        this.player.sprite.y,
-        vx,
-        vy,
-        timeDifference,
-        this.container,
-      );
-      this.gameObjects.push(bomb);
-      this.bombs.push(bomb);
+      this.throwBomb();
     }
   }
 
   handleTouches() {
-    if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    ) {
+    if (this.isOnMobile) {
       const touches = this.mobileTouch.getCurrentTouches();
       if (touches) {
         if (touches.length < 1) {
@@ -491,7 +527,7 @@ export default class GameState {
             this.player.setAx(-1);
             this.player.setLastMoveRight(false);
           }
-          if (touches[i].clientY < this.rendererHeight / 2) {
+          if (touches[i].clientY < this.rendererHeight / 2 && !this.buttonStates.bombButton) {
             if (
               new Date().getTime() - this.topPressLastDate > 20 &&
               new Date().getTime() - this.topPressLastDate < 500

@@ -11,6 +11,7 @@ import bombImg from './assets/efest.png';
 import bodyguardImg from './assets/bodyguard.png';
 // eslint-disable-next-line import/no-unresolved
 import explosions from './assets/explosion/*.png';
+import bombButtonImg from './assets/bomb-button.png';
 
 const app = new PIXI.Application({
   width: $(window).width(),
@@ -32,6 +33,7 @@ $(document).ready(() => {
   loader.add('cloud', cloudImg);
   loader.add('bomb', bombImg);
   loader.add('bodyguard', bodyguardImg);
+  loader.add('bombButton', bombButtonImg);
   // TODO consider removing
   explosionFrames.forEach((frame: string) => loader.add(frame, frame));
 
@@ -44,6 +46,7 @@ $(document).ready(() => {
     sprites.cloud = new PIXI.Sprite(resources.cloud.texture);
     sprites.bomb = new PIXI.Sprite(resources.bomb.texture);
     sprites.bodyguard = new PIXI.Sprite(resources.bodyguard.texture);
+    sprites.bombButton = new PIXI.Sprite(resources.bombButton.texture);
   });
   loader.onComplete.add(() => {
     const gameState = new GameState(container, app, explosionFrames, sprites);
