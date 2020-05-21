@@ -4,3 +4,4 @@ dist/
 .cache/
 docs/
 yarn.lock
+build/
