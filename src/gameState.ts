@@ -50,7 +50,11 @@ export default class GameState {
 
   private mobileTouch: MobileTouch;
 
-  private isOnMobile: boolean;
+  private userData: any = {
+    isOnMobile: false,
+    rendererWidth: 0,
+    rendererHeight: 0,
+  };
 
   private buttonStates: any = {
     bombButton: false,
@@ -65,18 +69,17 @@ export default class GameState {
     private explosionFrames: Object,
     private sprites: any,
   ) {
-    this.rendererWidth = this.app.renderer.view.width;
-    this.rendererHeight = this.app.renderer.view.height;
-
+    this.userData.rendererWidth = this.app.renderer.view.width;
+    this.userData.rendererHeight = this.app.renderer.view.height;
     if (
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     ) {
-      this.isOnMobile = true;
+      this.userData.isOnMobile = true;
 
       const bombButton = new Button(
         ButtonTypes.BOMB,
         this.sprites.bombButton,
-        this.rendererWidth - this.sprites.bombButton.width,
+        this.userData.rendererWidth - this.sprites.bombButton.width,
         0,
         this.container,
       );
@@ -94,7 +97,7 @@ export default class GameState {
       const cloudButton = new Button(
         ButtonTypes.CLOUD,
         this.sprites.cloudButton,
-        this.rendererWidth - this.sprites.bombButton.width - this.sprites.cloudButton.width,
+        this.userData.rendererWidth - this.sprites.bombButton.width - this.sprites.cloudButton.width,
         0,
         this.container,
       );
@@ -107,23 +110,23 @@ export default class GameState {
         this.attackCloud();
       });
     } else {
-      this.isOnMobile = false;
+      this.userData.isOnMobile = false;
     }
 
     this.mobileTouch = new MobileTouch();
 
     this.player = new Player(
       this.sprites.player,
-      this.rendererWidth,
-      this.rendererHeight,
+      this.userData.rendererWidth,
+      this.userData.rendererHeight,
       this.container,
     );
     this.gameObjects.push(this.player);
 
     const fallingObject = new FallingObject(
       this.sprites.fallingObject,
-      this.rendererWidth,
-      this.rendererHeight,
+      this.userData.rendererWidth,
+      this.userData.rendererHeight,
       this.container,
     );
 
@@ -154,8 +157,8 @@ export default class GameState {
       this.enemies.forEach((_enemy) => {
         const bullet = new Bullet(
           this.sprites.bullet,
-          this.rendererWidth,
-          this.rendererHeight,
+          this.userData.rendererWidth,
+          this.userData.rendererHeight,
           this.container,
           _enemy.sprite.x + _enemy.sprite.width / 2,
           _enemy.sprite.y,
@@ -170,8 +173,8 @@ export default class GameState {
   private createNewEnemy() {
     const enemy = new Enemy(
       this.sprites.enemy,
-      this.rendererWidth,
-      this.rendererHeight,
+      this.userData.rendererWidth,
+      this.userData.rendererHeight,
       this.container,
     );
     this.enemies.push(enemy);
@@ -181,8 +184,8 @@ export default class GameState {
   private createNewBodyguard() {
     const bodyguard = new Bodyguard(
       this.sprites.bodyguard,
-      this.rendererWidth,
-      this.rendererHeight,
+      this.userData.rendererWidth,
+      this.userData.rendererHeight,
       this.container,
     );
 
@@ -214,9 +217,9 @@ export default class GameState {
           .updateText(`HP: ${this.player.getHp()}`);
       } else if (
         _bullet.sprite.x < 0 ||
-        _bullet.sprite.x > this.rendererWidth ||
+        _bullet.sprite.x > this.userData.rendererWidth ||
         _bullet.sprite.y < 0 ||
-        _bullet.sprite.y > this.rendererHeight
+        _bullet.sprite.y > this.userData.rendererHeight
       ) {
         this.bullets = this.bullets.filter((e) => e !== _bullet);
         this.gameObjects = this.gameObjects.filter((e) => e !== _bullet);
@@ -266,7 +269,7 @@ export default class GameState {
         }
       });
 
-      if (_bomb.sprite.y + _bomb.sprite.height / 2 > this.rendererHeight && !_bomb.exploded) {
+      if (_bomb.sprite.y + _bomb.sprite.height / 2 > this.userData.rendererHeight && !_bomb.exploded) {
         _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
         this.gameObjects = this.gameObjects.filter((e) => e !== _bomb);
         this.removeBomb(_bomb);
@@ -309,8 +312,8 @@ export default class GameState {
     if (this.player.getHp() <= 0) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const deathText = new Text(
-        this.rendererWidth / 4,
-        this.rendererHeight / 4,
+        this.userData.rendererWidth / 4,
+        this.userData.rendererHeight / 4,
         `
         You're dead\n
         Score: ${this.player.score}ml
@@ -357,11 +360,11 @@ export default class GameState {
 
   handleGravity(delta: number) {
     this.gameObjects.forEach((obj) => {
-      if (obj.sprite.y < this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y) {
+      if (obj.sprite.y < this.userData.rendererHeight - obj.sprite.height * obj.sprite.anchor.y) {
         obj.handleGravity(delta);
       } else {
         obj.preventFalling();
-        obj.setSpriteY(this.rendererHeight - obj.sprite.height * obj.sprite.anchor.y);
+        obj.setSpriteY(this.userData.rendererHeight - obj.sprite.height * obj.sprite.anchor.y);
       }
     });
   }
@@ -532,7 +535,7 @@ export default class GameState {
   }
 
   handleTouches() {
-    if (this.isOnMobile) {
+    if (this.userData.isOnMobile) {
       const touches = this.mobileTouch.getCurrentTouches();
       if (touches) {
         if (touches.length < 1) {
@@ -540,17 +543,17 @@ export default class GameState {
         }
         for (let i = 0; i < touches.length; i += 1) {
           if (
-            touches[i].clientX > this.rendererWidth / 2 &&
-            touches[i].clientY > this.rendererHeight / 2
+            touches[i].clientX > this.userData.rendererWidth / 2 &&
+            touches[i].clientY > this.userData.rendererHeight / 2
           ) {
             this.player.setAx(1);
             this.player.setLastMoveRight(true);
-          } else if (touches[i].clientY > this.rendererHeight / 2) {
+          } else if (touches[i].clientY > this.userData.rendererHeight / 2) {
             this.player.setAx(-1);
             this.player.setLastMoveRight(false);
           }
           if (
-            touches[i].clientY < this.rendererHeight / 2 &&
+            touches[i].clientY < this.userData.rendererHeight / 2 &&
             !this.buttonStates.bombButton &&
             !this.buttonStates.cloudButton
           ) {
