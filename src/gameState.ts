@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import MobileTouch from './mobileDevices/index';
+import HandleMobile from './mobileDevices/handleMobile';
 import HandleKeyboard from './handleKeyboard';
 
 import Player from './objects/player';
@@ -14,105 +14,58 @@ import CloudSprite from './objects/cloudSprite';
 import Bodyguard from './objects/bodyguard';
 
 import { getFont1, getFont2, getFont3 } from './objects/textStyles';
-import { boxesIntersect, detectCollision } from './helpers';
+import { detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
-import { TextTypes, ButtonTypes } from './types';
-import Button from './objects/button';
+import { TextTypes } from './types';
+import Collisions from './collisions';
 
 export default class GameState {
   public player: Player;
 
-  private enemies: Enemy[] = [];
+  public enemies: Enemy[] = [];
 
   private bodyguards: Bodyguard[] = [];
 
-  private bullets: Bullet[] = [];
+  public bullets: Bullet[] = [];
 
-  private bombs: Bomb[] = [];
+  public bombs: Bomb[] = [];
 
-  private fallingObjects: FallingObject[] = [];
+  public fallingObjects: FallingObject[] = [];
 
-  private cloudSprites: CloudSprite[] = [];
-
-  private buttons: Button[] = [];
+  public cloudSprites: CloudSprite[] = [];
 
   public cloudLoadTime: number;
 
   public bombLoadTime: number;
 
-  private displayTexts: Text[] = [];
+  public displayTexts: Text[] = [];
 
-  private gameObjects: GameObject[] = [];
+  public gameObjects: GameObject[] = [];
 
   private handleKeyboard: HandleKeyboard;
 
-  private mobileTouch: MobileTouch;
+  private handleMobile: HandleMobile;
 
-  private userData: any = {
+  private collisions: Collisions;
+
+  public userData: any = {
     isOnMobile: false,
     rendererWidth: 0,
     rendererHeight: 0,
   };
 
-  private buttonStates: any = {
-    bombButton: false,
-    cloudButton: false,
-  };
-
-  private topPressLastDate: number;
-
   constructor(
-    private container: PIXI.Container,
+    public container: PIXI.Container,
     private app: PIXI.Application,
     private explosionFrames: Object,
-    private sprites: any,
+    public sprites: any,
   ) {
     this.userData.rendererWidth = this.app.renderer.view.width;
     this.userData.rendererHeight = this.app.renderer.view.height;
-    if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    ) {
-      this.userData.isOnMobile = true;
+    this.handleKeyboard = new HandleKeyboard(this);
+    this.handleMobile = new HandleMobile(this);
 
-      const bombButton = new Button(
-        ButtonTypes.BOMB,
-        this.sprites.bombButton,
-        this.userData.rendererWidth - this.sprites.bombButton.width,
-        0,
-        this.container,
-      );
-      bombButton.sprite.on('touchstart', () => {
-        this.buttonStates.bombButton = true;
-        this.bombLoadTime = new Date().getTime();
-      });
-      bombButton.sprite.on('touchend', () => {
-        this.buttonStates.bombButton = false;
-        this.throwBomb();
-      });
-
-      this.buttons.push(bombButton);
-
-      const cloudButton = new Button(
-        ButtonTypes.CLOUD,
-        this.sprites.cloudButton,
-        this.userData.rendererWidth -
-          this.sprites.bombButton.width -
-          this.sprites.cloudButton.width,
-        0,
-        this.container,
-      );
-      cloudButton.sprite.on('touchstart', () => {
-        this.buttonStates.cloudButton = true;
-        this.cloudLoadTime = new Date().getTime();
-      });
-      cloudButton.sprite.on('touchend', () => {
-        this.buttonStates.cloudButton = false;
-        this.attackCloud();
-      });
-    } else {
-      this.userData.isOnMobile = false;
-    }
-    this.mobileTouch = new MobileTouch();
+    this.collisions = new Collisions(this);
 
     this.player = new Player(
       this.sprites.player,
@@ -167,8 +120,6 @@ export default class GameState {
         this.bullets.push(bullet);
       });
     }, 2000);
-
-    this.handleKeyboard = new HandleKeyboard(this);
   }
 
   public createNewEnemy() {
@@ -194,122 +145,11 @@ export default class GameState {
     this.gameObjects.push(bodyguard);
   }
 
-  private handleFallingObjectCollision() {
-    this.fallingObjects.forEach((_fallingObject) => {
-      if (boxesIntersect(this.player.sprite, _fallingObject.sprite)) {
-        this.displayTexts
-          .find((element) => element.textType === TextTypes.SCORE_TEXT)
-          .updateText(`Score: ${this.player.score + 10}ml`);
-        this.container.removeChild(_fallingObject.sprite);
-        this.fallingObjects = this.fallingObjects.filter((e) => e !== _fallingObject);
-        this.gameObjects = this.gameObjects.filter((obj) => obj !== _fallingObject);
-      }
-    });
-  }
-
-  private handleBulletCollision() {
-    this.bullets.forEach((_bullet) => {
-      if (boxesIntersect(this.player.sprite, _bullet.sprite)) {
-        this.player.setHp(this.player.getHp() - 10);
-        this.bullets = this.bullets.filter((e) => e !== _bullet);
-        this.container.removeChild(_bullet.sprite);
-        this.displayTexts
-          .find((text) => text.textType === TextTypes.HP_TEXT)
-          .updateText(`HP: ${this.player.getHp()}`);
-      } else if (
-        _bullet.sprite.x < 0 ||
-        _bullet.sprite.x > this.userData.rendererWidth ||
-        _bullet.sprite.y < 0 ||
-        _bullet.sprite.y > this.userData.rendererHeight
-      ) {
-        this.bullets = this.bullets.filter((e) => e !== _bullet);
-        this.gameObjects = this.gameObjects.filter((e) => e !== _bullet);
-        this.container.removeChild(_bullet.sprite);
-      }
-    });
-  }
-
-  private handleCloudCollision() {
-    this.cloudSprites.forEach((_cloudSprite) => {
-      this.enemies.forEach((_enemy) => {
-        if (boxesIntersect(_cloudSprite.sprite, _enemy.sprite)) {
-          _enemy.setHp(_enemy.getHp() - 1);
-        }
-      });
-    });
-  }
-
-  private removeBomb(bomb: Bomb) {
+  public removeBomb(bomb: Bomb) {
     this.container.removeChild(bomb.sprite);
     setTimeout(() => {
       this.bombs = this.bombs.filter((_bomb: Bomb) => bomb !== _bomb);
     }, 1000);
-  }
-
-  private handleBombCollision() {
-    this.container.filters = [];
-    this.bombs.forEach((_bomb) => {
-      const blurFilter = new PIXI.filters.BlurFilter();
-
-      _bomb.explosions.forEach((explosion: any) => {
-        if (_bomb.exploded && boxesIntersect(this.player.sprite, explosion)) {
-          const vCollision = {
-            x: explosion.x - this.player.sprite.x,
-            y: explosion.y - this.player.sprite.y,
-          };
-          if (vCollision.x < 0) {
-            this.player.vx = 10;
-          } else {
-            this.player.vx = -10;
-          }
-          this.player.vy = -20;
-          this.container.filters = [blurFilter];
-          blurFilter.blur = 20;
-        } else {
-          blurFilter.blur = 0;
-        }
-      });
-
-      if (
-        _bomb.sprite.y + _bomb.sprite.height / 2 > this.userData.rendererHeight &&
-        !_bomb.exploded
-      ) {
-        _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
-        this.gameObjects = this.gameObjects.filter((e) => e !== _bomb);
-        this.removeBomb(_bomb);
-      }
-
-      this.enemies.forEach((_enemy) => {
-        if (_bomb.created) {
-          if (boxesIntersect(_bomb.sprite, _enemy.sprite) && !_bomb.exploded) {
-            _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
-            this.removeBomb(_bomb);
-            this.gameObjects = this.gameObjects.filter((e) => e !== _bomb);
-          }
-          _bomb.explosions.forEach((explosion: any) => {
-            if (boxesIntersect(explosion, _enemy.sprite)) {
-              const vCollision = {
-                x: explosion.x - _enemy.sprite.x,
-                y: explosion.y - _enemy.sprite.y,
-              };
-              _enemy.setPushVariable(true);
-              if (vCollision.x < 0) {
-                _enemy.setVx(5);
-              } else {
-                _enemy.setVx(-5);
-              }
-              _enemy.setHp(_enemy.getHp() - 1);
-              const checkIfFinishedInterval = setInterval(() => {
-                if (_bomb.explodeFinished) {
-                  clearInterval(checkIfFinishedInterval);
-                  _enemy.setPushVariable(false);
-                }
-              });
-            }
-          });
-        }
-      });
-    });
   }
 
   private handlePlayerDie() {
@@ -343,14 +183,14 @@ export default class GameState {
 
   gameLoop(delta: number) {
     this.handleKeyboard.handleKeyboardPress();
-    this.handleTouches();
+    this.handleMobile.handleTouches();
 
-    this.handleCloudCollision();
-    this.handleFallingObjectCollision();
-    this.handleBulletCollision();
+    this.collisions.handleCloudCollision();
+    this.collisions.handleFallingObjectCollision();
+    this.collisions.handleBulletCollision();
     this.handlePlayerDie();
     this.handleExpiredClouds();
-    this.handleBombCollision();
+    this.collisions.handleBombCollision();
 
     this.handleGravity(delta);
     this.handlePhysics();
@@ -481,42 +321,5 @@ export default class GameState {
     setTimeout(() => {
       cloud.shouldRemoveCloudSprite = true;
     }, timeDifference);
-  }
-
-  handleTouches() {
-    if (this.userData.isOnMobile) {
-      const touches = this.mobileTouch.getCurrentTouches();
-      if (touches) {
-        if (touches.length < 1) {
-          this.player.setAx(0);
-        }
-        for (let i = 0; i < touches.length; i += 1) {
-          if (
-            touches[i].clientX > this.userData.rendererWidth / 2 &&
-            touches[i].clientY > this.userData.rendererHeight / 2
-          ) {
-            this.player.setAx(1);
-            this.player.setLastMoveRight(true);
-          } else if (touches[i].clientY > this.userData.rendererHeight / 2) {
-            this.player.setAx(-1);
-            this.player.setLastMoveRight(false);
-          }
-          if (
-            touches[i].clientY < this.userData.rendererHeight / 2 &&
-            !this.buttonStates.bombButton &&
-            !this.buttonStates.cloudButton
-          ) {
-            if (
-              new Date().getTime() - this.topPressLastDate > 20 &&
-              new Date().getTime() - this.topPressLastDate < 500
-            ) {
-              this.player.setFlipping(true);
-            }
-            this.player.jump();
-            this.topPressLastDate = new Date().getTime();
-          }
-        }
-      }
-    }
   }
 }
