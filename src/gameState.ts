@@ -13,11 +13,12 @@ import CloudSprite from './objects/cloudSprite';
 // import Wall from './objects/wall';
 import Bodyguard from './objects/bodyguard';
 
-import { getFont1, getFont2, getFont3 } from './objects/textStyles';
+import { getFont1, getFont3 } from './objects/textStyles';
 import { detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
 import { TextTypes } from './types';
 import Collisions from './collisions';
+import HandleEvents from './events';
 
 export default class GameState {
   public player: Player;
@@ -48,6 +49,8 @@ export default class GameState {
 
   private collisions: Collisions;
 
+  private handleEvents: HandleEvents;
+
   public userData: any = {
     isOnMobile: false,
     rendererWidth: 0,
@@ -56,7 +59,7 @@ export default class GameState {
 
   constructor(
     public container: PIXI.Container,
-    private app: PIXI.Application,
+    public app: PIXI.Application,
     private explosionFrames: Object,
     public sprites: any,
   ) {
@@ -66,7 +69,7 @@ export default class GameState {
     this.handleMobile = new HandleMobile(this);
 
     this.collisions = new Collisions(this);
-
+    this.handleEvents = new HandleEvents(this);
     this.player = new Player(
       this.sprites.player,
       this.userData.rendererWidth,
@@ -152,35 +155,6 @@ export default class GameState {
     }, 1000);
   }
 
-  private handlePlayerDie() {
-    if (this.player.getHp() <= 0) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const deathText = new Text(
-        this.userData.rendererWidth / 4,
-        this.userData.rendererHeight / 4,
-        `
-        You're dead\n
-        Score: ${this.player.score}ml
-        `,
-        getFont2(),
-        TextTypes.DEATH_TEXT,
-        this.container,
-      );
-      this.app.ticker.stop();
-    }
-  }
-
-  private handleExpiredClouds() {
-    this.cloudSprites.forEach((_cloudSprite) => {
-      _cloudSprite.handlePhysics();
-      if (_cloudSprite.sprite.scale.x < 0.1) {
-        this.container.removeChild(_cloudSprite.sprite);
-        this.cloudSprites = this.cloudSprites.filter((e) => e !== _cloudSprite);
-        this.gameObjects = this.gameObjects.filter((e) => e !== _cloudSprite);
-      }
-    });
-  }
-
   gameLoop(delta: number) {
     this.handleKeyboard.handleKeyboardPress();
     this.handleMobile.handleTouches();
@@ -188,8 +162,8 @@ export default class GameState {
     this.collisions.handleCloudCollision();
     this.collisions.handleFallingObjectCollision();
     this.collisions.handleBulletCollision();
-    this.handlePlayerDie();
-    this.handleExpiredClouds();
+    this.handleEvents.handlePlayerDie();
+    this.handleEvents.handleExpiredClouds();
     this.collisions.handleBombCollision();
 
     this.handleGravity(delta);
