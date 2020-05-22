@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
-import Keyboard from 'pixi.js-keyboard';
 import MobileTouch from './mobileDevices/index';
+import HandleKeyboard from './handleKeyboard';
 
 import Player from './objects/player';
 import Enemy from './objects/enemy';
@@ -20,7 +20,7 @@ import { TextTypes, ButtonTypes } from './types';
 import Button from './objects/button';
 
 export default class GameState {
-  private player: Player;
+  public player: Player;
 
   private enemies: Enemy[] = [];
 
@@ -36,17 +36,15 @@ export default class GameState {
 
   private buttons: Button[] = [];
 
-  private rendererWidth: number;
+  public cloudLoadTime: number;
 
-  private rendererHeight: number;
-
-  private cloudLoadTime: number;
-
-  private bombLoadTime: number;
+  public bombLoadTime: number;
 
   private displayTexts: Text[] = [];
 
   private gameObjects: GameObject[] = [];
+
+  private handleKeyboard: HandleKeyboard;
 
   private mobileTouch: MobileTouch;
 
@@ -97,7 +95,9 @@ export default class GameState {
       const cloudButton = new Button(
         ButtonTypes.CLOUD,
         this.sprites.cloudButton,
-        this.userData.rendererWidth - this.sprites.bombButton.width - this.sprites.cloudButton.width,
+        this.userData.rendererWidth -
+          this.sprites.bombButton.width -
+          this.sprites.cloudButton.width,
         0,
         this.container,
       );
@@ -112,7 +112,6 @@ export default class GameState {
     } else {
       this.userData.isOnMobile = false;
     }
-
     this.mobileTouch = new MobileTouch();
 
     this.player = new Player(
@@ -168,9 +167,11 @@ export default class GameState {
         this.bullets.push(bullet);
       });
     }, 2000);
+
+    this.handleKeyboard = new HandleKeyboard(this);
   }
 
-  private createNewEnemy() {
+  public createNewEnemy() {
     const enemy = new Enemy(
       this.sprites.enemy,
       this.userData.rendererWidth,
@@ -181,7 +182,7 @@ export default class GameState {
     this.gameObjects.push(enemy);
   }
 
-  private createNewBodyguard() {
+  public createNewBodyguard() {
     const bodyguard = new Bodyguard(
       this.sprites.bodyguard,
       this.userData.rendererWidth,
@@ -269,7 +270,10 @@ export default class GameState {
         }
       });
 
-      if (_bomb.sprite.y + _bomb.sprite.height / 2 > this.userData.rendererHeight && !_bomb.exploded) {
+      if (
+        _bomb.sprite.y + _bomb.sprite.height / 2 > this.userData.rendererHeight &&
+        !_bomb.exploded
+      ) {
         _bomb.explode(_bomb.sprite.x, _bomb.sprite.y);
         this.gameObjects = this.gameObjects.filter((e) => e !== _bomb);
         this.removeBomb(_bomb);
@@ -338,7 +342,7 @@ export default class GameState {
   }
 
   gameLoop(delta: number) {
-    this.handleKeyboardPress();
+    this.handleKeyboard.handleKeyboardPress();
     this.handleTouches();
 
     this.handleCloudCollision();
@@ -354,7 +358,8 @@ export default class GameState {
     detectCollision(this.gameObjects); // TODO consider reordering
     this.update(delta);
 
-    Keyboard.update();
+    HandleKeyboard.update();
+
     this.draw(delta);
   }
 
@@ -476,62 +481,6 @@ export default class GameState {
     setTimeout(() => {
       cloud.shouldRemoveCloudSprite = true;
     }, timeDifference);
-  }
-
-  private canCreateBodyguard = true;
-
-  private canCreateEnemy = true;
-
-  private handleKeyboardPress() {
-    if (Keyboard.isKeyDown('ArrowLeft', 'KeyA')) {
-      this.player.setAx(-1);
-      this.player.setLastMoveRight(false);
-    }
-    if (Keyboard.isKeyReleased('ArrowLeft', 'KeyA')) {
-      this.player.setAx(0);
-    }
-    if (Keyboard.isKeyDown('ArrowRight', 'KeyD')) {
-      this.player.setAx(1);
-      this.player.setLastMoveRight(true);
-    }
-    if (Keyboard.isKeyReleased('ArrowRight', 'KeyD')) {
-      this.player.setAx(0);
-    }
-    if (Keyboard.isKeyDown('ArrowUp', 'KeyW')) {
-      this.player.jump();
-    }
-    if (Keyboard.isKeyDown('Digit1') && this.canCreateBodyguard) {
-      this.canCreateBodyguard = false;
-      this.createNewBodyguard();
-    }
-    if (Keyboard.isKeyReleased('Digit1')) {
-      this.canCreateBodyguard = true;
-    }
-    if (Keyboard.isKeyDown('Digit2') && this.canCreateEnemy) {
-      this.canCreateEnemy = false;
-      this.createNewEnemy();
-    }
-    if (Keyboard.isKeyReleased('Digit2')) {
-      this.canCreateEnemy = true;
-    }
-    if (Keyboard.isKeyDown('Space')) {
-      this.player.setFlipping(true);
-    }
-    if (Keyboard.isKeyPressed('KeyE')) {
-      this.cloudLoadTime = new Date().getTime();
-    }
-
-    if (Keyboard.isKeyReleased('KeyE')) {
-      this.attackCloud();
-    }
-
-    if (Keyboard.isKeyPressed('KeyQ')) {
-      this.bombLoadTime = new Date().getTime();
-    }
-
-    if (Keyboard.isKeyReleased('KeyQ')) {
-      this.throwBomb();
-    }
   }
 
   handleTouches() {
