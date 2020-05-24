@@ -7,6 +7,7 @@ export enum ObjectType {
   ENEMY = 'enemy',
   FALLING_OBJECT = 'fallingObject',
   WALL = 'WALL',
+  SHOP = 'SHOP',
 }
 export enum TextTypes {
   SCORE_TEXT = 'SCORE_TEXT',

@@ -16,9 +16,10 @@ import Bodyguard from './objects/bodyguard';
 import { getFont1, getFont3, getFont2 } from './objects/textStyles';
 import { detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
-import { TextTypes } from './types';
+import { TextTypes, ObjectType } from './types';
 import Collisions from './collisions';
 import HandleEvents from './events';
+import Shop from './objects/shop';
 
 export default class GameState {
   public player: Player;
@@ -34,6 +35,8 @@ export default class GameState {
   public fallingObjects: FallingObject[] = [];
 
   public cloudSprites: CloudSprite[] = [];
+
+  public shop: Shop;
 
   public cloudLoadTime: number;
 
@@ -89,6 +92,14 @@ export default class GameState {
 
     this.gameObjects.push(fallingObject);
     this.fallingObjects.push(fallingObject);
+
+    this.shop = new Shop(
+      this.userData.rendererWidth,
+      this.userData.rendererHeight,
+      sprites.shop,
+      ObjectType.SHOP,
+      this.container,
+    );
 
     this.createNewEnemy();
 
@@ -191,6 +202,7 @@ export default class GameState {
     this.collisions.handleCloudCollision();
     this.collisions.handleFallingObjectCollision();
     this.collisions.handleBulletCollision();
+    this.collisions.handleShopCollision();
     this.handleEvents.handlePlayerDie();
     this.handleEvents.handleExpiredClouds();
     this.collisions.handleBombCollision();

@@ -124,4 +124,17 @@ export default class Collisions {
       }
     });
   }
+
+  public handleShopCollision() {
+    if (boxesIntersect(this.gameState.player.sprite, this.gameState.shop.sprite)) {
+      if (
+        this.gameState.shop.sprite.y - this.gameState.player.sprite.y >
+        this.gameState.shop.sprite.height / 8
+      ) {
+        this.gameState.player.pushPlayer(0, -10);
+      } else {
+        this.gameState.player.pushPlayer(10, 0);
+      }
+    }
+  }
 }
