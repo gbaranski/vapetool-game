@@ -306,6 +306,7 @@ export default class GameState {
       timeDifference,
       this.container,
     );
+
     this.gameObjects.push(bomb);
     this.bombs.push(bomb);
   }
