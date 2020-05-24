@@ -14,8 +14,10 @@ export default class Text {
   ) {
     this.textObject = new PIXI.Text(text, this.textStyle);
     this.textObject.position.set(this.x, this.y);
-    
-    if(textType === TextTypes.PAUSE_TEXT) { this.textObject.interactive = true}
+
+    if (textType === TextTypes.PAUSE_TEXT) {
+      this.textObject.interactive = true;
+    }
 
     this.container.addChild(this.textObject);
   }
@@ -26,12 +28,9 @@ export default class Text {
 
   removeFromContainer() {
     this.container.removeChild(this.textObject);
-    if(this.textType === TextTypes.PAUSE_TEXT) { this.textObject.interactive = false};
   }
 
   addBackToContainer() {
     this.container.addChild(this.textObject);
-    if(this.textType === TextTypes.PAUSE_TEXT) { this.textObject.interactive = true };
   }
-
 }
