@@ -13,7 +13,7 @@ import CloudSprite from './objects/cloudSprite';
 // import Wall from './objects/wall';
 import Bodyguard from './objects/bodyguard';
 
-import { getFont1, getFont3 } from './objects/textStyles';
+import { getFont1, getFont3, getFont2 } from './objects/textStyles';
 import { detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
 import { TextTypes } from './types';
@@ -50,6 +50,8 @@ export default class GameState {
   private collisions: Collisions;
 
   private handleEvents: HandleEvents;
+
+  private pauseText: Text;
 
   public userData: any = {
     isOnMobile: false,
@@ -108,20 +110,32 @@ export default class GameState {
       new Text(0, 80, `Loading...`, getFont3(), TextTypes.DEBUG_TEXT, this.container),
     );
 
+    this.pauseText = new Text(
+      this.userData.rendererWidth / 4,
+      this.userData.rendererHeight / 4,
+      'Paused',
+      getFont2(),
+      TextTypes.PAUSE_TEXT,
+      this.container,
+    );
+    this.pauseText.removeFromContainer();
+
     setInterval(() => {
-      this.enemies.forEach((_enemy) => {
-        const bullet = new Bullet(
-          this.sprites.bullet,
-          this.userData.rendererWidth,
-          this.userData.rendererHeight,
-          this.container,
-          _enemy.sprite.x + _enemy.sprite.width / 2,
-          _enemy.sprite.y,
-          this.player.sprite.x,
-          this.player.sprite.y,
-        );
-        this.bullets.push(bullet);
-      });
+      if (!this.userData.isPaused) {
+        this.enemies.forEach((_enemy) => {
+          const bullet = new Bullet(
+            this.sprites.bullet,
+            this.userData.rendererWidth,
+            this.userData.rendererHeight,
+            this.container,
+            _enemy.sprite.x + _enemy.sprite.width / 2,
+            _enemy.sprite.y,
+            this.player.sprite.x,
+            this.player.sprite.y,
+          );
+          this.bullets.push(bullet);
+        });
+      }
     }, 2000);
   }
 
@@ -155,7 +169,22 @@ export default class GameState {
     }, 1000);
   }
 
+  private handleGamePause() {
+    if (!document.hasFocus() && !this.userData.isPaused) {
+      this.userData.isPaused = true;
+      this.pauseText.addBackToContainer();
+    } else if (document.hasFocus()) {
+      this.userData.isPaused = false;
+      this.pauseText.removeFromContainer();
+    }
+  }
+
   gameLoop(delta: number) {
+    this.handleGamePause();
+    if (this.userData.isPaused) {
+      return;
+    }
+
     this.handleKeyboard.handleKeyboardPress();
     this.handleMobile.handleTouches();
 

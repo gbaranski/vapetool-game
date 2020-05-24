@@ -14,10 +14,24 @@ export default class Text {
   ) {
     this.textObject = new PIXI.Text(text, this.textStyle);
     this.textObject.position.set(this.x, this.y);
+    
+    if(textType === TextTypes.PAUSE_TEXT) { this.textObject.interactive = true}
+
     this.container.addChild(this.textObject);
   }
 
   updateText(newText: string) {
     this.textObject.text = newText;
   }
+
+  removeFromContainer() {
+    this.container.removeChild(this.textObject);
+    if(this.textType === TextTypes.PAUSE_TEXT) { this.textObject.interactive = false};
+  }
+
+  addBackToContainer() {
+    this.container.addChild(this.textObject);
+    if(this.textType === TextTypes.PAUSE_TEXT) { this.textObject.interactive = true };
+  }
+
 }

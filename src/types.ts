@@ -13,6 +13,7 @@ export enum TextTypes {
   HP_TEXT = 'HP_TEXT',
   DEBUG_TEXT = 'DEBUG_TEXT',
   DEATH_TEXT = 'DEATH_TEXT',
+  PAUSE_TEXT = 'PAUSE_TEXT',
 }
 export enum ButtonTypes {
   BOMB = 'BOMB_BUTTON',
