@@ -26,7 +26,7 @@ export default class GameState {
 
   public enemies: Enemy[] = [];
 
-  private bodyguards: Bodyguard[] = [];
+  public bodyguards: Bodyguard[] = [];
 
   public bullets: Bullet[] = [];
 
@@ -104,7 +104,14 @@ export default class GameState {
     this.createNewEnemy();
 
     this.displayTexts.push(
-      new Text(0, 0, `HP: ${this.player.getHp()}`, getFont1(), TextTypes.HP_TEXT, this.container),
+      new Text(
+        0,
+        0,
+        `HP: ${this.player.getHp()}`,
+        getFont1(),
+        TextTypes.PLAYER_HP_TEXT,
+        this.container,
+      ),
     );
     this.displayTexts.push(
       new Text(

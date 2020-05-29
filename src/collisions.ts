@@ -93,7 +93,7 @@ export default class Collisions {
         this.gameState.bullets = this.gameState.bullets.filter((e) => e !== _bullet);
         this.gameState.container.removeChild(_bullet.sprite);
         this.gameState.displayTexts
-          .find((text) => text.textType === TextTypes.HP_TEXT)
+          .find((text) => text.textType === TextTypes.PLAYER_HP_TEXT)
           .updateText(`HP: ${this.gameState.player.getHp()}`);
       } else if (
         _bullet.sprite.x < 0 ||
@@ -105,6 +105,14 @@ export default class Collisions {
         this.gameState.gameObjects = this.gameState.gameObjects.filter((e) => e !== _bullet);
         this.gameState.container.removeChild(_bullet.sprite);
       }
+      this.gameState.bodyguards.forEach((_bodyguard) => {
+        if (boxesIntersect(_bodyguard.sprite, _bullet.sprite)) {
+          _bodyguard.setHp(_bodyguard.getHp() - 10);
+          this.gameState.bullets = this.gameState.bullets.filter((e) => e !== _bullet);
+          this.gameState.container.removeChild(_bullet.sprite);
+          _bodyguard.updateHpText();
+        }
+      });
     });
   }
 

@@ -11,7 +11,7 @@ export enum ObjectType {
 }
 export enum TextTypes {
   SCORE_TEXT = 'SCORE_TEXT',
-  HP_TEXT = 'HP_TEXT',
+  PLAYER_HP_TEXT = 'PLAYER_HP_TEXT',
   DEBUG_TEXT = 'DEBUG_TEXT',
   DEATH_TEXT = 'DEATH_TEXT',
   PAUSE_TEXT = 'PAUSE_TEXT',
