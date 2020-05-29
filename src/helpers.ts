@@ -6,6 +6,10 @@ const blacklistedObjects: { [key: string]: ObjectType[] } = {
   [ObjectType.BODYGUARD]: [ObjectType.BOMB],
 };
 
+export function getEuclideanDistance(a: PIXI.Sprite, b: PIXI.Sprite) {
+  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+}
+
 export function boxesIntersect(a: PIXI.Sprite, b: PIXI.Sprite) {
   const ab = a.getBounds();
   const bb = b.getBounds();
