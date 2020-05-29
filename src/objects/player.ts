@@ -151,7 +151,7 @@ export default class Player extends GameObject {
 
   pushPlayer(xPushMultiplier: number, yPushMultiplier: number) {
     this.vx = Math.min((this.vx += xPushMultiplier), 10);
-    this.vy = Math.min((this.vy += yPushMultiplier), 10);
+    this.vy = Math.max((this.vy += yPushMultiplier), -15);
   }
 
   getHp() {
