@@ -335,6 +335,8 @@ export default class GameState {
         _bodyguard.updateHpText();
       }
     });
+    console.log(delta);
+    this.player.handleFlips(delta);
   }
 
   throwBomb() {

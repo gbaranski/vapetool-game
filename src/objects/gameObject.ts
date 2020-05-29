@@ -21,7 +21,8 @@ export default abstract class GameObject {
     GameObject.objectCounter += 1;
     this.objectType = objectType;
     const name = `${objectType}_${GameObject.objectCounter}`;
-    // console.log(name || "asda");
+    // eslint-disable-next-line no-console
+    console.log(name);
   }
 
   draw() {

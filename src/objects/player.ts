@@ -116,7 +116,6 @@ export default class Player extends GameObject {
     }
     this.allowedDoubleJump = false;
     this.handleFriction();
-    this.handleFlips();
   }
 
   checkIfBunnyGoRight() {
@@ -131,11 +130,11 @@ export default class Player extends GameObject {
     this.flipping = flipping;
   }
 
-  handleFlips() {
+  handleFlips(secondsPassed: number) {
     if (this.checkIfBunnyGoRight() && !this.flipping) {
-      this.flipVelocity = 5;
+      this.flipVelocity = 5 * secondsPassed * 2;
     } else if (!this.flipping) {
-      this.flipVelocity = -5;
+      this.flipVelocity = -5 * secondsPassed * 2;
     }
 
     if (this.flipping) {
