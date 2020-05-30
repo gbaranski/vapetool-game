@@ -91,6 +91,11 @@ export default class Collisions {
       if (boxesIntersect(this.gameState.player.sprite, _bullet.sprite)) {
         this.gameState.player.setHp(this.gameState.player.getHp() - 10);
         this.gameState.bullets = this.gameState.bullets.filter((e) => e !== _bullet);
+        _bullet.trails.forEach((_trail) => {
+          this.gameState.container.removeChild(_trail);
+        });
+        _bullet.trails.splice(0, _bullet.trails.length); // remove whole array
+
         this.gameState.container.removeChild(_bullet.sprite);
         this.gameState.displayTexts
           .find((text) => text.textType === TextTypes.PLAYER_HP_TEXT)
@@ -104,12 +109,23 @@ export default class Collisions {
         this.gameState.bullets = this.gameState.bullets.filter((e) => e !== _bullet);
         this.gameState.gameObjects = this.gameState.gameObjects.filter((e) => e !== _bullet);
         this.gameState.container.removeChild(_bullet.sprite);
+
+        _bullet.trails.forEach((_trail) => {
+          this.gameState.container.removeChild(_trail);
+        });
+        _bullet.trails.splice(0, _bullet.trails.length); // remove whole array
       }
       this.gameState.bodyguards.forEach((_bodyguard) => {
         if (boxesIntersect(_bodyguard.sprite, _bullet.sprite)) {
           _bodyguard.setHp(_bodyguard.getHp() - 10);
           this.gameState.bullets = this.gameState.bullets.filter((e) => e !== _bullet);
           this.gameState.container.removeChild(_bullet.sprite);
+
+          _bullet.trails.forEach((_trail) => {
+            this.gameState.container.removeChild(_trail);
+          });
+          _bullet.trails.splice(0, _bullet.trails.length); // remove whole array
+
           _bodyguard.updateHpText();
         }
       });

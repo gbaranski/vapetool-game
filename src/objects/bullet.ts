@@ -11,6 +11,8 @@ export default class Bullet extends GameObject {
 
   private bulletSpeed: number;
 
+  public trails: PIXI.Sprite[] = [];
+
   constructor(
     sprite: PIXI.Sprite,
     rendererWidth: number,
@@ -51,8 +53,30 @@ export default class Bullet extends GameObject {
   }
 
   handlePhysics() {
-    this.sprite.x += Math.cos(this.sprite.rotation) * this.bulletSpeed;
-    this.sprite.y += Math.sin(this.sprite.rotation) * this.bulletSpeed;
+    if (this.trails.length > 200) {
+      this.container.removeChild(this.trails.shift());
+    }
+
+    const trailPart = new PIXI.Sprite(PIXI.Texture.WHITE);
+    trailPart.tint = 0xff0000;
+    trailPart.scale.set(1.5);
+    trailPart.x = this.sprite.x;
+    trailPart.y = this.sprite.y;
+    trailPart.anchor.set(-1, 0.5);
+    trailPart.rotation = this.sprite.rotation;
+
+    this.container.addChild(trailPart);
+    this.trails.push(trailPart);
+    this.trails.forEach((_trail, index) => {
+      this.trails[index].x += this.vx - this.vx / 15;
+      this.trails[index].y += this.vy - this.vy / 15;
+      this.trails[index].alpha = index / 1000;
+    });
+
+    this.vx = Math.cos(this.sprite.rotation) * this.bulletSpeed;
+    this.vy = Math.sin(this.sprite.rotation) * this.bulletSpeed;
+    this.sprite.x += this.vx;
+    this.sprite.y += this.vy;
   }
 }
 
