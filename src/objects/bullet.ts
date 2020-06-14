@@ -28,7 +28,7 @@ export default class Bullet extends GameObject {
     this.rendererWidth = rendererWidth;
     this.rendererHeight = rendererHeight;
 
-    this.bulletSpeed = -5; // default -50
+    this.bulletSpeed = -10; // default -50
     this.sprite = new PIXI.Sprite(sprite.texture);
     this.sprite.x = startX;
     this.sprite.y = startY;
@@ -56,6 +56,7 @@ export default class Bullet extends GameObject {
     if (this.trails.length > 200) {
       this.container.removeChild(this.trails.shift());
     }
+    this.bulletSpeed *= 1.01;
 
     const trailPart = new PIXI.Sprite(PIXI.Texture.WHITE);
     trailPart.tint = 0xff0000;
