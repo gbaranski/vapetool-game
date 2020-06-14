@@ -56,6 +56,8 @@ export default class GameState {
 
   public actions: Actions;
 
+  private botLogic: BotLogic;
+
   private handleEvents: HandleEvents;
 
   private pauseText: Text;
@@ -80,7 +82,7 @@ export default class GameState {
     this.collisions = new Collisions(this);
     this.handleEvents = new HandleEvents(this);
     this.actions = new Actions(this, explosionFrames);
-    new BotLogic(this);
+    this.botLogic = new BotLogic(this);
     this.player = new Player(
       this.sprites.player,
       this.userData.rendererWidth,

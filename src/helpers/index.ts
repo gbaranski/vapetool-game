@@ -1,5 +1,5 @@
-import { ObjectType } from './types';
-import GameObject from './objects/gameObject';
+import { ObjectType } from '../types';
+import GameObject from '../objects/gameObject';
 
 const blacklistedObjects: { [key: string]: ObjectType[] } = {
   [ObjectType.PLAYER]: [ObjectType.FALLING_OBJECT, ObjectType.BODYGUARD],
