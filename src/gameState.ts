@@ -14,13 +14,14 @@ import CloudSprite from './objects/cloudSprite';
 import Bodyguard from './objects/bodyguard';
 
 import { getFont1, getFont3, getFont2 } from './objects/textStyles';
-import { detectCollision, getEuclideanDistance } from './helpers';
+import { detectCollision } from './helpers';
 import GameObject from './objects/gameObject';
 import { TextTypes, ObjectType } from './types';
 import Collisions from './collisions';
 import HandleEvents from './events';
 import Shop from './objects/shop';
 import Actions from './actions';
+import BotLogic from './botLogic';
 
 export default class GameState {
   public player: Player;
@@ -79,6 +80,7 @@ export default class GameState {
     this.collisions = new Collisions(this);
     this.handleEvents = new HandleEvents(this);
     this.actions = new Actions(this, explosionFrames);
+    new BotLogic(this);
     this.player = new Player(
       this.sprites.player,
       this.userData.rendererWidth,
@@ -141,50 +143,6 @@ export default class GameState {
       this.container,
     );
     this.pauseText.removeFromContainer();
-
-    setInterval(() => {
-      if (this.userData.isPaused) {
-        return;
-      }
-
-      this.enemies.forEach((_enemy) => {
-        let closestObject: any = {
-          euclideanDistance: Number.MAX_SAFE_INTEGER,
-          sprite: null,
-        };
-        this.bodyguards.forEach((_bodyguard) => {
-          const euclideanDistance = getEuclideanDistance(_enemy.sprite, _bodyguard.sprite);
-          if (euclideanDistance < closestObject.euclideanDistance) {
-            closestObject = {
-              euclideanDistance,
-              sprite: _bodyguard.sprite,
-            };
-          }
-        });
-        if (
-          getEuclideanDistance(_enemy.sprite, this.player.sprite) <
-            closestObject.euclideanDistance ||
-          this.bodyguards.length === 0
-        ) {
-          closestObject = {
-            euclideanDistance: null, // can also assign to real euclidean but not even using it anywhere
-            sprite: this.player.sprite,
-          };
-          console.log('Player is closest object');
-        }
-        const bullet = new Bullet(
-          this.sprites.bullet,
-          this.userData.rendererWidth,
-          this.userData.rendererHeight,
-          this.container,
-          _enemy.sprite.x,
-          _enemy.sprite.y,
-          closestObject.sprite.x,
-          closestObject.sprite.y,
-        );
-        this.bullets.push(bullet);
-      });
-    }, 2000);
   }
 
   public createNewEnemy() {
