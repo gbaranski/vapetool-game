@@ -40,7 +40,7 @@ export default class HandleMobile {
       });
       bombButton.sprite.on('touchend', () => {
         this.buttonStates.bombButton = false;
-        this.gameState.throwBomb();
+        this.gameState.actions.throwBomb();
       });
 
       this.buttons.push(bombButton);
@@ -60,7 +60,7 @@ export default class HandleMobile {
       });
       cloudButton.sprite.on('touchend', () => {
         this.buttonStates.cloudButton = false;
-        this.gameState.attackCloud();
+        this.gameState.actions.attackCloud();
       });
     } else {
       this.gameState.userData.isOnMobile = false;
