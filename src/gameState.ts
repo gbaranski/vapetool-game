@@ -20,6 +20,7 @@ import { TextTypes, ObjectType } from './types';
 import Collisions from './collisions';
 import HandleEvents from './events';
 import Shop from './objects/shop';
+import Actions from './actions';
 
 export default class GameState {
   public player: Player;
@@ -52,6 +53,8 @@ export default class GameState {
 
   private collisions: Collisions;
 
+  public actions: Actions;
+
   private handleEvents: HandleEvents;
 
   private pauseText: Text;
@@ -65,7 +68,7 @@ export default class GameState {
   constructor(
     public container: PIXI.Container,
     public app: PIXI.Application,
-    private explosionFrames: Object,
+    explosionFrames: Object,
     public sprites: any,
   ) {
     this.userData.rendererWidth = this.app.renderer.view.width;
@@ -75,6 +78,7 @@ export default class GameState {
 
     this.collisions = new Collisions(this);
     this.handleEvents = new HandleEvents(this);
+    this.actions = new Actions(this, explosionFrames);
     this.player = new Player(
       this.sprites.player,
       this.userData.rendererWidth,
@@ -336,40 +340,5 @@ export default class GameState {
       }
     });
     this.player.handleFlips(delta);
-  }
-
-  throwBomb() {
-    const timeDifference = new Date().getTime() - this.bombLoadTime;
-    const vx = this.player.checkIfBunnyGoRight() ? 10 : -10;
-    const vy = -Math.abs(timeDifference / 20);
-    const bomb = new Bomb(
-      this.sprites.bomb,
-      this.explosionFrames,
-      this.player.sprite.x,
-      this.player.sprite.y,
-      vx,
-      vy,
-      timeDifference,
-      this.container,
-    );
-
-    this.gameObjects.push(bomb);
-    this.bombs.push(bomb);
-  }
-
-  attackCloud() {
-    const cloud = new CloudSprite(this.sprites.cloud);
-    const timeDifference = new Date().getTime() - this.cloudLoadTime;
-    cloud.attackCloud(
-      this.player.checkIfBunnyGoRight(),
-      timeDifference,
-      this.player.sprite.x,
-      this.player.sprite.y,
-      this.container,
-    );
-    this.cloudSprites.push(cloud);
-    setTimeout(() => {
-      cloud.shouldRemoveCloudSprite = true;
-    }, timeDifference);
   }
 }

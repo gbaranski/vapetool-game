@@ -52,7 +52,7 @@ export default class HandleKeyboard {
     }
 
     if (Keyboard.isKeyReleased('KeyE')) {
-      this.gameState.attackCloud();
+      this.gameState.actions.attackCloud();
     }
 
     if (Keyboard.isKeyPressed('KeyQ')) {
@@ -60,7 +60,7 @@ export default class HandleKeyboard {
     }
 
     if (Keyboard.isKeyReleased('KeyQ')) {
-      this.gameState.throwBomb();
+      this.gameState.actions.throwBomb();
     }
   }
 
